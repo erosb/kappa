@@ -45,29 +45,29 @@ allprojects {
 // Only report code coverage for published projects
 def publishedProjects = subprojects.findAll { it.path != ':openapi-perf-checker' }
 
-task jacocoMerge(type: JacocoMerge) {
-  publishedProjects.each { subproject ->
-    executionData subproject.tasks.withType(Test)
-  }
-  doFirst {
-    executionData = files(executionData.findAll { it.exists() })
-  }
-}
-
-task codeCoverageReport(type: JacocoReport) {
-  dependsOn publishedProjects.test, jacocoMerge
-
-  additionalSourceDirs.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
-  sourceDirectories.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
-  classDirectories.from = files(publishedProjects.sourceSets.main.output)
-  executionData jacocoMerge.destinationFile
-
-  reports {
-    xml.enabled true
-    html.enabled true
-    csv.enabled false
-  }
-}
+//task jacocoMerge(type: JacocoMerge) {
+//  publishedProjects.each { subproject ->
+//    executionData subproject.tasks.withType(Test)
+//  }
+//  doFirst {
+//    executionData = files(executionData.findAll { it.exists() })
+//  }
+//}
+//
+//task codeCoverageReport(type: JacocoReport) {
+//  dependsOn publishedProjects.test, jacocoMerge
+//
+//  additionalSourceDirs.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+//  sourceDirectories.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+//  classDirectories.from = files(publishedProjects.sourceSets.main.output)
+//  executionData jacocoMerge.destinationFile
+//
+//  reports {
+//    xml.enabled true
+//    html.enabled true
+//    csv.enabled false
+//  }
+//}
 
 sonarqube {
   properties {
