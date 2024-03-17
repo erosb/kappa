@@ -9,6 +9,7 @@ description = "openapi4j operation validator"
 dependencies {
   api(project(":openapi-parser"))
   api(project(":openapi-schema-validator"))
+  implementation("com.github.erosb:json-sKema:0.14.0")
 
   // ---------------- Optional data adapters ----------------
   // xml
