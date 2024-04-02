@@ -9,17 +9,17 @@ description = "openapi4j operation validator"
 dependencies {
   api(project(":openapi-parser"))
   api(project(":openapi-schema-validator"))
-  implementation("com.github.erosb:json-sKema:0.14.0")
+  implementation("com.github.erosb:json-sKema:0.15.0")
 
   // ---------------- Optional data adapters ----------------
   // xml
-  compileOnly("org.json:json:20190722")
+  compileOnly("org.json:json:20231013")
   // multipart
   compileOnly("commons-fileupload:commons-fileupload:1.4")
   // -------------- END Optional data adapters --------------
 
   testImplementation("junit:junit:4.13.2")
-  testImplementation("org.json:json:20190722")
+  testImplementation("org.json:json:20231013")
   testImplementation("commons-fileupload:commons-fileupload:1.4")
   testImplementation("org.skyscreamer:jsonassert:1.5.0")
 }
