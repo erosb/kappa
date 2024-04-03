@@ -26,6 +26,7 @@ public class ReferenceRegistry {
    * @return The reference created or replaced.
    */
   public Reference addRef(URL url, String refValue) {
+    System.out.println("ReferenceRegistry.addRef(" + url + ", " + refValue + ")");
     String canonicalRefValue = buildCanonicalRef(url, refValue);
 
     Reference reference = new Reference(url, canonicalRefValue, refValue);

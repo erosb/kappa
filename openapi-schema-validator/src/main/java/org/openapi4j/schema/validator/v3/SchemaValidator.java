@@ -79,7 +79,9 @@ public class SchemaValidator extends BaseJsonValidator<OAI3> {
                   final SchemaValidator parentSchema) {
 
     super(context, schemaNode, schemaParentNode, parentSchema);
-
+    System.out.println("creating SchemaValidator with");
+    System.out.println("  schemaNode = " + schemaNode);
+    System.out.println("  schemaParentNode = " + schemaParentNode);
     this.crumbInfo = crumbInfo;
     validators = read(this.context, schemaNode);
   }

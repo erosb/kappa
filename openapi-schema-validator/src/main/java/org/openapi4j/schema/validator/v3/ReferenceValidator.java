@@ -31,7 +31,7 @@ class ReferenceValidator extends BaseJsonValidator<OAI3> {
                      final SchemaValidator parentSchema) {
 
     super(context, schemaNode, schemaParentNode, parentSchema);
-
+    System.out.println("creating ReferenceValidator");
     if (HASH.equals(schemaNode.textValue())) {
       refValue = schemaNode.textValue();
       schemaValidator = parentSchema.findParent();
@@ -40,6 +40,7 @@ class ReferenceValidator extends BaseJsonValidator<OAI3> {
       JsonNode refNode = schemaParentNode.has(ABS_REF_FIELD) ? schemaParentNode.get(ABS_REF_FIELD) : schemaNode;
       refValue = refNode.textValue();
       Reference reference = context.getContext().getReferenceRegistry().getRef(refValue);
+      System.out.println("found reference by refValue=" + refValue + " : " + reference.getContent());
       // Check visited references to break infinite looping
       JsonValidator validator = context.getReference(refValue);
       if (validator == null) {

@@ -61,11 +61,11 @@ class BodyValidator {
 
     Schema copy = mediaType.getSchema().copy();
     JsonNode rawJson = TreeUtil.json.convertValue(copy, JsonNode.class);
-    return new SkemaBackedJsonValidator(rawJson);
+//    return new SkemaBackedJsonValidator(rawJson);
 
-//    return new SchemaValidator(
-//      context,
-//      BODY,
-//      TreeUtil.json.convertValue(mediaType.getSchema().copy(), JsonNode.class));
+    return new SchemaValidator(
+      context,
+      BODY,
+      TreeUtil.json.convertValue(mediaType.getSchema().copy(), JsonNode.class));
   }
 }
