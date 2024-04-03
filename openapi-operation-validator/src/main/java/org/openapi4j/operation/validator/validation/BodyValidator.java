@@ -2,6 +2,7 @@ package org.openapi4j.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openapi4j.core.model.v3.OAI3;
 import org.openapi4j.core.util.TreeUtil;
 import org.openapi4j.core.validation.ValidationException;
@@ -61,6 +62,10 @@ class BodyValidator {
 
     Schema copy = mediaType.getSchema().copy();
     JsonNode rawJson = TreeUtil.json.convertValue(copy, JsonNode.class);
+    if (rawJson instanceof ObjectNode) {
+      ObjectNode obj = (ObjectNode) rawJson;
+      obj.set("components", context.getContext().getBaseDocument().get("components"));
+    }
     return new SkemaBackedJsonValidator(rawJson);
 
 //    return new SchemaValidator(
