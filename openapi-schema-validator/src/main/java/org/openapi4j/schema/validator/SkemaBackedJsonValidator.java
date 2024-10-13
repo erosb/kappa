@@ -16,14 +16,17 @@ public class SkemaBackedJsonValidator implements JsonValidator {
   private final Schema schema;
 
   public SkemaBackedJsonValidator(JsonNode rawJson) {
-    schema = new SchemaLoader(rawJson.toPrettyString()).load();
+    String schemaJsonString = rawJson.toPrettyString();
+//    System.out.println("init SkemaBackedValidator: ");
+//    System.out.println(schemaJsonString);
+    schema = new SchemaLoader(schemaJsonString).load();
   }
 
   @Override
   public boolean validate(JsonNode valueNode, ValidationData<?> validation) {
-    System.out.println("ret bool?");
-    IJsonValue jsonValue = new JsonParser(valueNode.toPrettyString()).parse();
-//    validation.
+    String jsonString = valueNode.toPrettyString();
+//    System.out.println(jsonString);
+    IJsonValue jsonValue = new JsonParser(jsonString).parse();
     ValidationFailure validate = Validator.forSchema(schema).validate(jsonValue);
     if (validate != null) {
       validation.add(new ValidationResult(ValidationSeverity.ERROR, 0, validate.getMessage()));
@@ -34,7 +37,6 @@ public class SkemaBackedJsonValidator implements JsonValidator {
   @Override
   public void validate(JsonNode valueNode)
     throws ValidationException {
-    System.out.println("thro exc?");
     ValidationData<?> validation = new ValidationData<>();
     validate(valueNode, validation);
 
