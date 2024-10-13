@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ServletTest {
   private static final String URL = "http://localhost:8080/path";
