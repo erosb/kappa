@@ -49,3 +49,4 @@ paths:
                 type: integer
           content:
             'application/json': {}
+
