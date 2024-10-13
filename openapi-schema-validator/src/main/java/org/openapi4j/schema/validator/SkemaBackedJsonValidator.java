@@ -9,9 +9,11 @@ import com.github.erosb.jsonsKema.ValidationFailure;
 import com.github.erosb.jsonsKema.Validator;
 import org.openapi4j.core.validation.ValidationException;
 import org.openapi4j.core.validation.ValidationResult;
+import org.openapi4j.core.validation.ValidationResults;
 import org.openapi4j.core.validation.ValidationSeverity;
 
 import java.net.URI;
+import java.util.Arrays;
 
 public class SkemaBackedJsonValidator implements JsonValidator {
 
@@ -19,8 +21,6 @@ public class SkemaBackedJsonValidator implements JsonValidator {
 
   public SkemaBackedJsonValidator(JsonNode rawJson, URI documentSource) {
     String schemaJsonString = rawJson.toPrettyString();
-    System.out.println("init SkemaBackedValidator: ");
-    System.out.println(schemaJsonString);
     schema = new SchemaLoader(new JsonParser(schemaJsonString, documentSource).parse())
       .load();
   }
@@ -28,13 +28,29 @@ public class SkemaBackedJsonValidator implements JsonValidator {
   @Override
   public boolean validate(JsonNode valueNode, ValidationData<?> validation) {
     String jsonString = valueNode.toPrettyString();
-//    System.out.println(jsonString);
     IJsonValue jsonValue = new JsonParser(jsonString).parse();
     ValidationFailure validate = Validator.forSchema(schema).validate(jsonValue);
     if (validate != null) {
-      validation.add(new ValidationResult(ValidationSeverity.ERROR, 0, validate.getMessage()));
+//      System.out.println(validate.toJSON());
+//      ValidationResult result = new ValidationResult(ValidationSeverity.ERROR, 0, validate.getMessage());
+//      validation.add(result);
+      collectLeafValidationFailures(validate, validation);
     }
     return validate == null;
+  }
+
+  private void collectLeafValidationFailures(ValidationFailure rootFailure, ValidationData<?> validation) {
+    if (rootFailure.getCauses().isEmpty()) {
+      ValidationResult res = new ValidationResult(ValidationSeverity.ERROR, 0, rootFailure.getMessage());
+      ValidationResults rs = new ValidationResults();
+      rs.add(res);
+      validation.add(Arrays.asList(
+        new ValidationResults.CrumbInfo(rootFailure.getSchema().getLocation().toString(), true),
+        new ValidationResults.CrumbInfo(rootFailure.getInstance().getLocation().toString(), false)
+      ), rs);
+    } else {
+      rootFailure.getCauses().forEach(cause -> collectLeafValidationFailures(cause, validation));
+    }
   }
 
   @Override

@@ -19,7 +19,8 @@ components:
   schemas:
     User:
       type: object
-      additionalProperties: false
+      propertyNames:
+        const: id
       properties:
         id:
           $ref: "./common-types.yaml#/Id"

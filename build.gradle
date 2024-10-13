@@ -10,7 +10,7 @@ allprojects {
   apply plugin: 'java'
   apply plugin: 'jacoco'
 
-  group = "org.openapi4j"
+  group = "com.github.erosb.openapi4j"
   version = "1.0.7" + (Boolean.valueOf(System.getProperty("release")) ? "" : "-SNAPSHOT")
 
   java {
