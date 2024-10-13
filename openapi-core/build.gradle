@@ -7,7 +7,7 @@ plugins {
 description = "openapi4j core utils & JSON reference resolver"
 
 dependencies {
-  api("com.fasterxml.jackson.core:jackson-databind:2.12.1")
+  api("com.fasterxml.jackson.core:jackson-databind:2.18.0")
   api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.1")
 
   testImplementation("junit:junit:4.13.2")

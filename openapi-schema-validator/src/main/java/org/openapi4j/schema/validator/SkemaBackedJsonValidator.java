@@ -11,15 +11,18 @@ import org.openapi4j.core.validation.ValidationException;
 import org.openapi4j.core.validation.ValidationResult;
 import org.openapi4j.core.validation.ValidationSeverity;
 
+import java.net.URI;
+
 public class SkemaBackedJsonValidator implements JsonValidator {
 
   private final Schema schema;
 
-  public SkemaBackedJsonValidator(JsonNode rawJson) {
+  public SkemaBackedJsonValidator(JsonNode rawJson, URI documentSource) {
     String schemaJsonString = rawJson.toPrettyString();
-//    System.out.println("init SkemaBackedValidator: ");
-//    System.out.println(schemaJsonString);
-    schema = new SchemaLoader(schemaJsonString).load();
+    System.out.println("init SkemaBackedValidator: ");
+    System.out.println(schemaJsonString);
+    schema = new SchemaLoader(new JsonParser(schemaJsonString, documentSource).parse())
+      .load();
   }
 
   @Override

@@ -17,6 +17,7 @@ import org.openapi4j.schema.validator.ValidationData;
 import org.openapi4j.schema.validator.v3.SchemaValidator;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static org.openapi4j.core.validation.ValidationSeverity.ERROR;
 
@@ -66,7 +67,11 @@ class BodyValidator {
       ObjectNode obj = (ObjectNode) rawJson;
       obj.set("components", context.getContext().getBaseDocument().get("components"));
     }
-    return new SkemaBackedJsonValidator(rawJson);
+      try {
+        return new SkemaBackedJsonValidator(rawJson, context.getContext().getBaseUrl().toURI());
+      } catch (URISyntaxException e) {
+          throw new RuntimeException(e);
+      }
 
 //    return new SchemaValidator(
 //      context,

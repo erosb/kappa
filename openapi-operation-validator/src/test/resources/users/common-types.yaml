@@ -1,0 +1,5 @@
+Identifier:
+  type: integer
+  minimum: 0
+Id:
+  $ref: "#/Identifier"
