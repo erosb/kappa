@@ -4,6 +4,7 @@ plugins {
   id "java"
   id "org.sonarqube" version "2.8"
   id 'jacoco'
+  id 'maven-publish'
 }
 
 allprojects {
@@ -73,4 +74,64 @@ sonarqube {
   properties {
     property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/codeCoverageReport/codeCoverageReport.xml"
   }
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      logger.warn(project.group + " : " + project.name + " : " + project.version)
+      logger.warn(project.description)
+
+      groupId = project.group
+      artifactId = project.name
+      version = project.version
+
+      from components.java
+      pom {
+        name = project.name
+        description = project.description
+        url = "https://github.com/erosb/openapi4j"
+        licenses {
+          license {
+            name = "Apache License, Version 2.0"
+            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+          }
+        }
+        developers {
+          developer {
+            id = 'erosb'
+            name = 'Bence Eros'
+          }
+        }
+        scm {
+          connection = "scm:git:git://github.com:erosb/openapi4j.git"
+          developerConnection = "scm:git:https://github.com/erosb/openapi4j"
+          url = "https://github.com/erosb/openapi4j"
+        }
+      }
+    }
+  }
+  repositories {
+    // Local publication to allow checks
+    /*maven {
+        def releasesUrl = uri("$buildDir/publish/release")
+        def snapshotsUrl = uri("$buildDir/publish/snapshot")
+        url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
+    }*/
+    maven {
+      name "ossrh"
+      credentials {
+        username findProperty("publishUsername") != null ? findProperty("publishUsername") : System.getenv("publishUsername")
+        password findProperty("publishPassword") != null ? findProperty("publishPassword") : System.getenv("publishPassword")
+      }
+
+      def snapshotsUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+      def releasesUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+      url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
+    }
+  }
+}
+
+tasks.withType(Sign) {
+  onlyIf { !version.endsWith("SNAPSHOT") }
 }
