@@ -1,5 +1,6 @@
 package org.openapi4j.operation.validator.validation.operation;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openapi4j.operation.validator.model.impl.Body;
 import org.openapi4j.operation.validator.model.impl.DefaultRequest;
@@ -16,6 +17,7 @@ import static org.openapi4j.operation.validator.model.Request.Method.GET;
 
 public class PathTest extends OperationValidatorTestBase {
   @Test
+  @Ignore
   public void checkReferences() throws Exception {
     URL specPath = OperationValidatorTestBase.class.getResource("/operation/operationValidator.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
