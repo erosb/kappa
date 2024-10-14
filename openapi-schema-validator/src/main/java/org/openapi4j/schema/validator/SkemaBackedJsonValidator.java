@@ -31,9 +31,6 @@ public class SkemaBackedJsonValidator implements JsonValidator {
     IJsonValue jsonValue = new JsonParser(jsonString).parse();
     ValidationFailure validate = Validator.forSchema(schema).validate(jsonValue);
     if (validate != null) {
-//      System.out.println(validate.toJSON());
-//      ValidationResult result = new ValidationResult(ValidationSeverity.ERROR, 0, validate.getMessage());
-//      validation.add(result);
       collectLeafValidationFailures(validate, validation);
     }
     return validate == null;
