@@ -15,6 +15,26 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  /users/versions:
+    get:
+      responses:
+        '200':
+          description: ok
 components:
   schemas:
     User:

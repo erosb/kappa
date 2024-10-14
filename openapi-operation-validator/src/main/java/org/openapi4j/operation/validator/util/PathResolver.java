@@ -149,16 +149,21 @@ public class PathResolver {
     if (requestPath == null || requestPath.isEmpty()) {
       requestPath = "/";
     }
-
+    Pattern bestMatch = null;
+    int bestMatchGroupCount = Integer.MAX_VALUE;
     // Match path pattern
     for (Pattern pathPattern : pathPatterns) {
       Matcher matcher = pathPattern.matcher(requestPath);
+      int matchGroupCount = matcher.groupCount();
       if (matcher.matches()) {
-        return pathPattern;
+        if (bestMatch == null || matchGroupCount < bestMatchGroupCount) {
+          bestMatch = pathPattern;
+          bestMatchGroupCount = matchGroupCount;
+        }
       }
     }
 
-    return null;
+    return bestMatch;
   }
 
   /**

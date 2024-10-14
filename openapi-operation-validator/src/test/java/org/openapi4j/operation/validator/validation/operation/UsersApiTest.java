@@ -55,4 +55,13 @@ public class UsersApiTest extends OperationValidatorTestBase {
       });
     }
   }
+
+  @Test
+  public void testVersionsEndpoint() throws Exception {
+    URL specPath = getClass().getResource("/users/users-api.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+
+    DefaultRequest request = new DefaultRequest.Builder("/users/versions", GET).build();
+    new RequestValidator(api).validate(request);
+  }
 }
