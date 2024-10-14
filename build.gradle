@@ -11,7 +11,7 @@ allprojects {
   apply plugin: 'jacoco'
 
   group = "com.github.erosb.openapi4j"
-  version = "1.0.7" + (Boolean.valueOf(System.getProperty("release")) ? "" : "-SNAPSHOT")
+  version = "2.0.0-RC1"
 
   java {
     sourceCompatibility = JavaVersion.VERSION_1_8
