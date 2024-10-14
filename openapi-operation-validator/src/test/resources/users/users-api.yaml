@@ -1,0 +1,26 @@
+openapi: 3.0.2
+info:
+  version: 0.1
+  title: my title
+  description: my descriptin
+paths:
+  /users:
+    get:
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+components:
+  schemas:
+    User:
+      type: object
+      propertyNames:
+        const: id
+      properties:
+        id:
+          $ref: "./common-types.yaml#/Id"
