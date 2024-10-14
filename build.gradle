@@ -135,3 +135,8 @@ publishing {
 tasks.withType(Sign) {
   onlyIf { !version.endsWith("SNAPSHOT") }
 }
+
+signing {
+  useGpgCmd()
+  sign publishing.publications.mavenJava
+}

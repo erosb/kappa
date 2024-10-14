@@ -71,5 +71,6 @@ tasks.withType(Sign) {
 }
 
 signing {
+  useGpgCmd()
   sign publishing.publications.mavenJava
 }
