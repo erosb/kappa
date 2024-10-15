@@ -24,7 +24,7 @@ publishing {
       pom {
         name = project.name
         description = project.description
-        url = "https://github.com/openapi4j/openapi4j"
+        url = "https://github.com/erosb/openapi4j"
         licenses {
           license {
             name = "Apache License, Version 2.0"
@@ -33,14 +33,14 @@ publishing {
         }
         developers {
           developer {
-            id = 'llfbandit'
-            name = 'Rémy NOËL'
+            id = 'erosb'
+            name = 'Bence Erős'
           }
         }
         scm {
-          connection = "scm:git:git://github.com:openapi4j/openapi4j.git"
-          developerConnection = "scm:git:ssh://@github.com:openapi4j/openapi4j.git"
-          url = "https://github.com/openapi4j/openapi4j"
+          connection = "scm:git:https://github.com/erosb/openapi4j"
+          developerConnection = "scm:git:https://github.com/erosb/openapi4j"
+          url = "https://github.com/erosb/openapi4j"
         }
       }
     }
