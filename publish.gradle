@@ -45,25 +45,25 @@ publishing {
       }
     }
   }
-  repositories {
+//  repositories {
     // Local publication to allow checks
     /*maven {
         def releasesUrl = uri("$buildDir/publish/release")
         def snapshotsUrl = uri("$buildDir/publish/snapshot")
         url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
     }*/
-    maven {
-      name "ossrh"
-      credentials {
-        username findProperty("publishUsername") != null ? findProperty("publishUsername") : System.getenv("publishUsername")
-        password findProperty("publishPassword") != null ? findProperty("publishPassword") : System.getenv("publishPassword")
-      }
-
-      def snapshotsUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-      def releasesUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-      url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
-    }
-  }
+//    maven {
+//      name "ossrh"
+//      credentials {
+//        username findProperty("publishUsername") != null ? findProperty("publishUsername") : System.getenv("publishUsername")
+//        password findProperty("publishPassword") != null ? findProperty("publishPassword") : System.getenv("publishPassword")
+//      }
+//
+//      def snapshotsUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+//      def releasesUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+//      url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
+//    }
+//  }
 }
 
 tasks.withType(Sign) {
@@ -74,3 +74,4 @@ signing {
   useGpgCmd()
   sign publishing.publications.mavenJava
 }
+

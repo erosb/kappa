@@ -6,6 +6,7 @@ plugins {
   id 'jacoco'
   id 'maven-publish'
   id 'signing'
+  id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 allprojects {
@@ -14,6 +15,7 @@ allprojects {
 
   group = "com.github.erosb"
   version = "2.0.0-RC1"
+  description = "Forked version of openapi4j aiming for openapi 3.1 support"
 
   java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -112,25 +114,25 @@ publishing {
       }
     }
   }
-  repositories {
+//  repositories {
     // Local publication to allow checks
     /*maven {
         def releasesUrl = uri("$buildDir/publish/release")
         def snapshotsUrl = uri("$buildDir/publish/snapshot")
         url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
     }*/
-    maven {
-      name "ossrh"
-      credentials {
-        username findProperty("publishUsername") != null ? findProperty("publishUsername") : System.getenv("publishUsername")
-        password findProperty("publishPassword") != null ? findProperty("publishPassword") : System.getenv("publishPassword")
-      }
-
-      def snapshotsUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-      def releasesUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-      url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
-    }
-  }
+//    maven {
+//      name "ossrh"
+//      credentials {
+//        username findProperty("publishUsername") != null ? findProperty("publishUsername") : System.getenv("publishUsername")
+//        password findProperty("publishPassword") != null ? findProperty("publishPassword") : System.getenv("publishPassword")
+//      }
+//
+//      def snapshotsUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+//      def releasesUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+//      url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
+//    }
+//  }
 }
 
 tasks.withType(Sign) {
@@ -140,4 +142,14 @@ tasks.withType(Sign) {
 signing {
   useGpgCmd()
   sign publishing.publications.mavenJava
+}
+
+
+nexusPublishing {
+  repositories {
+    sonatype {
+      username = System.getenv("publishUsername")
+      password = System.getenv("publishPassword")
+    }
+  }
 }
