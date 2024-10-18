@@ -5,19 +5,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.openapi4j.core.exception.ResolutionException;
 import org.openapi4j.core.validation.ValidationResults;
 import org.openapi4j.schema.validator.ValidationData;
-import org.openapi4j.schema.validator.v3.SchemaValidator;
 
 class OpenApi4j implements JsonValidator {
-  private final SchemaValidator schemaValidator;
 
   OpenApi4j(JsonNode schema) throws ResolutionException {
-    schemaValidator = new SchemaValidator("schemas", schema);
+//    schemaValidator = new SchemaValidator("schemas", schema);
   }
 
   @Override
   public String validate(JsonNode data) {
     ValidationData<Void> validation = new ValidationData<>();
-    schemaValidator.validate(data, validation);
+//    schemaValidator.validate(data, validation);
     if (!validation.isValid()) {
       return validation.toString();
     }

@@ -9,10 +9,11 @@ import org.openapi4j.parser.model.v3.AbsParameter;
 import org.openapi4j.parser.model.v3.MediaType;
 import org.openapi4j.parser.model.v3.Schema;
 import org.openapi4j.schema.validator.JsonValidator;
+import org.openapi4j.schema.validator.SkemaBackedJsonValidator;
 import org.openapi4j.schema.validator.ValidationContext;
 import org.openapi4j.schema.validator.ValidationData;
-import org.openapi4j.schema.validator.v3.SchemaValidator;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,9 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
   void validate(final Map<String, JsonNode> values,
                 final ValidationData<?> validation) {
 
-    if (specValidators == null) return;
+    if (specValidators == null) {
+      return;
+    }
 
     for (Map.Entry<String, JsonValidator> entry : specValidators.entrySet()) {
       String paramName = entry.getKey();
@@ -73,12 +76,13 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
       }
 
       if (paramSchema != null) {
-        SchemaValidator validator = new SchemaValidator(
-          context,
-          paramName,
-          TreeUtil.json.convertValue(paramSchema.copy(), JsonNode.class));
-
-        validators.put(paramName, validator);
+        try {
+          JsonValidator v = new SkemaBackedJsonValidator(
+            TreeUtil.json.convertValue(paramSchema.copy(), JsonNode.class), context.getContext().getBaseUrl().toURI());
+          validators.put(paramName, v);
+        } catch (URISyntaxException e) {
+          throw new RuntimeException(e);
+        }
       }
     }
 
