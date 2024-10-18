@@ -5,6 +5,7 @@ import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonParser;
 import com.github.erosb.jsonsKema.Schema;
 import com.github.erosb.jsonsKema.SchemaLoader;
+import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.jsonsKema.ValidationFailure;
 import com.github.erosb.jsonsKema.Validator;
 import org.openapi4j.core.validation.ValidationException;
@@ -29,21 +30,26 @@ public class SkemaBackedJsonValidator implements JsonValidator {
   public boolean validate(JsonNode valueNode, ValidationData<?> validation) {
     String jsonString = valueNode.toPrettyString();
     IJsonValue jsonValue = new JsonParser(jsonString).parse();
-    ValidationFailure validate = Validator.forSchema(schema).validate(jsonValue);
-    if (validate != null) {
-      collectLeafValidationFailures(validate, validation);
+    ValidationFailure failure = Validator.forSchema(schema).validate(jsonValue);
+    if (failure != null) {
+      collectLeafValidationFailures(failure, validation);
     }
-    return validate == null;
+    return failure == null;
+  }
+
+  private String describeLocation(SourceLocation loc) {
+    return (loc.getDocumentSource() == null ? "unknown-source" : loc.getDocumentSource().toString())
+      + loc.getPointer();
   }
 
   private void collectLeafValidationFailures(ValidationFailure rootFailure, ValidationData<?> validation) {
     if (rootFailure.getCauses().isEmpty()) {
-      ValidationResult res = new ValidationResult(ValidationSeverity.ERROR, 0, rootFailure.getMessage());
       ValidationResults rs = new ValidationResults();
+      ValidationResult res = new ValidationResult(ValidationSeverity.ERROR, 0, rootFailure.getMessage());
       rs.add(res);
       validation.add(Arrays.asList(
-        new ValidationResults.CrumbInfo(rootFailure.getSchema().getLocation().toString(), true),
-        new ValidationResults.CrumbInfo(rootFailure.getInstance().getLocation().toString(), false)
+        new ValidationResults.CrumbInfo(describeLocation(rootFailure.getSchema().getLocation()), true)
+       , new ValidationResults.CrumbInfo(describeLocation(rootFailure.getInstance().getLocation()), false)
       ), rs);
     } else {
       rootFailure.getCauses().forEach(cause -> collectLeafValidationFailures(cause, validation));
