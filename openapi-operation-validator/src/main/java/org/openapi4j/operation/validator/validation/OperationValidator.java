@@ -349,10 +349,7 @@ public class OperationValidator {
       .stream()
       .collect(Collectors.toMap(Parameter::getName, parameter -> parameter));
 
-    return
-      parameters.size() != 0
-        ? new ParameterValidator<>(context, parameters)
-        : null;
+    return parameters.isEmpty() ? null : new ParameterValidator<>(context, parameters);
   }
 
   private Map<MediaTypeContainer, BodyValidator> createRequestBodyValidators() {
