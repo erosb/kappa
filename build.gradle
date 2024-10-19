@@ -14,7 +14,7 @@ allprojects {
   apply plugin: 'jacoco'
 
   group = "com.github.erosb"
-  version = "2.0.0-RC3"
+  version = "0.0.0-develop"
   description = "Forked version of openapi4j aiming for openapi 3.1 support"
 
   java {
@@ -32,11 +32,6 @@ allprojects {
     mavenLocal()
   }
 
-  /*tasks.withType(JavaCompile) {
-    options.compilerArgs << '-Xlint:unchecked'
-    options.deprecation = true
-  }*/
-
   jar {
     manifest {
       attributes 'Build-date': new Date()
@@ -45,33 +40,6 @@ allprojects {
     }
   }
 }
-
-// Only report code coverage for published projects
-def publishedProjects = subprojects.findAll { it.path != ':openapi-perf-checker' }
-
-//task jacocoMerge(type: JacocoMerge) {
-//  publishedProjects.each { subproject ->
-//    executionData subproject.tasks.withType(Test)
-//  }
-//  doFirst {
-//    executionData = files(executionData.findAll { it.exists() })
-//  }
-//}
-//
-//task codeCoverageReport(type: JacocoReport) {
-//  dependsOn publishedProjects.test, jacocoMerge
-//
-//  additionalSourceDirs.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
-//  sourceDirectories.from = files(publishedProjects.sourceSets.main.allSource.srcDirs)
-//  classDirectories.from = files(publishedProjects.sourceSets.main.output)
-//  executionData jacocoMerge.destinationFile
-//
-//  reports {
-//    xml.enabled true
-//    html.enabled true
-//    csv.enabled false
-//  }
-//}
 
 sonarqube {
   properties {
@@ -114,25 +82,6 @@ publishing {
       }
     }
   }
-//  repositories {
-    // Local publication to allow checks
-    /*maven {
-        def releasesUrl = uri("$buildDir/publish/release")
-        def snapshotsUrl = uri("$buildDir/publish/snapshot")
-        url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
-    }*/
-//    maven {
-//      name "ossrh"
-//      credentials {
-//        username findProperty("publishUsername") != null ? findProperty("publishUsername") : System.getenv("publishUsername")
-//        password findProperty("publishPassword") != null ? findProperty("publishPassword") : System.getenv("publishPassword")
-//      }
-//
-//      def snapshotsUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-//      def releasesUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-//      url version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
-//    }
-//  }
 }
 
 tasks.withType(Sign) {
