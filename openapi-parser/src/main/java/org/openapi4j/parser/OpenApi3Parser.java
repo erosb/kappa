@@ -6,7 +6,6 @@ import org.openapi4j.core.model.v3.OAI3Context;
 import org.openapi4j.core.util.TreeUtil;
 import org.openapi4j.core.validation.ValidationException;
 import org.openapi4j.parser.model.v3.OpenApi3;
-import org.openapi4j.parser.validation.v3.OpenApi3Validator;
 
 import java.net.URL;
 import java.util.List;
@@ -35,10 +34,6 @@ public class OpenApi3Parser extends OpenApiParser<OpenApi3> {
       api.setContext(context);
     } catch (IllegalArgumentException e) {
       throw new ResolutionException(String.format(INVALID_SPEC, url.toString()), e);
-    }
-
-    if (validate) {
-      OpenApi3Validator.instance().validate(api);
     }
 
     return api;
