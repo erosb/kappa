@@ -12,11 +12,12 @@ import java.util.Enumeration;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class ServletRequest implements Request {
+public abstract class JakartaServletRequest
+  implements Request {
   private static final String HTTP_GET = "GET";
   private static final String ERR_MSG = "A HttpServletRequest is required";
 
-  private ServletRequest() {
+  private JakartaServletRequest() {
   }
 
   /**

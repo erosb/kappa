@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.openapi4j.operation.validator.adapters.server.servlet.ServletRequest;
+import org.openapi4j.operation.validator.adapters.server.servlet.JakartaServletRequest;
 import org.openapi4j.operation.validator.model.Request;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +17,7 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
-public class ServletTest {
+public class JakartaServletTest {
   private static final String URL = "http://localhost:8080/path";
   private static final String PATH = "/path";
   private static final String H_NAME = "headerName";
@@ -73,7 +73,7 @@ public class ServletTest {
     mockHeaders(false);
     Mockito.when(servletRequest.getMethod()).thenReturn("GET");
 
-    Request rq = ServletRequest.of(servletRequest);
+    Request rq = JakartaServletRequest.of(servletRequest);
     checkCommons(rq, false, false);
 
     Assert.assertEquals(servletRequest.getQueryString(), rq.getQuery());
@@ -85,7 +85,7 @@ public class ServletTest {
     mockHeaders(true);
     Mockito.when(servletRequest.getMethod()).thenReturn("GET");
 
-    Request rq = ServletRequest.of(servletRequest);
+    Request rq = JakartaServletRequest.of(servletRequest);
     checkCommons(rq, true, true);
 
     Assert.assertEquals(servletRequest.getQueryString(), rq.getQuery());
@@ -97,7 +97,7 @@ public class ServletTest {
     mockHeaders(true);
     Mockito.when(servletRequest.getMethod()).thenReturn("POST");
 
-    Request rq = ServletRequest.of(servletRequest);
+    Request rq = JakartaServletRequest.of(servletRequest);
     checkCommons(rq, true, true);
 
     Assert.assertNull(rq.getQuery());
