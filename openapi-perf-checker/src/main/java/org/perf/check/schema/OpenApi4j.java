@@ -3,7 +3,7 @@ package org.perf.check.schema;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.openapi4j.core.exception.ResolutionException;
-import org.openapi4j.core.validation.ValidationResults;
+import org.openapi4j.core.validation.OpenApiValidationFailure;
 import org.openapi4j.schema.validator.ValidationData;
 
 class OpenApi4j implements JsonValidator {
@@ -25,6 +25,6 @@ class OpenApi4j implements JsonValidator {
 
   @Override
   public String getVersion() {
-    return ValidationResults.class.getPackage().getImplementationVersion();
+    return OpenApiValidationFailure.class.getPackage().getImplementationVersion();
   }
 }

@@ -3,8 +3,7 @@ package org.openapi4j.operation.validator.validation;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.openapi4j.core.exception.DecodeException;
 import org.openapi4j.core.model.v3.OAI3;
-import org.openapi4j.core.validation.ValidationResult;
-import org.openapi4j.core.validation.ValidationResults;
+import org.openapi4j.core.validation.OpenApiValidationFailure;
 import org.openapi4j.operation.validator.model.Request;
 import org.openapi4j.operation.validator.model.impl.Body;
 import org.openapi4j.operation.validator.model.impl.MediaTypeContainer;
@@ -32,10 +31,9 @@ public class OperationValidator {
   private static final String VALIDATION_CTX_REQUIRED_ERR_MSG = "Validation context is required.";
   private static final String PATH_REQUIRED_ERR_MSG = "Path is required.";
   private static final String OPERATION_REQUIRED_ERR_MSG = "Operation is required.";
-  private static final ValidationResult BODY_REQUIRED_ERR = new ValidationResult(ERROR, 200, "Body is required but none provided.");
-  private static final ValidationResult BODY_CONTENT_TYPE_ERR = new ValidationResult(ERROR, 202, "Body content type cannot be determined. No 'Content-Type' header available.");
-  private static final ValidationResult BODY_WRONG_CONTENT_TYPE_ERR = new ValidationResult(ERROR, 203, "Content type '%s' is not allowed for body content.");
-  private static final ValidationResult PATH_NOT_FOUND_ERR = new ValidationResult(ERROR, 205, "Path template '%s' has not been found from value '%s'.");
+  private static final OpenApiValidationFailure BODY_REQUIRED_ERR = OpenApiValidationFailure.missingRequiredBody();
+  private static final OpenApiValidationFailure BODY_CONTENT_TYPE_ERR = OpenApiValidationFailure.missingContentTypeHeader();
+  private static final OpenApiValidationFailure PATH_NOT_FOUND_ERR = OpenApiValidationFailure.noMatchingPathPatternFound();
 
   // Parameter specifics
   private static final String IN_PATH = "path";
@@ -43,7 +41,6 @@ public class OperationValidator {
   private static final String IN_HEADER = "header";
   private static final String IN_COOKIE = "cookie";
   private static final String DEFAULT_RESPONSE_CODE = "default";
-  private static final ValidationResults.CrumbInfo CRUMB_PATH = new ValidationResults.CrumbInfo(IN_PATH, true);
   // Validators
   private final ParameterValidator<Parameter> specRequestPathValidator;
   private final ParameterValidator<Parameter> specRequestQueryValidator;
@@ -149,7 +146,7 @@ public class OperationValidator {
     // Check paths are matching before trying to map values
     Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns, request.getPath());
     if (pathPattern == null) {
-      validation.add(CRUMB_PATH, PATH_NOT_FOUND_ERR, templatePath, request.getPath());
+      validation.add(PATH_NOT_FOUND_ERR);
       return null;
     }
 
@@ -312,7 +309,7 @@ public class OperationValidator {
     }
 
     if (validator == null) {
-      validation.add(BODY_WRONG_CONTENT_TYPE_ERR, rawContentType);
+      validation.add(OpenApiValidationFailure.wrongContentType(rawContentType));
       return;
     }
 

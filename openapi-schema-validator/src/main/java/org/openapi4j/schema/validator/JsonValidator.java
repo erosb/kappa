@@ -15,12 +15,4 @@ public interface JsonValidator {
    * @return {@code true} if chain should continue for the current keyword, {@code false} otherwise.
    */
   boolean validate(final JsonNode valueNode, final ValidationData<?> validation);
-
-  /**
-   * Validate the given value from the validation setup.
-   *
-   * @param valueNode The given value to check.
-   * @throws ValidationException The result stack info from the validation in case of error.
-   */
-  void validate(final JsonNode valueNode) throws ValidationException;
 }

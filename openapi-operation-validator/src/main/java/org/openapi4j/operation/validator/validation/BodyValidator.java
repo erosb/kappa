@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openapi4j.core.model.v3.OAI3;
 import org.openapi4j.core.util.TreeUtil;
-import org.openapi4j.core.validation.ValidationResult;
 import org.openapi4j.operation.validator.model.impl.Body;
 import org.openapi4j.parser.model.v3.MediaType;
 import org.openapi4j.parser.model.v3.Schema;
@@ -15,14 +14,10 @@ import org.openapi4j.schema.validator.ValidationContext;
 import org.openapi4j.schema.validator.ValidationData;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 
-import static org.openapi4j.core.validation.ValidationSeverity.ERROR;
-
 class BodyValidator {
-  private static final ValidationResult BODY_CONTENT_ERR = new ValidationResult(ERROR, 201, "An error occurred when getting the body content from type '%s'.%n%s");
-
-  private static final String BODY = "body";
 
   private final ValidationContext<OAI3> context;
   private final MediaType mediaType;
@@ -50,7 +45,7 @@ class BodyValidator {
       JsonNode jsonBody = body.getContentAsNode(context.getContext(), mediaType, rawContentType);
       validator.validate(jsonBody, validation);
     } catch (IOException ex) {
-      validation.add(BODY_CONTENT_ERR, rawContentType, ex);
+      throw new UncheckedIOException(ex);
     }
   }
 

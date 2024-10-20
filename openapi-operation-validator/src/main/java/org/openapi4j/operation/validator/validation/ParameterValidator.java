@@ -3,7 +3,7 @@ package org.openapi4j.operation.validator.validation;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.openapi4j.core.model.v3.OAI3;
 import org.openapi4j.core.util.TreeUtil;
-import org.openapi4j.core.validation.ValidationResult;
+import org.openapi4j.core.validation.OpenApiValidationFailure;
 import org.openapi4j.parser.model.OpenApiSchema;
 import org.openapi4j.parser.model.v3.AbsParameter;
 import org.openapi4j.parser.model.v3.MediaType;
@@ -17,10 +17,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.openapi4j.core.validation.ValidationSeverity.ERROR;
-
 class ParameterValidator<M extends OpenApiSchema<M>> {
-  private static final ValidationResult PARAM_REQUIRED_ERR = new ValidationResult(ERROR, 206, "Parameter '%s' is required.");
 
   private final ValidationContext<OAI3> context;
   private final Map<String, JsonValidator> specValidators;
@@ -86,7 +83,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
       }
     }
 
-    return validators.size() != 0 ? validators : null;
+    return validators.isEmpty() ? null :validators;
   }
 
   private boolean checkRequired(final String paramName,
@@ -96,7 +93,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
 
     if (!paramValues.containsKey(paramName)) {
       if (parameter.isRequired()) {
-        validation.add(PARAM_REQUIRED_ERR, paramName);
+        validation.add(OpenApiValidationFailure.missingRequiredParameter(paramName));
       }
       return false;
     }
