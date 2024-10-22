@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.openapi4j.core.model.v3.OAI3;
 import org.openapi4j.core.util.TreeUtil;
 import org.openapi4j.core.validation.OpenApiValidationFailure;
+import org.openapi4j.core.validation.URIFactory;
 import org.openapi4j.parser.model.OpenApiSchema;
 import org.openapi4j.parser.model.v3.AbsParameter;
 import org.openapi4j.parser.model.v3.MediaType;
@@ -13,6 +14,7 @@ import org.openapi4j.schema.validator.SkemaBackedJsonValidator;
 import org.openapi4j.schema.validator.ValidationContext;
 import org.openapi4j.schema.validator.ValidationData;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
   private final ValidationContext<OAI3> context;
   private final Map<String, JsonValidator> specValidators;
   private final Map<String, AbsParameter<M>> specParameters;
+  private final URIFactory uriFactory = new URIFactory();
 
   ParameterValidator(ValidationContext<OAI3> context, Map<String, AbsParameter<M>> specParameters) {
     this.context = context;
@@ -45,7 +48,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
 
       if (checkRequired(paramName, specParameters.get(paramName), values, validation)) {
         JsonNode paramValue = values.get(paramName);
-        entry.getValue().validate(paramValue, validation);
+        entry.getValue().validate(paramValue, uriFactory.pathParam(paramName), validation);
       }
     }
   }
@@ -75,7 +78,9 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
       if (paramSchema != null) {
         try {
           JsonValidator v = new SkemaBackedJsonValidator(
-            TreeUtil.json.convertValue(paramSchema.copy(), JsonNode.class), context.getContext().getBaseUrl().toURI());
+            TreeUtil.json.convertValue(paramSchema.copy(), JsonNode.class),
+            context.getContext().getBaseUrl().toURI()//.resolve("paths/parameters")
+          );
           validators.put(paramName, v);
         } catch (URISyntaxException e) {
           throw new RuntimeException(e);
@@ -83,7 +88,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
       }
     }
 
-    return validators.isEmpty() ? null :validators;
+    return validators.isEmpty() ? null : validators;
   }
 
   private boolean checkRequired(final String paramName,

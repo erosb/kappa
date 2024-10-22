@@ -1,6 +1,15 @@
 package org.openapi4j.core.validation;
 
+import com.github.erosb.jsonsKema.JavaUtilRegexpFactory;
+import com.github.erosb.jsonsKema.JsonPointer;
+import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.jsonsKema.ValidationFailure;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 public class OpenApiValidationFailure {
 
@@ -17,23 +26,26 @@ public class OpenApiValidationFailure {
   }
 
   public static RequestBodyValidationFailure wrongContentType(String actualContentType) {
-    return new RequestBodyValidationFailure("Content type '%s' is not allowed for body content.".formatted(actualContentType));
+    return new RequestBodyValidationFailure(String.format("Content type '%s' is not allowed for body content.", actualContentType));
   }
 
   public static ParameterValidationFailure missingRequiredParameter(String paramName) {
-    return new ParameterValidationFailure("Content type '%s' is not allowed for body content.".formatted(paramName));
+    return new ParameterValidationFailure(String.format("Missing required parameter '%s'.", paramName));
   }
 
   public static SchemaValidationFailure bodySchemaValidationFailure(ValidationFailure result) {
     return new SchemaValidationFailure(result);
   }
 
-  public static class SchemaValidationFailure extends OpenApiValidationFailure {
+  public static class SchemaValidationFailure
+    extends OpenApiValidationFailure {
 
     private final ValidationFailure failure;
 
     private SchemaValidationFailure(ValidationFailure result) {
-      super(result.getMessage());
+      super(result.getMessage(), result.getInstance().getLocation(), result.getSchema().getLocation());
+      System.out.println(result.getInstance().getLocation().getDocumentSource());
+//      System.out.println(result);
       this.failure = result;
     }
 
@@ -42,35 +54,63 @@ public class OpenApiValidationFailure {
     }
   }
 
-  public static class PathValidationFailure extends OpenApiValidationFailure {
+  public static class PathValidationFailure
+    extends OpenApiValidationFailure {
 
     PathValidationFailure(String message) {
-      super(message);
+      super(message,
+        new SourceLocation(-1, -1, new JsonPointer("path"), request),
+        null);
     }
 
   }
 
-  public static class ParameterValidationFailure extends OpenApiValidationFailure {
+  public static class ParameterValidationFailure
+    extends OpenApiValidationFailure {
 
     ParameterValidationFailure(String message) {
-      super(message);
+      super(message, new SourceLocation(-1, -1, new JsonPointer("parameters"), request),
+        null);
     }
   }
 
-  public static class RequestBodyValidationFailure extends OpenApiValidationFailure {
+  public static class RequestBodyValidationFailure
+    extends OpenApiValidationFailure {
 
     private RequestBodyValidationFailure(String message) {
-      super(message);
+      super(message, new SourceLocation(-1, -1, new JsonPointer("body"), request), null);
     }
   }
+
+  private static final URI request = new URIFactory().request();
 
   private final String message;
 
-  OpenApiValidationFailure(String message) {
-    this.message = message;
+  private final SourceLocation instanceLocation;
+
+  private final SourceLocation schemaLocation;
+
+  OpenApiValidationFailure(String message, SourceLocation instanceLocation,
+                           SourceLocation schemaLocation) {
+    this.message = requireNonNull(message);
+    this.instanceLocation = requireNonNull(instanceLocation);
+    this.schemaLocation = schemaLocation;
   }
 
   public String getMessage() {
     return message;
+  }
+
+  public String describeInstanceLocation() {
+    String uri = Optional.ofNullable(instanceLocation.getDocumentSource())
+      .map(Object::toString)
+      .orElse("");
+
+    return uri + instanceLocation.getPointer();
+  }
+
+  public String describeSchemaLocation() {
+    return schemaLocation.getDocumentSource().toString()
+      + schemaLocation.getPointer();
   }
 }

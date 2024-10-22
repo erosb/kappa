@@ -8,7 +8,7 @@ description = "openapi4j schema data validator"
 
 dependencies {
   api(project(":openapi-core"))
-  implementation("com.github.erosb:json-sKema:0.19.0-RC2")
+  implementation("com.github.erosb:json-sKema:0.0.0-develop")
   testImplementation("junit:junit:4.13.2")
 }
 

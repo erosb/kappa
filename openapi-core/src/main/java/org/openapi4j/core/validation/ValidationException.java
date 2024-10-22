@@ -36,6 +36,9 @@ public class ValidationException extends Exception {
     if (getMessage() != null) {
       builder.append(getMessage());
     }
+    validationFailures.forEach(failure -> builder.append(
+      String.format("%n%s", failure.getMessage())
+    ));
 
     return builder.toString();
   }

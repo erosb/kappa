@@ -21,9 +21,9 @@ public class SkemaBackedJsonValidator implements JsonValidator {
   }
 
   @Override
-  public boolean validate(JsonNode valueNode, ValidationData<?> validation) {
+  public boolean validate(JsonNode valueNode, URI documentSource, ValidationData<?> validation) {
     String jsonString = valueNode.toPrettyString();
-    IJsonValue jsonValue = new JsonParser(jsonString).parse();
+    IJsonValue jsonValue = new JsonParser(jsonString, documentSource).parse();
     ValidationFailure failure = Validator.forSchema(schema).validate(jsonValue);
     if (failure != null) {
       validation.add(failure);

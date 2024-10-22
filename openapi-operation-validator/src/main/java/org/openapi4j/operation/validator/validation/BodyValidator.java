@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.openapi4j.core.model.v3.OAI3;
 import org.openapi4j.core.util.TreeUtil;
+import org.openapi4j.core.validation.URIFactory;
 import org.openapi4j.operation.validator.model.impl.Body;
 import org.openapi4j.parser.model.v3.MediaType;
 import org.openapi4j.parser.model.v3.Schema;
@@ -22,6 +23,7 @@ class BodyValidator {
   private final ValidationContext<OAI3> context;
   private final MediaType mediaType;
   private final JsonValidator validator;
+  private final URIFactory uriFactory = new URIFactory();
 
   BodyValidator(ValidationContext<OAI3> context, MediaType mediaType) {
     this.context = context;
@@ -37,13 +39,13 @@ class BodyValidator {
     if (validator == null) {
       return; // No schema specified for body
     } else if (body == null) {
-      validator.validate(JsonNodeFactory.instance.nullNode(), validation);
+      validator.validate(JsonNodeFactory.instance.nullNode(), uriFactory.requestBody(), validation);
       return;
     }
 
     try {
       JsonNode jsonBody = body.getContentAsNode(context.getContext(), mediaType, rawContentType);
-      validator.validate(jsonBody, validation);
+      validator.validate(jsonBody, uriFactory.requestBody(), validation);
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }
@@ -60,15 +62,15 @@ class BodyValidator {
       ObjectNode obj = (ObjectNode) rawJson;
       obj.set("components", context.getContext().getBaseDocument().get("components"));
     }
-      try {
-        return new SkemaBackedJsonValidator(rawJson, context.getContext().getBaseUrl().toURI());
-      } catch (URISyntaxException e) {
-          throw new RuntimeException(e);
-      }
+    try {
+      return new SkemaBackedJsonValidator(rawJson, context.getContext().getBaseUrl().toURI());
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
 
-//    return new SchemaValidator(
-//      context,
-//      BODY,
-//      TreeUtil.json.convertValue(mediaType.getSchema().copy(), JsonNode.class));
+    //    return new SchemaValidator(
+    //      context,
+    //      BODY,
+    //      TreeUtil.json.convertValue(mediaType.getSchema().copy(), JsonNode.class));
   }
 }

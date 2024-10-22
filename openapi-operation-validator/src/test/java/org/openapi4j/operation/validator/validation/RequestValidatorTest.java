@@ -2,6 +2,7 @@ package org.openapi4j.operation.validator.validation;
 
 import org.junit.Test;
 import org.openapi4j.core.exception.ResolutionException;
+import org.openapi4j.core.validation.OpenApiValidationFailure;
 import org.openapi4j.core.validation.ValidationException;
 import org.openapi4j.operation.validator.model.Request;
 import org.openapi4j.operation.validator.model.Response;
@@ -14,12 +15,15 @@ import org.openapi4j.parser.model.v3.Path;
 
 import java.net.URL;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNotNull;
 import static org.openapi4j.operation.validator.model.Request.Method.GET;
 import static org.openapi4j.operation.validator.model.Request.Method.POST;
 
 public class RequestValidatorTest {
+
   @Test(expected = ValidationException.class)
   public void operationMethodNotFound() throws ValidationException, ResolutionException {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
@@ -37,6 +41,23 @@ public class RequestValidatorTest {
         throw ex;
       }
     }
+  }
+
+  @Test
+  public void pathParameterValidationFailure()
+    throws Exception {
+    URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+    RequestValidator requestValidator = new RequestValidator(api);
+
+    ValidationException thrown = assertThrows(ValidationException.class, () ->
+      requestValidator.validate(new DefaultRequest.Builder("https://api.com/fixed/string/fixed/2/fixed/", GET).build())
+    );
+
+    OpenApiValidationFailure pathFailure = thrown.results().get(0);
+    assertEquals("expected type: integer, actual: string", pathFailure.getMessage());
+    assertEquals("$request.path.intPathParam#", pathFailure.describeInstanceLocation());
+    assertEquals("/request/requestValidator.yaml#/paths", pathFailure.describeSchemaLocation());
   }
 
   @Test

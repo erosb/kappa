@@ -11,14 +11,22 @@ import org.openapi4j.parser.OpenApi3Parser;
 import org.openapi4j.parser.model.v3.OpenApi3;
 
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.openapi4j.operation.validator.model.Request.Method.GET;
 
 public class UsersApiTest extends OperationValidatorTestBase {
+
+  private static OpenApiValidationFailure failureByMessage(Collection<OpenApiValidationFailure> failures, String msg) {
+    return failures.stream()
+      .filter(c -> c.getMessage().equals(msg))
+      .findFirst()
+      .orElseThrow(() -> new IllegalArgumentException("could not find failure with message " + msg));
+  }
 
   @Test
   public void testRequest() throws Exception {
@@ -44,17 +52,20 @@ public class UsersApiTest extends OperationValidatorTestBase {
       new RequestValidator(api).validate(invalidResp, request);
     } catch (ValidationException e) {
       List<OpenApiValidationFailure> results = e.results();
-      List<String> actualMessages = results.stream().map(OpenApiValidationFailure::getMessage).collect(toList());
-//      assertEquals(Arrays.asList("-5 is lower than minimum 0",
-//        "actual instance is not the same as expected constant value"), actualMessages);
       results.forEach(item -> {
         System.out.println("----------");
         System.out.println(item.getMessage());
-//        System.out.println("item.message() = " + item.message());
-//        System.out.println("item.dataCrumbs() = " + item.dataCrumbs());
-//        System.out.println("item.dataJsonPointer() = " + item.dataJsonPointer());
-//        System.out.println("item.schemaCrumbs() = " + item.schemaCrumbs());
+        System.out.println(item.describeInstanceLocation());
+        System.out.println(item.describeSchemaLocation());
       });
+      assertEquals(2, results.size());
+      OpenApiValidationFailure negativeId = failureByMessage(results, "-5 is lower than minimum 0");
+      assertEquals(negativeId.describeInstanceLocation(), "$request.body#/0/id");
+      assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
+
+      OpenApiValidationFailure wrongProp = failureByMessage(results, "actual instance is not the same as expected constant value");
+      assertEquals(wrongProp.describeInstanceLocation(), "$request.body#/1/userId");
+      assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames/const"));
     }
   }
 
