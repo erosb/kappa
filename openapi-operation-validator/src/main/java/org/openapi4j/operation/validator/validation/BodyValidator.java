@@ -67,10 +67,5 @@ class BodyValidator {
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
-
-    //    return new SchemaValidator(
-    //      context,
-    //      BODY,
-    //      TreeUtil.json.convertValue(mediaType.getSchema().copy(), JsonNode.class));
   }
 }

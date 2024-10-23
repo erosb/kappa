@@ -1,6 +1,7 @@
 package org.openapi4j.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.JsonPointer;
 import org.openapi4j.core.model.v3.OAI3;
 import org.openapi4j.core.util.TreeUtil;
 import org.openapi4j.core.validation.OpenApiValidationFailure;
@@ -16,6 +17,7 @@ import org.openapi4j.schema.validator.ValidationData;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,15 +78,14 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
       }
 
       if (paramSchema != null) {
-        try {
-          JsonValidator v = new SkemaBackedJsonValidator(
-            TreeUtil.json.convertValue(paramSchema.copy(), JsonNode.class),
-            context.getContext().getBaseUrl().toURI()//.resolve("paths/parameters")
-          );
-          validators.put(paramName, v);
-        } catch (URISyntaxException e) {
-          throw new RuntimeException(e);
-        }
+        URL contextBaseURL = context.getContext().getBaseUrl();
+        URI pathParamDefinitionURI = uriFactory.pathParamDefinition(contextBaseURL, paramName);
+        JsonValidator v = new SkemaBackedJsonValidator(
+          TreeUtil.json.convertValue(paramSchema.copy(), JsonNode.class),
+          pathParamDefinitionURI
+        );
+
+        validators.put(paramName, v);
       }
     }
 

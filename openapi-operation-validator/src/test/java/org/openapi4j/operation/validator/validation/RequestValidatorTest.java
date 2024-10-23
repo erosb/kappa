@@ -17,6 +17,7 @@ import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNotNull;
 import static org.openapi4j.operation.validator.model.Request.Method.GET;
@@ -51,13 +52,13 @@ public class RequestValidatorTest {
     RequestValidator requestValidator = new RequestValidator(api);
 
     ValidationException thrown = assertThrows(ValidationException.class, () ->
-      requestValidator.validate(new DefaultRequest.Builder("https://api.com/fixed/string/fixed/2/fixed/", GET).build())
+      requestValidator.validate(new DefaultRequest.Builder("https://api.com/fixed/WRONG/fixed/2/fixed/", GET).build())
     );
 
     OpenApiValidationFailure pathFailure = thrown.results().get(0);
     assertEquals("expected type: integer, actual: string", pathFailure.getMessage());
     assertEquals("$request.path.intPathParam#", pathFailure.describeInstanceLocation());
-    assertEquals("/request/requestValidator.yaml#/paths", pathFailure.describeSchemaLocation());
+    assertTrue(pathFailure.describeSchemaLocation().endsWith("/request/requestValidator.yaml/paths/intPathParam#/type"));
   }
 
   @Test

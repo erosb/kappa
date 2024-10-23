@@ -1,7 +1,10 @@
 package org.openapi4j.core.validation;
 
+import org.openapi4j.core.model.v3.OAI3;
+
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 public class URIFactory {
 
@@ -23,5 +26,13 @@ public class URIFactory {
 
   public URI pathParam(String paramName) {
     return uri("$request.path." + paramName);
+  }
+
+  public URI pathParamDefinition(URL contextbaseURL, String paramName) {
+      try {
+          return new URI(contextbaseURL.toURI() + "/paths/" + paramName);
+      } catch (URISyntaxException e) {
+          throw new RuntimeException(e);
+      }
   }
 }

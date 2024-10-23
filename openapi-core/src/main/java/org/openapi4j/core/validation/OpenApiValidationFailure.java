@@ -1,13 +1,10 @@
 package org.openapi4j.core.validation;
 
-import com.github.erosb.jsonsKema.JavaUtilRegexpFactory;
 import com.github.erosb.jsonsKema.JsonPointer;
 import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.jsonsKema.ValidationFailure;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -44,8 +41,6 @@ public class OpenApiValidationFailure {
 
     private SchemaValidationFailure(ValidationFailure result) {
       super(result.getMessage(), result.getInstance().getLocation(), result.getSchema().getLocation());
-      System.out.println(result.getInstance().getLocation().getDocumentSource());
-//      System.out.println(result);
       this.failure = result;
     }
 
@@ -101,16 +96,15 @@ public class OpenApiValidationFailure {
     return message;
   }
 
-  public String describeInstanceLocation() {
-    String uri = Optional.ofNullable(instanceLocation.getDocumentSource())
-      .map(Object::toString)
-      .orElse("");
+  private String stringify(SourceLocation loc) {
+    return loc.getDocumentSource().toString() + loc.getPointer();
+  }
 
-    return uri + instanceLocation.getPointer();
+  public String describeInstanceLocation() {
+    return stringify(instanceLocation);
   }
 
   public String describeSchemaLocation() {
-    return schemaLocation.getDocumentSource().toString()
-      + schemaLocation.getPointer();
+    return stringify(schemaLocation);
   }
 }
