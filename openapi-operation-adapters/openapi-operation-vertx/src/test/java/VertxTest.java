@@ -3,8 +3,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.openapi4j.operation.validator.adapters.server.vertx.v3.impl.VertxRequest;
-import org.openapi4j.operation.validator.model.Request;
+import com.github.erosb.kappa.operation.validator.adapters.server.vertx.v3.impl.VertxRequest;
+import com.github.erosb.kappa.operation.validator.model.Request;
 
 import java.io.IOException;
 import java.util.HashMap;

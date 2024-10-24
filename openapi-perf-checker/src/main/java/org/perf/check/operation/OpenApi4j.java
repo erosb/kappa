@@ -1,16 +1,16 @@
 package org.perf.check.operation;
 
-import org.openapi4j.core.exception.ResolutionException;
-import org.openapi4j.core.validation.ValidationException;
-import org.openapi4j.operation.validator.model.Request;
-import org.openapi4j.operation.validator.model.impl.Body;
-import org.openapi4j.operation.validator.model.impl.DefaultRequest;
-import org.openapi4j.operation.validator.validation.OperationValidator;
-import org.openapi4j.operation.validator.validation.RequestValidator;
-import org.openapi4j.parser.OpenApi3Parser;
-import org.openapi4j.parser.model.v3.OpenApi3;
-import org.openapi4j.parser.model.v3.Operation;
-import org.openapi4j.parser.model.v3.Path;
+import com.github.erosb.kappa.core.exception.ResolutionException;
+import com.github.erosb.kappa.core.validation.ValidationException;
+import com.github.erosb.kappa.operation.validator.model.Request;
+import com.github.erosb.kappa.operation.validator.model.impl.Body;
+import com.github.erosb.kappa.operation.validator.model.impl.DefaultRequest;
+import com.github.erosb.kappa.operation.validator.validation.OperationValidator;
+import com.github.erosb.kappa.operation.validator.validation.RequestValidator;
+import com.github.erosb.kappa.parser.OpenApi3Parser;
+import com.github.erosb.kappa.parser.model.v3.OpenApi3;
+import com.github.erosb.kappa.parser.model.v3.Operation;
+import com.github.erosb.kappa.parser.model.v3.Path;
 
 import java.net.URL;
 

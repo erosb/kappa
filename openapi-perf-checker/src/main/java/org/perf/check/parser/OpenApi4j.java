@@ -1,8 +1,8 @@
 package org.perf.check.parser;
 
-import org.openapi4j.core.exception.ResolutionException;
-import org.openapi4j.core.validation.ValidationException;
-import org.openapi4j.parser.OpenApi3Parser;
+import com.github.erosb.kappa.core.exception.ResolutionException;
+import com.github.erosb.kappa.core.validation.ValidationException;
+import com.github.erosb.kappa.parser.OpenApi3Parser;
 
 class OpenApi4j implements PerfParser {
   @Override

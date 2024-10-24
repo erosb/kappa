@@ -2,9 +2,9 @@ package org.perf.check.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import org.openapi4j.core.exception.ResolutionException;
-import org.openapi4j.core.validation.OpenApiValidationFailure;
-import org.openapi4j.schema.validator.ValidationData;
+import com.github.erosb.kappa.core.exception.ResolutionException;
+import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
+import com.github.erosb.kappa.schema.validator.ValidationData;
 
 class OpenApi4j implements JsonValidator {
 
