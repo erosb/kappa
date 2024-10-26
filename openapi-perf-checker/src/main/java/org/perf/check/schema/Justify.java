@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.leadpony.justify.api.JsonSchema;
 import org.leadpony.justify.api.JsonValidationService;
 import org.leadpony.justify.api.ProblemHandler;
-import org.openapi4j.core.exception.EncodeException;
-import org.openapi4j.core.util.TreeUtil;
+import com.github.erosb.kappa.core.exception.EncodeException;
+import com.github.erosb.kappa.core.util.TreeUtil;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;

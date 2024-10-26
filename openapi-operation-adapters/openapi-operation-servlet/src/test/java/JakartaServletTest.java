@@ -4,8 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.openapi4j.operation.validator.adapters.server.servlet.JakartaServletRequest;
-import org.openapi4j.operation.validator.model.Request;
+import com.github.erosb.kappa.operation.validator.adapters.server.servlet.JakartaServletRequest;
+import com.github.erosb.kappa.operation.validator.model.Request;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

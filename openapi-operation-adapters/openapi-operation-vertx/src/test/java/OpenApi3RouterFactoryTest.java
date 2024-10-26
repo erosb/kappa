@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openapi4j.core.exception.ResolutionException;
-import org.openapi4j.operation.validator.adapters.server.vertx.v3.OpenApi3RouterFactory;
-import org.openapi4j.operation.validator.model.impl.RequestParameters;
+import com.github.erosb.kappa.core.exception.ResolutionException;
+import com.github.erosb.kappa.operation.validator.adapters.server.vertx.v3.OpenApi3RouterFactory;
+import com.github.erosb.kappa.operation.validator.model.impl.RequestParameters;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
