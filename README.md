@@ -1,4 +1,7 @@
-# OpenAPI for java project home
+# Kappa - OpenAPI validator for Java and JVM projects
+
+This project is a successor of the [archived openapi4j](https://github.com/openapi4j/openapi4j) project.
+
 
 This is the home page of the openapi4j project for Java (Jakarta or JVM platform in general).
 
@@ -29,16 +32,7 @@ All modules follow the [Semantic Versioning 2.0.0](https://semver.org) and are a
 
 ## Supported versions
 
-The modules currently support the OpenAPI Specification (OAS) version 3.0.x.
-
-OAI 3.1.0 has been released as candidate.
-There's too much changes too keep code on same basis and keep a fairly low level of complexity.
-As a consequence, OAI 3.1.x support will be made in a version 2 of openapi4j.
-
-As my time is very limited, version 1 should be considered as freezed for now.
-
-See related projects for limitations and issues.
-
+Kappa targets supporting OpenAPI 3.1. Currently it uses a draft2020-12 compliant validator for JSON Schema.
 ## Contributing
 
 Reporting issues, making comments, ... Any help is welcome !
@@ -52,7 +46,7 @@ We accept Pull Requests via GitHub. There are some guidelines which will make ap
 
 ## License
 
-openapi4j and all the modules are released under the Apache 2.0 license. See [LICENSE](https://github.com/openapi4j/openapi4j/blob/master/LICENSE.md) for details.
+Kappa and all the modules are released under the Apache 2.0 license. See [LICENSE](https://github.com/openapi4j/openapi4j/blob/master/LICENSE.md) for details.
 
 
 ## Contributor notes
