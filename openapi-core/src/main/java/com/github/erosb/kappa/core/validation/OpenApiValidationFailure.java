@@ -18,6 +18,10 @@ public class OpenApiValidationFailure {
     return new RequestBodyValidationFailure("Body is required but none provided.");
   }
 
+  public static RequestBodyValidationFailure unparseableRequestBody(String descr) {
+    return new RequestBodyValidationFailure("could not parse request body: " + descr);
+  }
+
   public static RequestBodyValidationFailure missingContentTypeHeader() {
     return new RequestBodyValidationFailure("Body content type cannot be determined. No 'Content-Type' header available.");
   }
@@ -72,12 +76,15 @@ public class OpenApiValidationFailure {
   public static class RequestBodyValidationFailure
     extends OpenApiValidationFailure {
 
-    private RequestBodyValidationFailure(String message) {
-      super(message, new SourceLocation(-1, -1, new JsonPointer("body"), request), null);
+    public RequestBodyValidationFailure(String message) {
+      super(message, new SourceLocation(-1, -1, new JsonPointer(), requestBody), new SourceLocation(-1, -1,
+        new JsonPointer(), new URIFactory().requestBodyDefinition()));
     }
   }
 
   private static final URI request = new URIFactory().request();
+
+  private static final URI requestBody = new URIFactory().requestBody();
 
   private final String message;
 
@@ -97,7 +104,14 @@ public class OpenApiValidationFailure {
   }
 
   private String stringify(SourceLocation loc) {
-    return loc.getDocumentSource().toString() + loc.getPointer();
+    JsonPointer pointer = loc.getPointer();
+    String pointerDescr;
+    if (pointer.getSegments().isEmpty()) {
+      pointerDescr = "";
+    } else {
+      pointerDescr = pointer.toString();
+    }
+    return loc.getDocumentSource().toString() + pointerDescr;
   }
 
   public String describeInstanceLocation() {

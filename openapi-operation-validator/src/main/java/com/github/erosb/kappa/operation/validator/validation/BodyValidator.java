@@ -1,10 +1,12 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.util.TreeUtil;
+import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
 import com.github.erosb.kappa.schema.validator.JsonValidator;
@@ -46,6 +48,8 @@ class BodyValidator {
     try {
       JsonNode jsonBody = body.getContentAsNode(context.getContext(), mediaType, rawContentType);
       validator.validate(jsonBody, uriFactory.requestBody(), validation);
+    } catch (JsonParseException ex) {
+      validation.add(OpenApiValidationFailure.unparseableRequestBody(ex.getMessage()));
     } catch (IOException ex) {
       throw new UncheckedIOException(ex);
     }

@@ -14,10 +14,13 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
+import static com.github.erosb.kappa.operation.validator.model.Request.Method.POST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static com.github.erosb.kappa.operation.validator.model.Request.Method.GET;
+import static org.junit.Assert.fail;
 
 public class UsersApiTest extends OperationValidatorTestBase {
 
@@ -50,15 +53,11 @@ public class UsersApiTest extends OperationValidatorTestBase {
 
     try {
       new RequestValidator(api).validate(invalidResp, request);
+      fail("should throw ValidationException");
     } catch (ValidationException e) {
       List<OpenApiValidationFailure> results = e.results();
-      results.forEach(item -> {
-        System.out.println("----------");
-        System.out.println(item.getMessage());
-        System.out.println(item.describeInstanceLocation());
-        System.out.println(item.describeSchemaLocation());
-      });
       assertEquals(2, results.size());
+
       OpenApiValidationFailure negativeId = failureByMessage(results, "-5 is lower than minimum 0");
       assertEquals(negativeId.describeInstanceLocation(), "$request.body#/0/id");
       assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
@@ -76,5 +75,24 @@ public class UsersApiTest extends OperationValidatorTestBase {
 
     DefaultRequest request = new DefaultRequest.Builder("/users/versions", GET).build();
     new RequestValidator(api).validate(request);
+  }
+
+  @Test
+  public void malformedRequestBody() throws Exception {
+    URL specPath = getClass().getResource("/users/users-api.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+
+    DefaultRequest request = new DefaultRequest.Builder("/users", POST)
+      .header("content-type", "application/json")
+      .body(Body.from("{{ooh:this:[is,bad]")).build();
+    ValidationException actual = assertThrows(ValidationException.class, () ->
+      new RequestValidator(api).validate(request));
+
+    actual.results().forEach(failure -> {
+      assertEquals("$request.body", failure.describeInstanceLocation());
+      assertTrue(failure.describeSchemaLocation().endsWith("requestBody"));
+      System.out.println("failure.describeSchemaLocation() = " + failure.describeSchemaLocation());
+      System.out.println("failure.getMessage() = " + failure.getMessage());
+    });
   }
 }

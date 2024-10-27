@@ -18,6 +18,10 @@ public class URIFactory {
     return uri("$request.body");
   }
 
+  public URI requestBodyDefinition() {
+    return uri("requestBody");
+  }
+
   public URI request() {
     return uri("$request");
   }

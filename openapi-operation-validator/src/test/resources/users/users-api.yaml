@@ -15,6 +15,15 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '200':
+          description: 'ok'
   /users/{id}:
     parameters:
       - name: id
