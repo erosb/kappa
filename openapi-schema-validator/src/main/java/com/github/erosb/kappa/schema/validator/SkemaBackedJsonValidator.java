@@ -10,7 +10,8 @@ import com.github.erosb.jsonsKema.Validator;
 
 import java.net.URI;
 
-public class SkemaBackedJsonValidator implements JsonValidator {
+public class SkemaBackedJsonValidator
+  implements JsonValidator {
 
   private final Schema schema;
 
@@ -20,15 +21,19 @@ public class SkemaBackedJsonValidator implements JsonValidator {
       .load();
   }
 
-  @Override
-  public boolean validate(JsonNode valueNode, URI documentSource, ValidationData<?> validation) {
-    String jsonString = valueNode.toPrettyString();
-    IJsonValue jsonValue = new JsonParser(jsonString, documentSource).parse();
+  public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
     ValidationFailure failure = Validator.forSchema(schema).validate(jsonValue);
     if (failure != null) {
       validation.add(failure);
       return false;
     }
     return true;
+  }
+
+  @Override
+  public boolean validate(JsonNode valueNode, URI documentSource, ValidationData<?> validation) {
+    String jsonString = valueNode.toPrettyString();
+    IJsonValue jsonValue = new JsonParser(jsonString, documentSource).parse();
+    return validate(jsonValue, validation);
   }
 }

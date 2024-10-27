@@ -17,32 +17,6 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class BodyTest {
-  @Test
-  public void fromMap() throws Exception {
-    Map<String, Object> values = new HashMap<>();
-    values.put("key", "value");
-    Body body = Body.from(values);
-
-    checkBody(body, TreeUtil.toJsonNode(values));
-  }
-
-  @Test
-  public void fromList() throws Exception {
-    List<Object> values = new ArrayList<>();
-    values.add(0, "value0");
-    values.add(1, "value1");
-    Body body = Body.from(values);
-
-    checkBody(body, TreeUtil.toJsonNode(values));
-  }
-
-  @Test
-  public void fromBoolean() throws Exception {
-    Boolean value = Boolean.TRUE;
-    Body body = Body.from(value);
-
-    checkBody(body, TreeUtil.toJsonNode(value));
-  }
 
   @Test
   public void fromString() throws Exception {

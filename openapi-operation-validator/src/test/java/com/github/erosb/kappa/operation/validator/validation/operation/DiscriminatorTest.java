@@ -14,31 +14,31 @@ public class DiscriminatorTest extends OperationValidatorTestBase {
   public void discriminatorCheck() throws Exception {
     OperationValidator val = loadOperationValidator("/operation/operationValidator.yaml", "discriminator");
 
-    JsonNode body = TreeUtil.json.readTree("{\"pet_type\": \"Cat\", \"age\": 3}");
+    String body = "{\"pet_type\": \"Cat\", \"age\": 3}";
     check(
       new DefaultRequest.Builder("/discriminator", POST).header("Content-Type", "application/json").body(Body.from(body)).build(),
       val::validateBody,
       true);
 
-    body = TreeUtil.json.readTree("{\"pet_type\": \"Dog\", \"bark\": true}");
+    body = "{\"pet_type\": \"Dog\", \"bark\": true}";
     check(
       new DefaultRequest.Builder("/discriminator", POST).header("Content-Type", "application/json").body(Body.from(body)).build(),
       val::validateBody,
       true);
 
-    body = TreeUtil.json.readTree("{\"pet_type\": \"Dog\", \"bark\": false, \"breed\": \"Dingo\"}");
+    body = "{\"pet_type\": \"Dog\", \"bark\": false, \"breed\": \"Dingo\"}";
     check(
       new DefaultRequest.Builder("/discriminator", POST).header("Content-Type", "application/json").body(Body.from(body)).build(),
       val::validateBody,
       true);
 
-    body = TreeUtil.json.readTree("{\"age\": 3}");
+    body = "{\"age\": 3}";
     check(
       new DefaultRequest.Builder("/discriminator", POST).header("Content-Type", "application/json").body(Body.from(body)).build(),
       val::validateBody,
       false);
 
-    body = TreeUtil.json.readTree("{\"pet_type\": \"Dog\", \"bark\": false, \"breed\": \"foo\"}");
+    body = "{\"pet_type\": \"Dog\", \"bark\": false, \"breed\": \"foo\"}";
     check(
       new DefaultRequest.Builder("/discriminator", POST).header("Content-Type", "application/json").body(Body.from(body)).build(),
       val::validateBody,

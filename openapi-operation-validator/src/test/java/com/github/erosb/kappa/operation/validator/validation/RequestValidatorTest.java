@@ -57,7 +57,7 @@ public class RequestValidatorTest {
 
     OpenApiValidationFailure pathFailure = thrown.results().get(0);
     assertEquals("expected type: integer, actual: string", pathFailure.getMessage());
-    assertEquals("$request.path.intPathParam#", pathFailure.describeInstanceLocation());
+    assertEquals("$request.path.intPathParam", pathFailure.describeInstanceLocation());
     assertTrue(pathFailure.describeSchemaLocation().endsWith("/request/requestValidator.yaml/paths/intPathParam#/type"));
   }
 

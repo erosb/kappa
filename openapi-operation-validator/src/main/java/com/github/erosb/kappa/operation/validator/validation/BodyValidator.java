@@ -1,15 +1,15 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonParseException;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
-import com.github.erosb.kappa.schema.validator.JsonValidator;
 import com.github.erosb.kappa.schema.validator.SkemaBackedJsonValidator;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;
@@ -24,7 +24,7 @@ class BodyValidator {
 
   private final ValidationContext<OAI3> context;
   private final MediaType mediaType;
-  private final JsonValidator validator;
+  private final SkemaBackedJsonValidator validator;
   private final URIFactory uriFactory = new URIFactory();
 
   BodyValidator(ValidationContext<OAI3> context, MediaType mediaType) {
@@ -46,16 +46,14 @@ class BodyValidator {
     }
 
     try {
-      JsonNode jsonBody = body.getContentAsNode(context.getContext(), mediaType, rawContentType);
-      validator.validate(jsonBody, uriFactory.requestBody(), validation);
+      IJsonValue jsonBody = body.contentAsNode(rawContentType, uriFactory.requestBody());
+      validator.validate(jsonBody, validation);
     } catch (JsonParseException ex) {
       validation.add(OpenApiValidationFailure.unparseableRequestBody(ex.getMessage()));
-    } catch (IOException ex) {
-      throw new UncheckedIOException(ex);
     }
   }
 
-  private JsonValidator initValidator() {
+  private SkemaBackedJsonValidator initValidator() {
     if (mediaType == null || mediaType.getSchema() == null) {
       return null;
     }

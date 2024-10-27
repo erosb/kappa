@@ -94,9 +94,7 @@ public class ResponseTest extends OperationValidatorTestBase {
   public void fullyReferencedOperation() throws Exception {
     OperationValidator val = loadOperationValidator("/operation/operationValidator_build_flat.yaml", "post");
 
-    JsonNode bodyDecimal = JsonNodeFactory.instance.objectNode().set(
-      "type",
-      JsonNodeFactory.instance.numberNode(1.1));
+    String bodyDecimal = "{\"type\":1.1}";
 
     // Missing
     check(

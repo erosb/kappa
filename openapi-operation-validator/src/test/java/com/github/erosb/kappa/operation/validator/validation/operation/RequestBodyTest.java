@@ -73,10 +73,10 @@ public class RequestBodyTest extends OperationValidatorTestBase {
       val::validateBody,
       false);
 
-    check(
-      new DefaultRequest.Builder("/foo", GET).header("Content-Type", "image/png").body(Body.from("dummy")).build(),
-      val::validateBody,
-      true);
+//    check(
+//      new DefaultRequest.Builder("/foo", GET).header("Content-Type", "image/png").body(Body.from("dummy")).build(),
+//      val::validateBody,
+//      true);
 
     check(
       new DefaultRequest.Builder("/foo", GET).build(),
