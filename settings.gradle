@@ -1,4 +1,4 @@
-rootProject.name = "openapi4j"
+rootProject.name = "kappa"
 include("openapi-core")
 include("openapi-parser")
 include("openapi-operation-validator")
