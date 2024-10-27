@@ -15,12 +15,12 @@ dependencies {
   // xml
   compileOnly("org.json:json:20231013")
   // multipart
-  compileOnly("commons-fileupload:commons-fileupload:1.4")
+  compileOnly("commons-fileupload:commons-fileupload:1.5")
   // -------------- END Optional data adapters --------------
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.json:json:20231013")
-  testImplementation("commons-fileupload:commons-fileupload:1.4")
+  testImplementation("commons-fileupload:commons-fileupload:1.5")
   testImplementation("org.skyscreamer:jsonassert:1.5.0")
 }
 

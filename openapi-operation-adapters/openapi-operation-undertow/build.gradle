@@ -9,7 +9,7 @@ description = "openapi4j operation Undertow adapter"
 dependencies {
   api(project(":openapi-operation-validator"))
   // Undertow
-  implementation("io.undertow:undertow-core:2.0.1.Final")
+  implementation("io.undertow:undertow-core:2.3.18.Final")
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.mockito:mockito-core:5.11.0")

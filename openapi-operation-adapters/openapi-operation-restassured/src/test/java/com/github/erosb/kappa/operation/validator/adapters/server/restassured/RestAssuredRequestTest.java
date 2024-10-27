@@ -25,7 +25,7 @@ public class RestAssuredRequestTest {
   private static final String QUERY_PARAM_NAME = "paramName";
 
   private FilterableRequestSpecification restAssuredRequest = new RequestSpecificationImpl("http://localhost", 8080,
-    "", new NoAuthScheme(), emptyList(), null, false, RestAssuredConfig.config(), null, null).path(PATH);
+    "", new NoAuthScheme(), emptyList(), null, false, RestAssuredConfig.config(), null, null, true, false).path(PATH);
 
   {
     restAssuredRequest.body("a body").cookie(COOKIE_NAME, COOKIE_VALUE)
