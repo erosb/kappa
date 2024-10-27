@@ -10,14 +10,12 @@ import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
+import com.github.erosb.kappa.parser.model.v3.MediaType;
+import com.github.erosb.kappa.parser.model.v3.Schema;
 import com.github.erosb.kappa.schema.validator.SkemaBackedJsonValidator;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;
-import com.github.erosb.kappa.parser.model.v3.MediaType;
-import com.github.erosb.kappa.parser.model.v3.Schema;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 
 class BodyValidator {

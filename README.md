@@ -3,14 +3,9 @@
 This project is a successor of the [archived openapi4j](https://github.com/openapi4j/openapi4j) project.
 
 
-This is the home page of the openapi4j project for Java (Jakarta or JVM platform in general).
+Kappa can be used to validate HTTP requests and responses against OpenAPI 3.1 definitions.
 
-openapi4j is a suite of tools, including the following :
-* [Open API specification](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md) parser and validator.
-* Open API [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) validator.
-* [JSON reference](https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03) implementation.
-* Request/response validator against operation.
-* For internal use only, performance project reports some numbers to 'manually' check any improvements or regressions between versions.
+Under the hood ist uses the [erosb/json-sKema](https://github.com/erosb/json-sKema) library for JSON Schema validation.
 
 ## Modules
 
@@ -25,7 +20,7 @@ All modules follow the [Semantic Versioning 2.0.0](https://semver.org) and are a
 
 ```xml
 <dependency>
-    <groupId>com.github.erosb</groupId>
+    <groupId>com.github.erosb.kappa</groupId>
     <artifactId>openapi-[module]</artifactId>
 </dependency>
 ```
