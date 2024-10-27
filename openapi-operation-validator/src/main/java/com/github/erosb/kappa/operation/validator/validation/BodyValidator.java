@@ -12,7 +12,7 @@ import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 import com.github.erosb.kappa.parser.model.v3.Schema;
-import com.github.erosb.kappa.schema.validator.SkemaBackedJsonValidator;
+import com.github.erosb.kappa.schema.validator.SKemaBackedJsonValidator;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;
 
@@ -22,7 +22,7 @@ class BodyValidator {
 
   private final ValidationContext<OAI3> context;
   private final MediaType mediaType;
-  private final SkemaBackedJsonValidator validator;
+  private final SKemaBackedJsonValidator validator;
   private final URIFactory uriFactory = new URIFactory();
 
   BodyValidator(ValidationContext<OAI3> context, MediaType mediaType) {
@@ -51,7 +51,7 @@ class BodyValidator {
     }
   }
 
-  private SkemaBackedJsonValidator initValidator() {
+  private SKemaBackedJsonValidator initValidator() {
     if (mediaType == null || mediaType.getSchema() == null) {
       return null;
     }
@@ -63,7 +63,7 @@ class BodyValidator {
       obj.set("components", context.getContext().getBaseDocument().get("components"));
     }
     try {
-      return new SkemaBackedJsonValidator(rawJson, context.getContext().getBaseUrl().toURI());
+      return new SKemaBackedJsonValidator(rawJson, context.getContext().getBaseUrl().toURI());
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }

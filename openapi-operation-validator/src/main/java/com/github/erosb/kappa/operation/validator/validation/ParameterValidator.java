@@ -9,7 +9,7 @@ import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 import com.github.erosb.kappa.parser.model.v3.Schema;
 import com.github.erosb.kappa.schema.validator.JsonValidator;
-import com.github.erosb.kappa.schema.validator.SkemaBackedJsonValidator;
+import com.github.erosb.kappa.schema.validator.SKemaBackedJsonValidator;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;
 import com.github.erosb.kappa.parser.model.OpenApiSchema;
@@ -78,7 +78,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
       if (paramSchema != null) {
         URL contextBaseURL = context.getContext().getBaseUrl();
         URI pathParamDefinitionURI = uriFactory.pathParamDefinition(contextBaseURL, paramName);
-        JsonValidator v = new SkemaBackedJsonValidator(
+        JsonValidator v = new SKemaBackedJsonValidator(
           TreeUtil.json.convertValue(paramSchema.copy(), JsonNode.class),
           pathParamDefinitionURI
         );

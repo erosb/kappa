@@ -1,5 +1,6 @@
 package com.github.erosb.kappa.operation.validator.validation.operation;
 
+import com.github.erosb.jsonsKema.ValidationFailure;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
@@ -62,9 +63,9 @@ public class UsersApiTest extends OperationValidatorTestBase {
       assertEquals(negativeId.describeInstanceLocation(), "$request.body#/0/id");
       assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
 
-      OpenApiValidationFailure wrongProp = failureByMessage(results, "actual instance is not the same as expected constant value");
+      OpenApiValidationFailure wrongProp = failureByMessage(results, "the instance is not equal to any enum values");
       assertEquals(wrongProp.describeInstanceLocation(), "$request.body#/1/userId");
-      assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames/const"));
+      assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames/enum"));
     }
   }
 
@@ -94,5 +95,22 @@ public class UsersApiTest extends OperationValidatorTestBase {
       System.out.println("failure.describeSchemaLocation() = " + failure.describeSchemaLocation());
       System.out.println("failure.getMessage() = " + failure.getMessage());
     });
+  }
+
+  @Test
+  public void formatValidation() throws Exception {
+    URL specPath = getClass().getResource("/users/users-api.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+
+    DefaultRequest request = new DefaultRequest.Builder("/users", POST)
+      .header("content-type", "application/json")
+      .body(Body.from("{\"email\":\"xx123\"}")).build();
+    ValidationException actual = assertThrows(ValidationException.class, () ->
+      new RequestValidator(api).validate(request));
+
+    OpenApiValidationFailure failure = failureByMessage(actual.results(), "instance does not match format 'email'");
+
+    System.out.println(failure.describeSchemaLocation());
+    assertEquals("$request.body#/email", failure.describeInstanceLocation());
   }
 }
