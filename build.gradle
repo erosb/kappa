@@ -14,7 +14,7 @@ allprojects {
   apply plugin: 'jacoco'
 
   group = "com.github.erosb"
-  version = "0.0.0-develop"
+  version = "0.0.0-SNAPSHOT"
   description = "Forked version of openapi4j aiming for openapi 3.1 support"
 
   java {
