@@ -23,7 +23,6 @@ buildConfig {
 
 dependencies {
   // Parsers
-  implementation(project(":openapi-parser"))
   implementation("io.swagger.parser.v3:swagger-parser:2.+")
   // Schema validators
   implementation(project(":openapi-schema-validator"))
