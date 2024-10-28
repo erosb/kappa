@@ -25,7 +25,7 @@ dependencies {
   // Parsers
   implementation("io.swagger.parser.v3:swagger-parser:2.+")
   // Schema validators
-  implementation(project(":openapi-schema-validator"))
+  implementation(project(":openapi-core"))
   implementation("com.networknt:json-schema-validator:$NETWORKNT_VERSION")
   implementation("com.github.java-json-tools:json-schema-validator:$JSONTOOLS_VERSION")
   implementation("org.leadpony.justify:justify:$JUSTIFY_VERSION")
