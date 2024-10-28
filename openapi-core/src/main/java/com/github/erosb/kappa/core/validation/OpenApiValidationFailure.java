@@ -1,7 +1,9 @@
 package com.github.erosb.kappa.core.validation;
 
+import com.github.erosb.jsonsKema.JsonParseException;
 import com.github.erosb.jsonsKema.JsonPointer;
 import com.github.erosb.jsonsKema.SourceLocation;
+import com.github.erosb.jsonsKema.TextLocation;
 import com.github.erosb.jsonsKema.ValidationFailure;
 
 import java.net.URI;
@@ -18,8 +20,8 @@ public class OpenApiValidationFailure {
     return new RequestBodyValidationFailure("Body is required but none provided.");
   }
 
-  public static RequestBodyValidationFailure unparseableRequestBody(String descr) {
-    return new RequestBodyValidationFailure("could not parse request body: " + descr);
+  public static RequestBodyValidationFailure unparseableRequestBody(JsonParseException ex) {
+    return new RequestBodyValidationFailure("could not parse request body: " + ex.getMessage(), ex.getLocation());
   }
 
   public static RequestBodyValidationFailure missingContentTypeHeader() {
@@ -77,7 +79,11 @@ public class OpenApiValidationFailure {
     extends OpenApiValidationFailure {
 
     public RequestBodyValidationFailure(String message) {
-      super(message, new SourceLocation(-1, -1, new JsonPointer(), requestBody), new SourceLocation(-1, -1,
+      this(message, new TextLocation(-1, -1, requestBody));
+    }
+
+    public RequestBodyValidationFailure(String message, TextLocation parseFailure) {
+      super(message, new SourceLocation(parseFailure.getLineNumber(), parseFailure.getPosition(), new JsonPointer(), requestBody), new SourceLocation(-1, -1,
         new JsonPointer(), new URIFactory().requestBodyDefinition()));
     }
   }
@@ -120,5 +126,13 @@ public class OpenApiValidationFailure {
 
   public String describeSchemaLocation() {
     return stringify(schemaLocation);
+  }
+
+  public SourceLocation getInstanceLocation() {
+    return instanceLocation;
+  }
+
+  public SourceLocation getSchemaLocation() {
+    return schemaLocation;
   }
 }

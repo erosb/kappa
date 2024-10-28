@@ -23,7 +23,8 @@ import static org.junit.Assert.assertTrue;
 import static com.github.erosb.kappa.operation.validator.model.Request.Method.GET;
 import static org.junit.Assert.fail;
 
-public class UsersApiTest extends OperationValidatorTestBase {
+public class UsersApiTest
+  extends OperationValidatorTestBase {
 
   private static OpenApiValidationFailure failureByMessage(Collection<OpenApiValidationFailure> failures, String msg) {
     return failures.stream()
@@ -33,7 +34,8 @@ public class UsersApiTest extends OperationValidatorTestBase {
   }
 
   @Test
-  public void testRequest() throws Exception {
+  public void testRequest()
+    throws Exception {
     URL specPath = getClass().getResource("/users/users-api.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
 
@@ -52,25 +54,27 @@ public class UsersApiTest extends OperationValidatorTestBase {
       .body(Body.from("[{\"id\":-5}, {\"userId\":4}]"))
       .build();
 
-    try {
-      new RequestValidator(api).validate(invalidResp, request);
-      fail("should throw ValidationException");
-    } catch (ValidationException e) {
-      List<OpenApiValidationFailure> results = e.results();
-      assertEquals(2, results.size());
+    ValidationException actual = assertThrows(ValidationException.class,
+      () -> new RequestValidator(api).validate(invalidResp, request)
+    );
 
-      OpenApiValidationFailure negativeId = failureByMessage(results, "-5 is lower than minimum 0");
-      assertEquals(negativeId.describeInstanceLocation(), "$request.body#/0/id");
-      assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
+    List<OpenApiValidationFailure> results = actual.results();
+    assertEquals(2, results.size());
 
-      OpenApiValidationFailure wrongProp = failureByMessage(results, "the instance is not equal to any enum values");
-      assertEquals(wrongProp.describeInstanceLocation(), "$request.body#/1/userId");
-      assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames/enum"));
-    }
+    OpenApiValidationFailure negativeId = failureByMessage(results, "-5 is lower than minimum 0");
+    assertEquals(negativeId.describeInstanceLocation(), "$request.body#/0/id");
+    assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
+    assertEquals(1, negativeId.getInstanceLocation().getLineNumber());
+    assertEquals(8, negativeId.getInstanceLocation().getPosition());
+
+    OpenApiValidationFailure wrongProp = failureByMessage(results, "the instance is not equal to any enum values");
+    assertEquals(wrongProp.describeInstanceLocation(), "$request.body#/1/userId");
+    assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames/enum"));
   }
 
   @Test
-  public void testVersionsEndpoint() throws Exception {
+  public void testVersionsEndpoint()
+    throws Exception {
     URL specPath = getClass().getResource("/users/users-api.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
 
@@ -79,26 +83,30 @@ public class UsersApiTest extends OperationValidatorTestBase {
   }
 
   @Test
-  public void malformedRequestBody() throws Exception {
+  public void malformedRequestBody()
+    throws Exception {
     URL specPath = getClass().getResource("/users/users-api.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
 
     DefaultRequest request = new DefaultRequest.Builder("/users", POST)
       .header("content-type", "application/json")
-      .body(Body.from("{{ooh:this:[is,bad]")).build();
+      .body(Body.from("{           {ooh:this:[is,bad]")).build();
     ValidationException actual = assertThrows(ValidationException.class, () ->
       new RequestValidator(api).validate(request));
 
-    actual.results().forEach(failure -> {
-      assertEquals("$request.body", failure.describeInstanceLocation());
-      assertTrue(failure.describeSchemaLocation().endsWith("requestBody"));
-      System.out.println("failure.describeSchemaLocation() = " + failure.describeSchemaLocation());
-      System.out.println("failure.getMessage() = " + failure.getMessage());
-    });
+    OpenApiValidationFailure failure = actual.results().get(0);
+    assertEquals("could not parse request body: Unexpected character found: {", failure.getMessage());
+    assertEquals("$request.body", failure.describeInstanceLocation());
+    assertEquals(1, failure.getInstanceLocation().getLineNumber());
+    assertEquals(13, failure.getInstanceLocation().getPosition());
+    assertTrue(failure.describeSchemaLocation().endsWith("requestBody"));
+    //      System.out.println("failure.describeSchemaLocation() = " + failure.describeSchemaLocation());
+    //      System.out.println("failure.getMessage() = " + failure.getMessage());
   }
 
   @Test
-  public void formatValidation() throws Exception {
+  public void formatValidation()
+    throws Exception {
     URL specPath = getClass().getResource("/users/users-api.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
 

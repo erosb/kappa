@@ -47,7 +47,7 @@ class BodyValidator {
       IJsonValue jsonBody = body.contentAsNode(rawContentType, uriFactory.requestBody());
       validator.validate(jsonBody, validation);
     } catch (JsonParseException ex) {
-      validation.add(OpenApiValidationFailure.unparseableRequestBody(ex.getMessage()));
+      validation.add(OpenApiValidationFailure.unparseableRequestBody(ex));
     }
   }
 
