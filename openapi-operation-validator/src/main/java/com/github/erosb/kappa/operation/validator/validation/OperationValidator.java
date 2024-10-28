@@ -546,13 +546,13 @@ public class OperationValidator {
   }
 
   private <M extends AbsRefOpenApiSchema<M>> M getFlatModel(M model, Class<M> clazz) {
-    try {
-      if (model.isRef()) {
-        return model.getReference(context.getContext()).getMappedContent(clazz);
-      }
-    } catch (DecodeException ex) {
-      // Will never happen
-    }
+//    try {
+//      if (model.isRef()) {
+//        return model.getReference(context.getContext()).getMappedContent(clazz);
+//      }
+//    } catch (DecodeException ex) {
+//      // Will never happen
+//    }
 
     return model.copy();
   }

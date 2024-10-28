@@ -8,8 +8,18 @@ paths:
     post:
       operationId: post
       parameters:
-      - $ref: '#/components/parameters/paramWithSchema'
-      - $ref: '#/components/parameters/paramWithContent'
+      - in: header
+        name: paramWithSchema
+        required: true
+        schema:
+          $ref: '#/components/schemas/number'
+      - in: header
+        name: paramWithContent
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/number'
       requestBody:
         $ref: '#/components/requestBodies/requestBody'
       responses:
