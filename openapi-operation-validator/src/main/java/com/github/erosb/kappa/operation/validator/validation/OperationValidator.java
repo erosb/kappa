@@ -40,9 +40,6 @@ public class OperationValidator {
   private static final String VALIDATION_CTX_REQUIRED_ERR_MSG = "Validation context is required.";
   private static final String PATH_REQUIRED_ERR_MSG = "Path is required.";
   private static final String OPERATION_REQUIRED_ERR_MSG = "Operation is required.";
-  private static final OpenApiValidationFailure BODY_REQUIRED_ERR = OpenApiValidationFailure.missingRequiredBody();
-  private static final OpenApiValidationFailure BODY_CONTENT_TYPE_ERR = OpenApiValidationFailure.missingContentTypeHeader();
-  private static final OpenApiValidationFailure PATH_NOT_FOUND_ERR = OpenApiValidationFailure.noMatchingPathPatternFound();
 
   // Parameter specifics
   private static final String IN_PATH = "path";
@@ -155,7 +152,7 @@ public class OperationValidator {
     // Check paths are matching before trying to map values
     Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns, request.getPath());
     if (pathPattern == null) {
-      validation.add(PATH_NOT_FOUND_ERR);
+      validation.add(OpenApiValidationFailure.noMatchingPathPatternFound());
       return null;
     }
 
@@ -255,10 +252,10 @@ public class OperationValidator {
 
     if (operation.getRequestBody().isRequired()) {
       if (request.getContentType() == null) {
-        validation.add(BODY_CONTENT_TYPE_ERR);
+        validation.add(OpenApiValidationFailure.missingContentTypeHeader());
         return;
       } else if (request.getBody() == null) {
-        validation.add(BODY_REQUIRED_ERR);
+        validation.add(OpenApiValidationFailure.missingRequiredBody());
         return;
       }
     }
