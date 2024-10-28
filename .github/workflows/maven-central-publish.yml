@@ -19,5 +19,5 @@ jobs:
       - name: Publish packages
         run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          publishUsername: ${{ secrets.OSSRH_USERNAME }}
+          publishPassword: ${{ secrets.OSSRH_PASSWORD }}
