@@ -7,7 +7,7 @@ plugins {
 description = "openapi4j operation Vert.x adapter"
 
 dependencies {
-  api(project(":openapi-operation-validator"))
+  api(project(":openapi-core"))
   // Vert.x
   implementation("io.vertx:vertx-web:3.9.16")
   implementation("io.vertx:vertx-codegen:3.9.16")

@@ -9,7 +9,7 @@ description = "openapi4j test project"
 description = "openapi4j operation Servlet adapter"
 
 dependencies {
-  api(project(":openapi-operation-validator"))
+  api(project(":openapi-core"))
   // Servlet V4
   implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
 
