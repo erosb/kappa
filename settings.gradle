@@ -1,8 +1,8 @@
 rootProject.name = "kappa"
 //include("openapi-core")
 include("openapi-perf-checker")
-include("openapi-operation-adapters:openapi-operation-restassured")
-include("openapi-operation-adapters:openapi-operation-servlet")
+include("kappa-restassured-adapter")
+include("kappa-servlet-adapter")
 include("openapi-operation-adapters:openapi-operation-undertow")
 include("openapi-operation-adapters:openapi-operation-vertx")
 //include("openapi-operation-adapters:openapi-operation-spring")
