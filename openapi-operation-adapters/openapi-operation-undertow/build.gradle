@@ -7,7 +7,7 @@ plugins {
 description = "openapi4j operation Undertow adapter"
 
 dependencies {
-  api(project(":openapi-core"))
+  api(project(":"))
   // Undertow
   implementation("io.undertow:undertow-core:2.3.18.Final")
 

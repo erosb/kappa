@@ -2,6 +2,7 @@ import java.nio.charset.StandardCharsets
 
 plugins {
   id "java"
+  id "java-library"
   id "org.sonarqube" version "2.8"
   id 'jacoco'
   id 'maven-publish'
@@ -40,6 +41,22 @@ allprojects {
     }
   }
 }
+
+dependencies {
+  api("com.fasterxml.jackson.core:jackson-databind:2.18.0")
+  api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.0")
+
+  implementation("com.github.erosb:json-sKema:0.19.0-RC3")
+
+  testImplementation("junit:junit:4.13.2")
+  testImplementation("org.skyscreamer:jsonassert:1.5.0")
+
+  compileOnly("org.json:json:20231013")
+  compileOnly("commons-fileupload:commons-fileupload:1.5")
+  testImplementation("org.json:json:20231013")
+  testImplementation("commons-fileupload:commons-fileupload:1.5")
+}
+
 
 sonarqube {
   properties {
