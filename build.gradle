@@ -64,6 +64,16 @@ sonarqube {
   }
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+  archiveClassifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+  archiveClassifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
 publishing {
   publications {
     mavenJava(MavenPublication) {
@@ -75,6 +85,8 @@ publishing {
       version = project.version
 
       from components.java
+      artifact sourcesJar
+      artifact javadocJar
       pom {
         name = project.name
         description = project.description
@@ -99,16 +111,6 @@ publishing {
       }
     }
   }
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-  archiveClassifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar) {
-  archiveClassifier = 'javadoc'
-  from javadoc.destinationDir
 }
 
 tasks.withType(Sign) {
