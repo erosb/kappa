@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Build-date: Tue Oct 29 19:43:07 CET 2024
-Implementation-Title: openapi-operation-vertx
-Implementation-Version: 2.0.0-RC5
-

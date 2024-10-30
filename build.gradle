@@ -101,6 +101,16 @@ publishing {
   }
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+  archiveClassifier = 'sources'
+  from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+  archiveClassifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
 tasks.withType(Sign) {
   onlyIf { !version.endsWith("SNAPSHOT") }
 }
