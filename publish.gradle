@@ -35,6 +35,7 @@ publishing {
           developer {
             id = 'erosb'
             name = 'Bence Erős'
+            email = 'ebence88@gmail.com'
           }
         }
         scm {

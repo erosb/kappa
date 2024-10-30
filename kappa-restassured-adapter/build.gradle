@@ -4,9 +4,7 @@ plugins {
   id 'signing'
 }
 
-description = "openapi4j test project"
-
-description = "openapi4j operation Servlet adapter"
+description = "Kappa adapter for working with RestAssured"
 
 dependencies {
   api(project(":"))

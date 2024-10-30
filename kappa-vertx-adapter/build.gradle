@@ -4,7 +4,7 @@ plugins {
   id 'signing'
 }
 
-description = "openapi4j operation Vert.x adapter"
+description = "Kappa adapter for working with Vert.x"
 
 dependencies {
   api(project(":"))
