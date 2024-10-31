@@ -9,6 +9,7 @@ import com.github.erosb.kappa.parser.model.v3.Schema;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public class BodyTest {
   @Test
   public void fromInputStream() throws Exception {
     String values = "{\"key\":\"value\"}";
-    Body body = Body.from(new ByteArrayInputStream(values.getBytes()));
+    Body body = Body.from(new InputStreamReader(new ByteArrayInputStream(values.getBytes())));
 
     checkBody(body, TreeUtil.json.readTree(new ByteArrayInputStream(values.getBytes())));
   }

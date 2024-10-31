@@ -20,6 +20,7 @@ import com.github.erosb.kappa.operation.validator.util.convert.style.SpaceDelimi
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -41,8 +42,8 @@ class FormUrlConverter {
 
   private final Map<MediaType, Map<String, AbsParameter<Parameter>>> mediaTypesCache = new HashMap<>();
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final InputStream body, String encoding) throws IOException {
-    return convert(context, mediaType, IOUtil.toString(body, encoding), encoding);
+  JsonNode convert(final OAIContext context, final MediaType mediaType, final Reader body, String encoding) throws IOException {
+    return convert(context, mediaType, IOUtil.toString(body), encoding);
   }
 
   JsonNode convert(final OAIContext context, final MediaType mediaType, final String body, final String encoding) {

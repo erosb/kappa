@@ -9,9 +9,12 @@ import com.github.erosb.kappa.parser.model.v3.MediaType;
 import com.github.erosb.kappa.parser.model.v3.Schema;
 import com.github.erosb.kappa.operation.validator.util.ContentType;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 /**
  * Convert supported media types to abstract tree nodes.
@@ -23,7 +26,7 @@ public final class ContentConverter {
   public static JsonNode convert(final OAIContext context,
                                  final MediaType mediaType,
                                  final String rawContentType,
-                                 final InputStream is,
+                                 final Reader is,
                                  final String str) throws IOException {
 
     String contentType = ContentType.getTypeOnly(rawContentType);
@@ -47,7 +50,7 @@ public final class ContentConverter {
     }
   }
 
-  private static JsonNode formUrlEncodedToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, final InputStream content) throws IOException {
+  private static JsonNode formUrlEncodedToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, final Reader content) throws IOException {
     String encoding = ContentType.getCharSet(rawContentType);
     return FormUrlConverter.instance().convert(context, mediaType, content, encoding);
   }
@@ -57,7 +60,7 @@ public final class ContentConverter {
     return FormUrlConverter.instance().convert(context, mediaType, content, encoding);
   }
 
-  private static JsonNode multipartToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, InputStream content) throws IOException {
+  private static JsonNode multipartToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, Reader content) throws IOException {
     String encoding = ContentType.getCharSet(rawContentType);
     return MultipartConverter.instance().convert(context, mediaType, content, rawContentType, encoding);
   }
@@ -67,7 +70,7 @@ public final class ContentConverter {
     return MultipartConverter.instance().convert(context, mediaType, content, rawContentType, encoding);
   }
 
-  private static JsonNode jsonToNode(InputStream content) throws IOException {
+  private static JsonNode jsonToNode(Reader content) throws IOException {
     return TreeUtil.json.readTree(content);
   }
 
@@ -75,16 +78,16 @@ public final class ContentConverter {
     return TreeUtil.json.readTree(content);
   }
 
-  private static JsonNode xmlToNode(final OAIContext context, final Schema schema, InputStream content) throws IOException {
-    return XmlConverter.instance().convert(context, schema, IOUtil.toString(content, StandardCharsets.UTF_8.name()));
+  private static JsonNode xmlToNode(final OAIContext context, final Schema schema, Reader content) throws IOException {
+    return XmlConverter.instance().convert(context, schema, IOUtil.toString(content));
   }
 
   private static JsonNode xmlToNode(final OAIContext context, final Schema schema, String content) {
     return XmlConverter.instance().convert(context, schema, content);
   }
 
-  private static JsonNode textToNode(InputStream content) throws IOException {
-    return JsonNodeFactory.instance.textNode(IOUtil.toString(content, StandardCharsets.UTF_8.name()));
+  private static JsonNode textToNode(Reader content) throws IOException {
+    return JsonNodeFactory.instance.textNode(IOUtil.toString(content));
   }
 
   private static JsonNode textToNode(String content) {

@@ -2,7 +2,6 @@ package com.github.erosb.kappa.operation.validator.model.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonParser;
 import com.github.erosb.kappa.core.model.OAIContext;
@@ -12,7 +11,7 @@ import com.github.erosb.kappa.operation.validator.util.convert.ContentConverter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.net.URI;
 import java.nio.charset.Charset;
 
@@ -23,7 +22,7 @@ public class Body {
 
   private final JsonNode bodyNode;
   private final String bodyStr;
-  private final InputStream bodyIs;
+  private final Reader bodyIs;
 
   private Body(String body) {
     this.bodyNode = null;
@@ -31,7 +30,7 @@ public class Body {
     this.bodyIs = null;
   }
 
-  private Body(InputStream bodyIs) {
+  private Body(Reader bodyIs) {
     this.bodyNode = null;
     this.bodyStr = null;
     this.bodyIs = bodyIs;
@@ -72,7 +71,7 @@ public class Body {
    * @return The constructed body.
    * @see {@link Charset#defaultCharset()}
    */
-  public static Body from(InputStream body) {
+  public static Body from(Reader body) {
     requireNonNull(body, BODY_REQUIRED_ERR_MSG);
     return new Body(body);
   }

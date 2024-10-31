@@ -15,6 +15,7 @@ import com.github.erosb.kappa.parser.model.v3.MediaType;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -95,7 +96,8 @@ public class ContentConverterTest {
       api.getContext(),
       mediaType,
       contentType,
-      new ByteArrayInputStream(input != null ? input.getBytes() : "".getBytes()), null);
+      new InputStreamReader(new ByteArrayInputStream(input != null ? input.getBytes() : "".getBytes())),
+      null);
 
     JSONAssert.assertEquals(
       String.format("JSON matching test failed on test '%s'", description),

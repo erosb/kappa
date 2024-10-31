@@ -13,10 +13,13 @@ import com.github.erosb.kappa.parser.model.v3.EncodingProperty;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 import com.github.erosb.kappa.parser.model.v3.Schema;
 import org.apache.commons.fileupload.*;
+import org.apache.commons.io.input.ReaderInputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,10 +40,10 @@ class MultipartConverter {
 
   JsonNode convert(final OAIContext context, final MediaType mediaType, final String body, final String rawContentType, final String encoding) throws IOException {
     InputStream is = new ByteArrayInputStream(body.getBytes(encoding));
-    return convert(context, mediaType, is, rawContentType, encoding);
+    return convert(context, mediaType, new InputStreamReader(is), rawContentType, encoding);
   }
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final InputStream body, final String rawContentType, final String encoding) throws IOException {
+  JsonNode convert(final OAIContext context, final MediaType mediaType, final Reader body, final String rawContentType, final String encoding) throws IOException {
     UploadContext requestContext = UPLOAD_CONTEXT_INSTANCE.create(body, rawContentType, encoding);
 
     ObjectNode result = JsonNodeFactory.instance.objectNode();
@@ -185,7 +188,7 @@ class MultipartConverter {
   @FunctionalInterface
   private interface UploadContextInstance {
     UploadContext create(
-      final InputStream body,
+      final Reader body,
       final String contentType,
       final String encoding);
   }
@@ -213,7 +216,7 @@ class MultipartConverter {
 
     @Override
     public InputStream getInputStream() {
-      return body;
+      return null;
     }
   };
 }

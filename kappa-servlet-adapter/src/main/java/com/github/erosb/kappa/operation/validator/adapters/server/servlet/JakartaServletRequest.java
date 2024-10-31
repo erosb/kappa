@@ -49,6 +49,7 @@ public abstract class JakartaServletRequest
     if (HTTP_GET.equalsIgnoreCase(hsr.getMethod())) {
       builder.query(hsr.getQueryString());
     } else {
+      hsr.getCharacterEncoding()
       builder.body(Body.from(body));
     }
 
