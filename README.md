@@ -79,8 +79,19 @@ public class OpenApiBackedRequestValidationFilter implements Filter {
     }
   }
 }
+```
 
+### Register your bean in Spring Context
 
+```java
+@Bean
+public FilterRegistrationBean<OpenApiBackedRequestValidationFilter> filterRegistration() {
+  FilterRegistrationBean<OpenApiBackedRequestValidationFilter> registration = new FilterRegistrationBean<>();
+  registration.setFilter(new OpenApiBackedRequestValidationFilter());
+  registration.setOrder(2);
+  registration.addUrlPatterns("/api/*");
+  return registration;
+}
 ```
 
 ## Supported versions
