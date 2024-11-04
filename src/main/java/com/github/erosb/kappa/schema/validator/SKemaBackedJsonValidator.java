@@ -11,16 +11,33 @@ import com.github.erosb.jsonsKema.Validator;
 import com.github.erosb.jsonsKema.ValidatorConfig;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class SKemaBackedJsonValidator
   implements JsonValidator {
+
+  static URI rewriteProbableJarUrl(URI uri)
+    throws URISyntaxException {
+    String uriString = uri.toString();
+    if (uriString.startsWith("jar:nested:") && uriString.indexOf('!') >= 0) {
+      String fixedUri = "classpath:/" + uriString.substring(uriString.lastIndexOf('!') + 1);
+      return new URI(fixedUri);
+    }
+    return uri;
+  }
 
   private final Schema schema;
 
   public SKemaBackedJsonValidator(JsonNode rawJson, URI documentSource) {
     String schemaJsonString = rawJson.toPrettyString();
-    schema = new SchemaLoader(new JsonParser(schemaJsonString, documentSource).parse())
-      .load();
+      try {
+          schema = new SchemaLoader(new JsonParser(
+            schemaJsonString,
+            rewriteProbableJarUrl(documentSource)
+          ).parse()).load();
+      } catch (URISyntaxException e) {
+          throw new RuntimeException(e);
+      }
   }
 
   public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {

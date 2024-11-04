@@ -38,7 +38,7 @@ public class OAI3ContextTest {
 
   @Test
   public void remote() throws ResolutionException, MalformedURLException {
-    URL specPath = new URL("https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore.yaml");
+    URL specPath = new URL("https://raw.githubusercontent.com/openapitools/openapi-generator/master/modules/openapi-generator/src/test/resources/3_1/petstore.yaml");
 
     OAI3Context apiContext = new OAI3Context(specPath);
     assertEquals(specPath, apiContext.getBaseUrl());
