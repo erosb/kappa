@@ -7,6 +7,18 @@ Kappa can be used to validate HTTP requests and responses against OpenAPI 3.1 de
 
 Under the hood ist uses the [erosb/json-sKema](https://github.com/erosb/json-sKema) library for JSON Schema validation.
 
+<!-- TOC -->
+* [Kappa - OpenAPI validator for Java and JVM projects](#kappa---openapi-validator-for-java-and-jvm-projects)
+  * [Validating incoming HTTP requests](#validating-incoming-http-requests)
+    * [Installation - Maven](#installation---maven)
+    * [Add a filter to validate the request](#add-a-filter-to-validate-the-request)
+    * [Register your bean in Spring Context](#register-your-bean-in-spring-context)
+  * [Supported versions](#supported-versions)
+  * [Contributing](#contributing)
+  * [License](#license)
+  * [Contributor notes](#contributor-notes)
+<!-- TOC -->
+
 ## Validating incoming HTTP requests
 
 If you want to validate the HTTP requests received by a Spring Boot service, you can do it by implementing
@@ -24,6 +36,8 @@ a simple `Filter` and intercepting incoming requests against your OpenAPI descri
 ```
 
 ### Add a filter to validate the request
+
+The best way to implement OpenAPI-based input validation is doing it in a servlet filter.
 
 ```java
 
