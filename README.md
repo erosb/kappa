@@ -30,7 +30,7 @@ a simple `Filter` and intercepting incoming requests against your OpenAPI descri
 <dependency>
   <groupId>com.github.erosb</groupId>
   <artifactId>kappa-servlet-adapter</artifactId>
-  <version>2.0.0-RC6</version>
+  <version>2.0.0-RC8</version>
 </dependency>
 
 ```
