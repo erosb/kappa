@@ -90,7 +90,7 @@ public class OpenApiValidationFailure {
 
   private static final URI request = new URIFactory().request();
 
-  private static final URI requestBody = new URIFactory().requestBody();
+  private static final URI requestBody = new URIFactory().httpEntity();
 
   private final String message;
 

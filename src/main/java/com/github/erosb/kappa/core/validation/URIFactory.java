@@ -4,9 +4,31 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+class RequestScopedURIFactory extends URIFactory {
+  @Override
+  public URI httpEntity() {
+    return uri("$request.body");
+  }
+}
+
+class ResponseScopedURIFactory extends URIFactory {
+  @Override
+  public URI httpEntity() {
+    return uri("$response.body");
+  }
+}
+
 public class URIFactory {
 
-  private static URI uri(String s) {
+  public static URIFactory forRequest() {
+    return new RequestScopedURIFactory();
+  }
+
+  public static URIFactory forResponse() {
+    return new ResponseScopedURIFactory();
+  }
+
+  static URI uri(String s) {
     try {
       return new URI(s);
     } catch (URISyntaxException e) {
@@ -14,7 +36,7 @@ public class URIFactory {
     }
   }
 
-  public URI requestBody() {
+  public URI httpEntity() {
     return uri("$request.body");
   }
 
