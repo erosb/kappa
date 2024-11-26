@@ -23,12 +23,12 @@ class BodyValidator {
   private final ValidationContext<OAI3> context;
   private final MediaType mediaType;
   private final SKemaBackedJsonValidator validator;
-  private final URIFactory uriFactory = new URIFactory();
+  private final URIFactory uriFactory;
 
-  BodyValidator(ValidationContext<OAI3> context, MediaType mediaType) {
+  BodyValidator(ValidationContext<OAI3> context, MediaType mediaType, URIFactory uriFactory) {
     this.context = context;
     this.mediaType = mediaType;
-
+    this.uriFactory = uriFactory;
     validator = initValidator();
   }
 
@@ -39,12 +39,12 @@ class BodyValidator {
     if (validator == null) {
       return; // No schema specified for body
     } else if (body == null) {
-      validator.validate(JsonNodeFactory.instance.nullNode(), uriFactory.requestBody(), validation);
+      validator.validate(JsonNodeFactory.instance.nullNode(), uriFactory.httpEntity(), validation);
       return;
     }
 
     try {
-      IJsonValue jsonBody = body.contentAsNode(rawContentType, uriFactory.requestBody());
+      IJsonValue jsonBody = body.contentAsNode(rawContentType, uriFactory.httpEntity());
       validator.validate(jsonBody, validation);
     } catch (JsonParseException ex) {
       validation.add(OpenApiValidationFailure.unparseableRequestBody(ex));

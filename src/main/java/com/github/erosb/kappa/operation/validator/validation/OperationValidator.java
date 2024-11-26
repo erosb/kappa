@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.operation.validator.model.Response;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.Callback;
@@ -360,7 +361,7 @@ public class OperationValidator {
       return null;
     }
 
-    return createBodyValidators(operation.getRequestBody().getContentMediaTypes());
+    return createBodyValidators(operation.getRequestBody().getContentMediaTypes(), URIFactory.forRequest());
   }
 
   private Map<String, Map<MediaTypeContainer, BodyValidator>> createResponseBodyValidators() {
@@ -376,20 +377,20 @@ public class OperationValidator {
       final String statusCode = entryStatusCode.getKey();
       final com.github.erosb.kappa.parser.model.v3.Response response = entryStatusCode.getValue();
 
-      validators.put(statusCode, createBodyValidators(response.getContentMediaTypes()));
+      validators.put(statusCode, createBodyValidators(response.getContentMediaTypes(), URIFactory.forResponse()));
     }
 
     return validators;
   }
 
-  private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes) {
+  private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes, URIFactory uriFactory) {
     final Map<MediaTypeContainer, BodyValidator> validators = new HashMap<>();
 
     if (mediaTypes == null) {
-      validators.put(MediaTypeContainer.create(null), new BodyValidator(context, null));
+      validators.put(MediaTypeContainer.create(null), new BodyValidator(context, null, uriFactory));
     } else {
       for (Map.Entry<String, MediaType> entry : mediaTypes.entrySet()) {
-        validators.put(MediaTypeContainer.create(entry.getKey()), new BodyValidator(context, entry.getValue()));
+        validators.put(MediaTypeContainer.create(entry.getKey()), new BodyValidator(context, entry.getValue(), uriFactory));
       }
     }
 

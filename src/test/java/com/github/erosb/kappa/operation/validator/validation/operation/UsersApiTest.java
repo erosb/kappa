@@ -34,6 +34,50 @@ public class UsersApiTest
   }
 
   @Test
+  public void invalidRequest()
+    throws Exception {
+    URL specPath = getClass().getResource("/users/users-api.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+
+    DefaultRequest request = new DefaultRequest.Builder("/users", POST)
+      .header("content-type", "application/json")
+      .body(Body.from("{\"email\":2}"))
+      .build();
+
+    ValidationException actual = assertThrows(ValidationException.class,
+      () -> new RequestValidator(api).validate(request)
+    );
+    OpenApiValidationFailure failure = actual.results().get(0);
+    assertEquals("$request.body#/email", failure.describeInstanceLocation());
+    assertTrue(failure.describeSchemaLocation().endsWith("users-api.yaml#/properties/email/type"));
+  }
+
+  @Test
+  public void invalidResponse()
+    throws Exception {
+    URL specPath = getClass().getResource("/users/users-api.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+
+    DefaultRequest request = new DefaultRequest.Builder("/users", GET)
+      .header("content-type", "application/json")
+      .build();
+
+    DefaultResponse invalidResp = new DefaultResponse.Builder(200)
+      .header("Content-Type", "application/json")
+      .body(Body.from("[{\"id\":-5}, {\"userId\":4}]"))
+      .build();
+
+
+    ValidationException actual = assertThrows(ValidationException.class,
+      () -> new RequestValidator(api).validate(invalidResp, request)
+    );
+    OpenApiValidationFailure negativeId = failureByMessage(actual.results(), "-5 is lower than minimum 0");
+    assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id");
+    assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
+  }
+
+
+  @Test
   public void testRequest()
     throws Exception {
     URL specPath = getClass().getResource("/users/users-api.yaml");
@@ -62,13 +106,13 @@ public class UsersApiTest
     assertEquals(2, results.size());
 
     OpenApiValidationFailure negativeId = failureByMessage(results, "-5 is lower than minimum 0");
-    assertEquals(negativeId.describeInstanceLocation(), "$request.body#/0/id");
+    assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id");
     assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
     assertEquals(1, negativeId.getInstanceLocation().getLineNumber());
     assertEquals(8, negativeId.getInstanceLocation().getPosition());
 
     OpenApiValidationFailure wrongProp = failureByMessage(results, "the instance is not equal to any enum values");
-    assertEquals(wrongProp.describeInstanceLocation(), "$request.body#/1/userId");
+    assertEquals(wrongProp.describeInstanceLocation(), "$response.body#/1/userId");
     assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames/enum"));
   }
 
@@ -100,8 +144,11 @@ public class UsersApiTest
     assertEquals(1, failure.getInstanceLocation().getLineNumber());
     assertEquals(13, failure.getInstanceLocation().getPosition());
     assertTrue(failure.describeSchemaLocation().endsWith("requestBody"));
-    //      System.out.println("failure.describeSchemaLocation() = " + failure.describeSchemaLocation());
-    //      System.out.println("failure.getMessage() = " + failure.getMessage());
+  }
+
+  @Test
+  public void testResponse() {
+
   }
 
   @Test
