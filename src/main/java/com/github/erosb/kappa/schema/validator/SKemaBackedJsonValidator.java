@@ -30,17 +30,20 @@ public class SKemaBackedJsonValidator
 
   public SKemaBackedJsonValidator(JsonNode rawJson, URI documentSource) {
     String schemaJsonString = rawJson.toPrettyString();
+    System.out.println("construct SKemaBackedJsonValidator()");
       try {
           schema = new SchemaLoader(new JsonParser(
             schemaJsonString,
             rewriteProbableJarUrl(documentSource)
           ).parse()).load();
+        System.out.println("schema = " + schema);
       } catch (URISyntaxException e) {
           throw new RuntimeException(e);
       }
   }
 
   public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
+    System.out.println("validating ");
     ValidationFailure failure = Validator.create(schema, new ValidatorConfig(FormatValidationPolicy.ALWAYS)).validate(jsonValue);
     if (failure != null) {
       validation.add(failure);

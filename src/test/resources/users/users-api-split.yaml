@@ -1,0 +1,51 @@
+openapi: 3.0.2
+info:
+  version: 0.1
+  title: my title
+  description: my descriptin
+paths:
+  /users:
+    get:
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '200':
+          description: 'ok'
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+  /users/versions:
+    get:
+      responses:
+        '200':
+          description: ok
+components:
+  schemas:
+    User:
+      $ref: "./subdir/User.yaml"
+

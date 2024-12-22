@@ -385,11 +385,13 @@ public class OperationValidator {
 
   private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes, URIFactory uriFactory) {
     final Map<MediaTypeContainer, BodyValidator> validators = new HashMap<>();
-
+    System.out.println("createBodyValidators()");
     if (mediaTypes == null) {
+      System.out.println(" > null");
       validators.put(MediaTypeContainer.create(null), new BodyValidator(context, null, uriFactory));
     } else {
       for (Map.Entry<String, MediaType> entry : mediaTypes.entrySet()) {
+        System.out.println(" > " + entry.getKey());
         validators.put(MediaTypeContainer.create(entry.getKey()), new BodyValidator(context, entry.getValue(), uriFactory));
       }
     }
@@ -540,6 +542,7 @@ public class OperationValidator {
   }
 
   private Schema getFlatSchema(Schema schema) {
+//    return schema.copy();
     if (schema != null) {
       return getFlatModel(schema, Schema.class);
     }
@@ -547,13 +550,13 @@ public class OperationValidator {
   }
 
   private <M extends AbsRefOpenApiSchema<M>> M getFlatModel(M model, Class<M> clazz) {
-    try {
-      if (model.isRef()) {
-        return model.getReference(context.getContext()).getMappedContent(clazz);
-      }
-    } catch (DecodeException ex) {
-      // Will never happen
-    }
+//    try {
+//      if (model.isRef()) {
+//        return model.getReference(context.getContext()).getMappedContent(clazz);
+//      }
+//    } catch (DecodeException ex) {
+//      // Will never happen
+//    }
 
     return model.copy();
   }

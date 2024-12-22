@@ -53,11 +53,13 @@ class BodyValidator {
 
   private SKemaBackedJsonValidator initValidator() {
     if (mediaType == null || mediaType.getSchema() == null) {
+      System.out.println("BodyValidator#initValidator() RET NULL " + mediaType);
       return null;
     }
 
     Schema copy = mediaType.getSchema().copy();
     JsonNode rawJson = TreeUtil.json.convertValue(copy, JsonNode.class);
+    System.out.println("body schema copy: " + rawJson);
     if (rawJson instanceof ObjectNode) {
       ObjectNode obj = (ObjectNode) rawJson;
       obj.set("components", context.getContext().getBaseDocument().get("components"));

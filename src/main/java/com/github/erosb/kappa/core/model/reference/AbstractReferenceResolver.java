@@ -45,7 +45,7 @@ public abstract class AbstractReferenceResolver {
     findReferences(baseUrl, baseDocument);
 
     // Resolves all references
-    resolveReferences();
+    //resolveReferences();
   }
 
   public JsonNode getBaseDocument() {
@@ -56,6 +56,7 @@ public abstract class AbstractReferenceResolver {
 
   private void findReferences(URL url, JsonNode document) throws ResolutionException {
     Collection<JsonNode> referencePaths = getReferencePaths(document);
+    System.out.println("referencePaths = " + referencePaths);
     List<JsonNode> refParents = document.findParents(refKeyword);
 
     for (JsonNode refNode : referencePaths) {
@@ -90,6 +91,7 @@ public abstract class AbstractReferenceResolver {
   }
 
   private void addRef(URL url, List<JsonNode> refParents, String refValue) {
+    System.out.println("addRef called with refValue=" + refValue + " , url=" + url);
     // Add the reference to the registry
     Reference reference = referenceRegistry.addRef(url, refValue);
 
