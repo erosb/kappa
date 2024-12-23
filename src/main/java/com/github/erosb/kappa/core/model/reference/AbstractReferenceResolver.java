@@ -45,7 +45,7 @@ public abstract class AbstractReferenceResolver {
     findReferences(baseUrl, baseDocument);
 
     // Resolves all references
-    //resolveReferences();
+    resolveReferences();
   }
 
   public JsonNode getBaseDocument() {
