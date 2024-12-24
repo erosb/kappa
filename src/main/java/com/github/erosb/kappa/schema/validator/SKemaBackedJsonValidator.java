@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.schema.validator;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.FormatValidationPolicy;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonParser;
@@ -9,6 +10,8 @@ import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.jsonsKema.ValidationFailure;
 import com.github.erosb.jsonsKema.Validator;
 import com.github.erosb.jsonsKema.ValidatorConfig;
+import com.github.erosb.kappa.core.model.v3.OAI3;
+import com.github.erosb.kappa.core.util.TreeUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,6 +30,24 @@ public class SKemaBackedJsonValidator
   }
 
   private final Schema schema;
+
+  public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context) {
+    JsonNode rawJson = TreeUtil.json.convertValue(schema, JsonNode.class);
+    System.out.println("body schema copy: " + rawJson);
+    if (rawJson instanceof ObjectNode) {
+      ObjectNode obj = (ObjectNode) rawJson;
+      obj.set("components", context.getContext().getBaseDocument().get("components"));
+    }
+    try {
+      this.schema = new SchemaLoader(new JsonParser(
+        rawJson.toPrettyString(),
+        rewriteProbableJarUrl(context.getContext().getBaseUrl().toURI())
+      ).parse()).load();
+      schema.setSkema(this.schema);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   public SKemaBackedJsonValidator(JsonNode rawJson, URI documentSource) {
     String schemaJsonString = rawJson.toPrettyString();

@@ -4,10 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.CompositeSchema;
+import com.github.erosb.jsonsKema.SchemaVisitor;
+import com.github.erosb.jsonsKema.TypeSchema;
 import com.github.erosb.kappa.core.exception.DecodeException;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.TreeUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +67,13 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
   private String title;
   private Boolean uniqueItems;
   private Xml xml;
+  @JsonIgnore
+  private com.github.erosb.jsonsKema.Schema skema;
+
+  @JsonIgnore
+  public void setSkema(com.github.erosb.jsonsKema.Schema skema) {
+    this.skema = skema;
+  }
 
   // Title
   public String getTitle() {
@@ -280,6 +292,19 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
 
   @JsonIgnore
   public String getSupposedType(OAIContext context) {
+
+    if (skema != null) {
+      String result = skema.accept(new SchemaVisitor<String>() {
+        @Override
+        public String visitTypeSchema(@NotNull TypeSchema schema) {
+          return schema.getType().getValue();
+        }
+      });
+      return result;
+    } else {
+      System.err.println("skema is null");
+    }
+
     // Ensure we're not in a $ref schema
     final Schema schema = getFlatSchema(context);
     assert schema != null;

@@ -58,16 +58,6 @@ class BodyValidator {
     }
 
     Schema copy = mediaType.getSchema().copy();
-    JsonNode rawJson = TreeUtil.json.convertValue(copy, JsonNode.class);
-    System.out.println("body schema copy: " + rawJson);
-    if (rawJson instanceof ObjectNode) {
-      ObjectNode obj = (ObjectNode) rawJson;
-      obj.set("components", context.getContext().getBaseDocument().get("components"));
-    }
-    try {
-      return new SKemaBackedJsonValidator(rawJson, context.getContext().getBaseUrl().toURI());
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
+    return new SKemaBackedJsonValidator(copy, context);
   }
 }

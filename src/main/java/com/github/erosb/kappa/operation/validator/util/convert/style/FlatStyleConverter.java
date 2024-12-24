@@ -1,9 +1,13 @@
 package com.github.erosb.kappa.operation.validator.util.convert.style;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
+import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +25,15 @@ abstract class FlatStyleConverter implements StyleConverter {
 
     Map<String, Object> values = new HashMap<>();
 
-    param.setSchema(param.getSchema().getFlatSchema(context));
+      try {
+          param.getSchema().setSkema(new SchemaLoader(
+            TreeUtil.json.writeValueAsString(param.getSchema()),
+            context.getBaseUrl().toURI()
+          ).load());
+      } catch (JsonProcessingException | URISyntaxException e) {
+          throw new RuntimeException(e);
+      }
+      //    param.setSchema(param.getSchema().getFlatSchema(context));
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(param.getSchema().getSupposedType(context))) {
       if (param.isExplode()) {
         handleExplodedObject(param, splitPattern, rawValue, values);
