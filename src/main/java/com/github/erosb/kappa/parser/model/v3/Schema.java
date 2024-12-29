@@ -531,7 +531,7 @@ public class Schema
   }
 
   public Schema getProperty(String name) {
-    return mapGet(properties, name);
+    return getProperties().get(name);
   }
 
   public Schema setProperty(String name, Schema property) {
