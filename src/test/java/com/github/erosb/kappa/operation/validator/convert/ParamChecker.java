@@ -36,6 +36,8 @@ abstract class ParamChecker {
   }
 
   static void checkObject(Map<String, JsonNode> nodes, String propName) {
+    System.out.println("nodes = " + nodes);
+    System.out.println("propName = " + propName);
     assertEquals(1, nodes.size());
     assertTrue(nodes.get(propName).get("stringProp").isTextual());
     assertEquals("admin", nodes.get(propName).get("stringProp").textValue());

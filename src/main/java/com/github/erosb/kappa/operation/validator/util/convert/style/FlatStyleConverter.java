@@ -27,22 +27,10 @@ abstract class FlatStyleConverter implements StyleConverter {
 
     Map<String, Object> values = new HashMap<>();
 
-    try {
-      JsonNode rawJson = TreeUtil.json.convertValue(param.getSchema(), JsonNode.class);
-      if (rawJson instanceof ObjectNode) {
-        ObjectNode obj = (ObjectNode) rawJson;
-        obj.set("components", context.getBaseDocument().get("components"));
-      }
-      System.out.println("FormStyleConverter load: " + rawJson.toPrettyString());
-      param.getSchema().setSkema(new SchemaLoader(
-        rawJson.toPrettyString(),
-        context.getBaseUrl().toURI()
-      ).load());
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
-      //    param.setSchema(param.getSchema().getFlatSchema(context));
+    param.setSchema(param.getSchema().getFlatSchema(context));
+    System.out.println("param.getSchema().getSupposedType(context) = " + param.getSchema().getSupposedType(context));
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(param.getSchema().getSupposedType(context))) {
+      System.out.println("object");
       if (param.isExplode()) {
         handleExplodedObject(param, splitPattern, rawValue, values);
       } else {
@@ -58,6 +46,7 @@ abstract class FlatStyleConverter implements StyleConverter {
   }
 
   private void handleExplodedObject(AbsParameter<?> param, String splitPattern, String rawValue, Map<String, Object> values) {
+    System.out.println("exploded");
     Scanner scanner = new Scanner(rawValue);
     scanner.useDelimiter(splitPattern);
     while (scanner.hasNext()) {

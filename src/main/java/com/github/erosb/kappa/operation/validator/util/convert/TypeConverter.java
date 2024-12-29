@@ -27,12 +27,12 @@ public final class TypeConverter {
   public JsonNode convertObject(final OAIContext context,
                                 final Schema schema,
                                 final Map<String, Object> content) {
-
     if (schema == null || content == null) {
       return JsonNodeFactory.instance.nullNode();
     }
 
     Map<String, Schema> properties = schema.getProperties();
+    System.out.println("properties = " + properties);
     if (properties == null || properties.isEmpty()) {
       return JsonNodeFactory.instance.nullNode();
     }
@@ -68,7 +68,10 @@ public final class TypeConverter {
   public JsonNode convertArray(final OAIContext context,
                                final Schema schema,
                                final Collection<Object> content) {
-    if (schema == null || content == null) {
+    if (schema == null) {
+      return TreeUtil.json.convertValue(content, JsonNode.class);
+    }
+    if (content == null) {
       return JsonNodeFactory.instance.nullNode();
     }
 

@@ -114,8 +114,9 @@ public final class ParameterConverter {
       final JsonNode convertedValue;
 
       if (param.getSchema() != null) {
+        System.out.println("has schema");
         final String style = param.getStyle();
-
+        System.out.println("style = " + style);
         if (LABEL.equals(style)) {
           convertedValue = LabelStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
         } else if (MATRIX.equals(style)) {

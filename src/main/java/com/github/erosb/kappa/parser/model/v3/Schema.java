@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.CompositeSchema;
 import com.github.erosb.jsonsKema.ItemsSchema;
+import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.jsonsKema.SchemaVisitor;
 import com.github.erosb.jsonsKema.TypeSchema;
 import com.github.erosb.kappa.core.exception.DecodeException;
@@ -15,12 +17,14 @@ import com.github.erosb.kappa.core.util.TreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
+public class Schema
+  extends AbsExtendedRefOpenApiSchema<Schema> {
   // additionalProperties field is processed by specific getters/setters
   @JsonIgnore
   private Schema additionalProperties;
@@ -70,6 +74,13 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
   private Xml xml;
   @JsonIgnore
   private com.github.erosb.jsonsKema.Schema skema;
+
+  public Schema() {
+  }
+
+  private Schema(com.github.erosb.jsonsKema.Schema skema) {
+    this.skema = skema;
+  }
 
   @JsonIgnore
   public void setSkema(com.github.erosb.jsonsKema.Schema skema) {
@@ -293,69 +304,78 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
 
   @JsonIgnore
   public String getSupposedType(OAIContext context) {
+    getSkema(context);
+    String result = skema.accept(new SchemaVisitor<String>() {
+      @Override
+      public String visitTypeSchema(@NotNull TypeSchema schema) {
+        return schema.getType().getValue();
+      }
 
-    if (skema != null) {
-      String result = skema.accept(new SchemaVisitor<String>() {
-        @Override
-        public String visitTypeSchema(@NotNull TypeSchema schema) {
-          return schema.getType().getValue();
+      @Override
+      public String visitItemsSchema(@NotNull ItemsSchema schema) {
+        return "array";
+      }
+
+      @Nullable
+      @Override
+      public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
+        return "object";
+      }
+    });
+    return result;
+
+    //    // Ensure we're not in a $ref schema
+    //    final Schema schema = getFlatSchema(context);
+    //    assert schema != null;
+    //
+    //    if (schema.type != null) {
+    //      return schema.type;
+    //    }
+    //
+    //    // Deduce type from other properties
+    //    if (schema.getProperties() != null) {
+    //      return OAI3SchemaKeywords.TYPE_OBJECT;
+    //    } else if (schema.getItemsSchema() != null) {
+    //      return OAI3SchemaKeywords.TYPE_ARRAY;
+    //    } else if (schema.getFormat() != null) {
+    //      // Deduce type from format
+    //      switch (schema.getFormat()) {
+    //        case OAI3SchemaKeywords.FORMAT_INT32:
+    //        case OAI3SchemaKeywords.FORMAT_INT64:
+    //          return OAI3SchemaKeywords.TYPE_INTEGER;
+    //        case OAI3SchemaKeywords.FORMAT_FLOAT:
+    //        case OAI3SchemaKeywords.FORMAT_DOUBLE:
+    //          return OAI3SchemaKeywords.TYPE_NUMBER;
+    //        default:
+    //          return OAI3SchemaKeywords.TYPE_STRING;
+    //      }
+    //    }
+    //
+    //    return null;
+  }
+
+  public com.github.erosb.jsonsKema.Schema getSkema(OAIContext context) {
+    if (skema == null) {
+      try {
+        JsonNode rawJson = TreeUtil.json.convertValue(this, JsonNode.class);
+        if (rawJson instanceof ObjectNode) {
+          ObjectNode obj = (ObjectNode) rawJson;
+          obj.set("components", context.getBaseDocument().get("components"));
         }
-
-        @Override
-        public String visitItemsSchema(@NotNull ItemsSchema schema) {
-          return "array";
-        }
-
-        @Nullable
-        @Override
-        public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
-          return "object";
-        }
-
-        @Nullable
-        @Override
-        public String accumulate(@NotNull com.github.erosb.jsonsKema.Schema parent, @Nullable String previous,
-                                 @Nullable String current) {
-          return previous == null ? current : previous;
-        }
-      });
-      return result;
-    } else {
-      System.err.println("skema is null");
-    }
-
-    // Ensure we're not in a $ref schema
-    final Schema schema = getFlatSchema(context);
-    assert schema != null;
-
-    if (schema.type != null) {
-      return schema.type;
-    }
-
-    // Deduce type from other properties
-    if (schema.getProperties() != null) {
-      return OAI3SchemaKeywords.TYPE_OBJECT;
-    } else if (schema.getItemsSchema() != null) {
-      return OAI3SchemaKeywords.TYPE_ARRAY;
-    } else if (schema.getFormat() != null) {
-      // Deduce type from format
-      switch (schema.getFormat()) {
-        case OAI3SchemaKeywords.FORMAT_INT32:
-        case OAI3SchemaKeywords.FORMAT_INT64:
-          return OAI3SchemaKeywords.TYPE_INTEGER;
-        case OAI3SchemaKeywords.FORMAT_FLOAT:
-        case OAI3SchemaKeywords.FORMAT_DOUBLE:
-          return OAI3SchemaKeywords.TYPE_NUMBER;
-        default:
-          return OAI3SchemaKeywords.TYPE_STRING;
+        skema = new SchemaLoader(
+          rawJson.toPrettyString(),
+          context.getBaseUrl().toURI()
+        ).load();
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
       }
     }
-
-    return null;
+    return skema;
   }
 
   @JsonIgnore
   public Schema getFlatSchema(OAIContext context) {
+    getSkema(context);
     return this;
   }
 
@@ -473,6 +493,19 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
 
   // Property
   public Map<String, Schema> getProperties() {
+    if (skema != null) {
+      return skema.accept(new SchemaVisitor<Map<String, Schema>>() {
+        @Override
+        public Map<String, Schema> visitCompositeSchema(@NotNull CompositeSchema schema) {
+          Map<String, Schema> rval = new HashMap<>(schema.getPropertySchemas().size());
+          for (Map.Entry<String, com.github.erosb.jsonsKema.Schema> entry : schema.getPropertySchemas().entrySet()) {
+            Schema mapped = new Schema(entry.getValue());
+            rval.put(entry.getKey(), mapped);
+          }
+          return rval.isEmpty() ? super.visitCompositeSchema(schema) : rval;
+        }
+      });
+    }
     return properties;
   }
 
@@ -482,7 +515,12 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
   }
 
   public boolean hasProperty(String name) {
-    return mapHas(properties, name);
+    return mapHas(properties, name) || skema.accept(new SchemaVisitor<Boolean>() {
+      @Override
+      public Boolean visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
+        return property.equals(name) ? true : null;
+      }
+    }) == Boolean.TRUE;
   }
 
   public Schema getProperty(String name) {
@@ -514,7 +552,8 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
   }
 
   @JsonProperty(value = OAI3SchemaKeywords.ADDITIONALPROPERTIES, access = JsonProperty.Access.WRITE_ONLY)
-  private void setMappedAdditionalProperties(JsonNode additionalProperties) throws JsonProcessingException {
+  private void setMappedAdditionalProperties(JsonNode additionalProperties)
+    throws JsonProcessingException {
     if (additionalProperties.isBoolean()) {
       setAdditionalPropertiesAllowed(additionalProperties.booleanValue());
     } else if (additionalProperties.isObject()) {
@@ -680,7 +719,7 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
 
   @Override
   public Schema copy() {
-    Schema copy = new Schema();
+    Schema copy = new Schema(skema);
 
     if (isRef()) {
       copy.setRef(getRef());

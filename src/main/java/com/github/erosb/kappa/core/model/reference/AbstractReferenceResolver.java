@@ -91,7 +91,6 @@ public abstract class AbstractReferenceResolver {
   }
 
   private void addRef(URL url, List<JsonNode> refParents, String refValue) {
-    System.out.println("addRef called with refValue=" + refValue + " , url=" + url);
     // Add the reference to the registry
     Reference reference = referenceRegistry.addRef(url, refValue);
 

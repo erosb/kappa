@@ -38,21 +38,7 @@ public class FormStyleConverter {
     }
 
     JsonNode result;
-
-    try {
-      JsonNode rawJson = TreeUtil.json.convertValue(param.getSchema(), JsonNode.class);
-      if (rawJson instanceof ObjectNode) {
-        ObjectNode obj = (ObjectNode) rawJson;
-        obj.set("components", context.getBaseDocument().get("components"));
-      }
-      param.getSchema().setSkema(new SchemaLoader(
-        rawJson.toPrettyString(),
-        context.getBaseUrl().toURI()
-      ).load());
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
-//    param.setSchema(param.getSchema().getFlatSchema(context));
+    param.setSchema(param.getSchema().getFlatSchema(context));
     String type = param.getSchema().getSupposedType(context);
     System.out.println("type = " + type);
     if (OAI3SchemaKeywords.TYPE_ARRAY.equals(type)) {
