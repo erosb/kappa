@@ -125,6 +125,7 @@ public abstract class AbstractReferenceResolver {
   }
 
   private void resolveReference(Reference ref, Set<Reference> visitedRefs) throws ResolutionException {
+    System.out.println("resolveReference() ref = " + ref.getRef());
     // Check visited references
     if (!visitedRefs.add(ref)) {
       StringBuilder stringBuilder = new StringBuilder();
@@ -155,7 +156,7 @@ public abstract class AbstractReferenceResolver {
 
       resolveReference(referenceRegistry.getRef(canonicalRefValue), visitedRefs);
     }
-
+    System.out.println("    -> valueNode = " + valueNode);
     ref.setContent(valueNode);
   }
 

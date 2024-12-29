@@ -135,4 +135,11 @@ public class OpenApiValidationFailure {
   public SourceLocation getSchemaLocation() {
     return schemaLocation;
   }
+
+  @Override
+  public String toString() {
+    return "OpenApiValidationFailure{" +
+      "message='" + message + '\'' +
+      '}';
+  }
 }
