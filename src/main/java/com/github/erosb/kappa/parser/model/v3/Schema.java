@@ -372,12 +372,6 @@ public class Schema
     return skema;
   }
 
-  @JsonIgnore
-  public Schema getFlatSchema(OAIContext context) {
-    getSkema(context);
-    return this;
-  }
-
   public Schema setType(String type) {
     this.type = type;
     return this;

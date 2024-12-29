@@ -27,8 +27,6 @@ abstract class FlatStyleConverter implements StyleConverter {
 
     Map<String, Object> values = new HashMap<>();
 
-    param.setSchema(param.getSchema().getFlatSchema(context));
-    System.out.println("param.getSchema().getSupposedType(context) = " + param.getSchema().getSupposedType(context));
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(param.getSchema().getSupposedType(context))) {
       System.out.println("object");
       if (param.isExplode()) {

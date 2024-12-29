@@ -48,7 +48,7 @@ public final class TypeConverter {
 
       Object value = content.get(entryKey);
 
-      Schema flatSchema = entry.getValue().getFlatSchema(context);
+      Schema flatSchema = entry.getValue();
       switch (flatSchema.getSupposedType(context)) {
         case OAI3SchemaKeywords.TYPE_OBJECT:
           convertedContent.set(entryKey, convertObject(context, flatSchema, castMap(value)));
@@ -77,22 +77,20 @@ public final class TypeConverter {
 
     ArrayNode convertedContent = JsonNodeFactory.instance.arrayNode();
 
-    Schema flatSchema = schema.getFlatSchema(context);
-    System.out.println("supposed type in convertArray(): " + flatSchema.getSupposedType(context));
-    switch (flatSchema.getSupposedType(context)) {
+    switch (schema.getSupposedType(context)) {
       case OAI3SchemaKeywords.TYPE_OBJECT:
         for (Object value : content) {
-          convertedContent.add(convertObject(context, flatSchema, castMap(value)));
+          convertedContent.add(convertObject(context, schema, castMap(value)));
         }
         break;
       case OAI3SchemaKeywords.TYPE_ARRAY:
         for (Object value : content) {
-          convertedContent.add(convertArray(context, flatSchema.getItemsSchema(), castList(value)));
+          convertedContent.add(convertArray(context, schema.getItemsSchema(), castList(value)));
         }
         break;
       default:
         for (Object value : content) {
-          convertedContent.add(convertPrimitive(context, flatSchema, value));
+          convertedContent.add(convertPrimitive(context, schema, value));
         }
         break;
     }
@@ -113,22 +111,21 @@ public final class TypeConverter {
     }
 
     try {
-      Schema flatSchema = schema.getFlatSchema(context);
-      switch (flatSchema.getSupposedType(context)) {
+      switch (schema.getSupposedType(context)) {
         case OAI3SchemaKeywords.TYPE_BOOLEAN:
           return JsonNodeFactory.instance.booleanNode(parseBoolean(value.toString()));
         case OAI3SchemaKeywords.TYPE_INTEGER:
-          if (OAI3SchemaKeywords.FORMAT_INT32.equals(flatSchema.getFormat())) {
+          if (OAI3SchemaKeywords.FORMAT_INT32.equals(schema.getFormat())) {
             return JsonNodeFactory.instance.numberNode(Integer.parseInt(value.toString()));
-          } else if (OAI3SchemaKeywords.FORMAT_INT64.equals(flatSchema.getFormat())) {
+          } else if (OAI3SchemaKeywords.FORMAT_INT64.equals(schema.getFormat())) {
             return JsonNodeFactory.instance.numberNode(Long.parseLong(value.toString()));
           } else {
             return JsonNodeFactory.instance.numberNode(new BigInteger(value.toString()));
           }
         case OAI3SchemaKeywords.TYPE_NUMBER:
-          if (OAI3SchemaKeywords.FORMAT_FLOAT.equals(flatSchema.getFormat())) {
+          if (OAI3SchemaKeywords.FORMAT_FLOAT.equals(schema.getFormat())) {
             return JsonNodeFactory.instance.numberNode(Float.parseFloat(value.toString()));
-          } else if (OAI3SchemaKeywords.FORMAT_DOUBLE.equals(flatSchema.getFormat())) {
+          } else if (OAI3SchemaKeywords.FORMAT_DOUBLE.equals(schema.getFormat())) {
             return JsonNodeFactory.instance.numberNode(Double.parseDouble(value.toString()));
           } else {
             return JsonNodeFactory.instance.numberNode(new BigDecimal(value.toString()));

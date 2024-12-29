@@ -38,9 +38,7 @@ public class FormStyleConverter {
     }
 
     JsonNode result;
-    param.setSchema(param.getSchema().getFlatSchema(context));
     String type = param.getSchema().getSupposedType(context);
-    System.out.println("type = " + type);
     if (OAI3SchemaKeywords.TYPE_ARRAY.equals(type)) {
       result = getArrayValues(context, param, paramPairs.get(paramName));
       visitedParams.add(paramName);
@@ -50,12 +48,10 @@ public class FormStyleConverter {
       result = getPrimitiveValue(context, param, paramPairs.get(paramName));
       visitedParams.add(paramName);
     }
-    System.out.println("result = " + result);
     return result;
   }
 
   private JsonNode getArrayValues(OAIContext context, AbsParameter<?> param, Collection<String> paramValues) {
-    System.out.println("paramValues = " + paramValues);
     if (paramValues == null) {
       return null;
     }
@@ -68,8 +64,6 @@ public class FormStyleConverter {
         values.addAll(StringUtil.tokenize(paramValue, ",", false, false));
       }
     }
-    System.out.println("values = " + values);
-    System.out.println("param.getSchema().getItemsSchema() = " + param.getSchema().getItemsSchema());
     return TypeConverter.instance().convertArray(context, param.getSchema().getItemsSchema(), values);
   }
 
