@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.erosb.jsonsKema.CompositeSchema;
+import com.github.erosb.jsonsKema.ItemsSchema;
 import com.github.erosb.jsonsKema.SchemaVisitor;
 import com.github.erosb.jsonsKema.TypeSchema;
 import com.github.erosb.kappa.core.exception.DecodeException;
@@ -299,6 +300,24 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
         public String visitTypeSchema(@NotNull TypeSchema schema) {
           return schema.getType().getValue();
         }
+
+        @Override
+        public String visitItemsSchema(@NotNull ItemsSchema schema) {
+          return "array";
+        }
+
+        @Nullable
+        @Override
+        public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
+          return "object";
+        }
+
+        @Nullable
+        @Override
+        public String accumulate(@NotNull com.github.erosb.jsonsKema.Schema parent, @Nullable String previous,
+                                 @Nullable String current) {
+          return previous == null ? current : previous;
+        }
       });
       return result;
     } else {
@@ -337,17 +356,7 @@ public class Schema extends AbsExtendedRefOpenApiSchema<Schema> {
 
   @JsonIgnore
   public Schema getFlatSchema(OAIContext context) {
-    if (!isRef() || context == null) {
-      return this;
-    }
-
-    try {
-      return getReference(context).getMappedContent(Schema.class);
-    } catch (DecodeException ex) {
-      // Will never happen
-    }
-
-    return null;
+    return this;
   }
 
   public Schema setType(String type) {

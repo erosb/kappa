@@ -1,6 +1,8 @@
 package com.github.erosb.kappa.operation.validator.util.convert.style;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
@@ -25,14 +27,20 @@ abstract class FlatStyleConverter implements StyleConverter {
 
     Map<String, Object> values = new HashMap<>();
 
-      try {
-          param.getSchema().setSkema(new SchemaLoader(
-            TreeUtil.json.writeValueAsString(param.getSchema()),
-            context.getBaseUrl().toURI()
-          ).load());
-      } catch (JsonProcessingException | URISyntaxException e) {
-          throw new RuntimeException(e);
+    try {
+      JsonNode rawJson = TreeUtil.json.convertValue(param.getSchema(), JsonNode.class);
+      if (rawJson instanceof ObjectNode) {
+        ObjectNode obj = (ObjectNode) rawJson;
+        obj.set("components", context.getBaseDocument().get("components"));
       }
+      System.out.println("FormStyleConverter load: " + rawJson.toPrettyString());
+      param.getSchema().setSkema(new SchemaLoader(
+        rawJson.toPrettyString(),
+        context.getBaseUrl().toURI()
+      ).load());
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
       //    param.setSchema(param.getSchema().getFlatSchema(context));
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(param.getSchema().getSupposedType(context))) {
       if (param.isExplode()) {

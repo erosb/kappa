@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
+import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.Schema;
 
 import java.math.BigDecimal;
@@ -67,7 +68,6 @@ public final class TypeConverter {
   public JsonNode convertArray(final OAIContext context,
                                final Schema schema,
                                final Collection<Object> content) {
-
     if (schema == null || content == null) {
       return JsonNodeFactory.instance.nullNode();
     }

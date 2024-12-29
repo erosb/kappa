@@ -20,6 +20,8 @@ abstract class ParamChecker {
   }
 
   static void checkArray(Map<String, JsonNode> nodes, String propName) {
+    System.out.println("nodes = " + nodes);
+    System.out.println("propName = " + propName);
     assertEquals(1, nodes.size());
     assertEquals(3, nodes.get(propName).size());
     assertEquals(3, nodes.get(propName).get(0).intValue());

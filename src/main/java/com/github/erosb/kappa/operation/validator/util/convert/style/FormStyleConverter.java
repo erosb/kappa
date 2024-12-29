@@ -1,16 +1,20 @@
 package com.github.erosb.kappa.operation.validator.util.convert.style;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.MultiStringMap;
 import com.github.erosb.kappa.core.util.StringUtil;
+import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.Schema;
 import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
 
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class FormStyleConverter {
@@ -35,8 +39,22 @@ public class FormStyleConverter {
 
     JsonNode result;
 
+    try {
+      JsonNode rawJson = TreeUtil.json.convertValue(param.getSchema(), JsonNode.class);
+      if (rawJson instanceof ObjectNode) {
+        ObjectNode obj = (ObjectNode) rawJson;
+        obj.set("components", context.getBaseDocument().get("components"));
+      }
+      param.getSchema().setSkema(new SchemaLoader(
+        rawJson.toPrettyString(),
+        context.getBaseUrl().toURI()
+      ).load());
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
 //    param.setSchema(param.getSchema().getFlatSchema(context));
     String type = param.getSchema().getSupposedType(context);
+    System.out.println("type = " + type);
     if (OAI3SchemaKeywords.TYPE_ARRAY.equals(type)) {
       result = getArrayValues(context, param, paramPairs.get(paramName));
       visitedParams.add(paramName);
@@ -46,11 +64,12 @@ public class FormStyleConverter {
       result = getPrimitiveValue(context, param, paramPairs.get(paramName));
       visitedParams.add(paramName);
     }
-
+    System.out.println("result = " + result);
     return result;
   }
 
   private JsonNode getArrayValues(OAIContext context, AbsParameter<?> param, Collection<String> paramValues) {
+    System.out.println("paramValues = " + paramValues);
     if (paramValues == null) {
       return null;
     }
@@ -63,7 +82,8 @@ public class FormStyleConverter {
         values.addAll(StringUtil.tokenize(paramValue, ",", false, false));
       }
     }
-
+    System.out.println("values = " + values);
+    System.out.println("param.getSchema().getItemsSchema() = " + param.getSchema().getItemsSchema());
     return TypeConverter.instance().convertArray(context, param.getSchema().getItemsSchema(), values);
   }
 
@@ -94,7 +114,7 @@ public class FormStyleConverter {
       }
     }
 
-    return result.size() != 0 ? result : null;
+    return !result.isEmpty() ? result : null;
   }
 
   private JsonNode getNotExplodedObjectValues(OAIContext context, AbsParameter<?> param, String paramName, MultiStringMap<String> values, List<String> visitedParams) {
