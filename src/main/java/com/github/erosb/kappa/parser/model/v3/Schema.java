@@ -320,13 +320,6 @@ public class Schema
       public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
         return "object";
       }
-
-      @Nullable
-      @Override
-      public String accumulate(@NotNull com.github.erosb.jsonsKema.Schema parent, @Nullable String previous,
-                               @Nullable String current) {
-        return previous == null ? current : previous;
-      }
     });
     return result;
 
@@ -364,14 +357,14 @@ public class Schema
     if (skema == null) {
       try {
         JsonNode rawJson = TreeUtil.json.convertValue(this, JsonNode.class);
-        if (rawJson instanceof ObjectNode) {
+        if (context != null && rawJson instanceof ObjectNode) {
           ObjectNode obj = (ObjectNode) rawJson;
           obj.set("components", context.getBaseDocument().get("components"));
         }
-        skema = new SchemaLoader(
-          rawJson.toPrettyString(),
-          context.getBaseUrl().toURI()
-        ).load();
+        SchemaLoader loader = context == null
+          ? new SchemaLoader(rawJson.toPrettyString())
+          : new SchemaLoader(rawJson.toPrettyString(), context.getBaseUrl().toURI());
+        skema = loader.load();
       } catch (URISyntaxException e) {
         throw new RuntimeException(e);
       }
