@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.CompositeSchema;
+import com.github.erosb.jsonsKema.FormatSchema;
 import com.github.erosb.jsonsKema.ItemsSchema;
 import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.jsonsKema.SchemaVisitor;
@@ -320,6 +321,13 @@ public class Schema
       public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
         return "object";
       }
+
+      @Override
+      public String visitFormatSchema(@NotNull FormatSchema schema) {
+        return schema.getFormat();
+      }
+
+
     });
     return result;
 
@@ -374,6 +382,7 @@ public class Schema
 
   public Schema setType(String type) {
     this.type = type;
+    skema = null;
     return this;
   }
 
