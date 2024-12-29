@@ -316,10 +316,16 @@ public class Schema
         return "array";
       }
 
-      @Nullable
       @Override
       public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
         return "object";
+      }
+
+      @Nullable
+      @Override
+      public String accumulate(@NotNull com.github.erosb.jsonsKema.Schema parent, @Nullable String previous,
+                               @Nullable String current) {
+        return previous == null ? current : previous;
       }
     });
     return result;
@@ -483,6 +489,14 @@ public class Schema
 
   // ItemsSchema
   public Schema getItemsSchema() {
+    if (skema != null) {
+      return skema.accept(new SchemaVisitor<Schema>() {
+        @Override
+        public Schema visitItemsSchema(@NotNull ItemsSchema schema) {
+          return new Schema(schema.getItemsSchema());
+        }
+      });
+    }
     return itemsSchema;
   }
 

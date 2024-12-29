@@ -78,6 +78,7 @@ public final class TypeConverter {
     ArrayNode convertedContent = JsonNodeFactory.instance.arrayNode();
 
     Schema flatSchema = schema.getFlatSchema(context);
+    System.out.println("supposed type in convertArray(): " + flatSchema.getSupposedType(context));
     switch (flatSchema.getSupposedType(context)) {
       case OAI3SchemaKeywords.TYPE_OBJECT:
         for (Object value : content) {
