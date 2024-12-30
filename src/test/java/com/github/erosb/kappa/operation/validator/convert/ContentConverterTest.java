@@ -71,7 +71,7 @@ public class ContentConverterTest {
       MediaType mediaType = new MediaType()
         .setSchema(api.getComponents().getSchemas().get(schemaModelName.textValue()))
         .setEncodings(TreeUtil.json.convertValue(encodings, new TypeReference<Map<String, EncodingProperty>>() {}));
-
+      System.out.println("check " + index);
       check(
         mediaType,
         contentType.textValue(),
@@ -84,6 +84,7 @@ public class ContentConverterTest {
   private void check(MediaType mediaType, String contentType, String input, String expected, String description) throws Exception {
     // With string
     JsonNode actual = ContentConverter.convert(api.getContext(), mediaType, contentType, null, input);
+    System.out.println(actual.toString());
     JSONAssert.assertEquals(
       String.format("JSON matching test failed on test '%s'", description),
       expected,

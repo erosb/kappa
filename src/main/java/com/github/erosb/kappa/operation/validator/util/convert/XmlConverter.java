@@ -1,5 +1,6 @@
 package com.github.erosb.kappa.operation.validator.util.convert;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -48,6 +49,7 @@ class XmlConverter {
   }
 
   private JsonNode convert(OAIContext context, final Schema schema, final JSONObject xml) {
+    System.out.println(xml);
     if (xml.isEmpty()) {
       return JsonNodeFactory.instance.nullNode();
     }
@@ -58,10 +60,16 @@ class XmlConverter {
     } catch (IOException e) {
       return JsonNodeFactory.instance.nullNode();
     }
-
-    // Specific case of xml2json mapping : Unwrap first key to match JSON content
+      try {
+          System.out.println(TreeUtil.json.writeValueAsString(schema));
+      } catch (JsonProcessingException e) {
+          throw new RuntimeException(e);
+      }
+      // Specific case of xml2json mapping : Unwrap first key to match JSON content
+    System.out.println("schema.getSupposedType(context) = " + schema.getSupposedType(context));
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(schema.getSupposedType(context))) {
       content = content.fields().next().getValue();
+      System.out.println("content = " + content);
     }
 
     return processNode(context, schema, content);

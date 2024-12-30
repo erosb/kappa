@@ -15,9 +15,18 @@ import com.github.erosb.kappa.core.util.TreeUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 public class SKemaBackedJsonValidator
   implements JsonValidator {
+
+  private static URI toURI(URL url) {
+      try {
+          return url.toURI();
+      } catch (URISyntaxException e) {
+          throw new RuntimeException(e);
+      }
+  }
 
   static URI rewriteProbableJarUrl(URI uri)
     throws URISyntaxException {
@@ -32,6 +41,10 @@ public class SKemaBackedJsonValidator
   private final Schema schema;
 
   public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context) {
+    this(schema, context, toURI(context.getContext().getBaseUrl()));
+  }
+
+  public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context, URI baseURI) {
     JsonNode rawJson = TreeUtil.json.convertValue(schema, JsonNode.class);
     System.out.println("body schema copy: " + rawJson);
     if (rawJson instanceof ObjectNode) {
@@ -41,7 +54,7 @@ public class SKemaBackedJsonValidator
     try {
       this.schema = new SchemaLoader(new JsonParser(
         rawJson.toPrettyString(),
-        rewriteProbableJarUrl(context.getContext().getBaseUrl().toURI())
+        rewriteProbableJarUrl(baseURI)
       ).parse()).load();
       schema.setSkema(this.schema);
     } catch (URISyntaxException e) {
