@@ -1,21 +1,21 @@
 package com.github.erosb.kappa.operation.validator.util.convert.style;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.MultiStringMap;
 import com.github.erosb.kappa.core.util.StringUtil;
-import com.github.erosb.kappa.core.util.TreeUtil;
+import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.Schema;
-import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
 
-import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class FormStyleConverter {
   private static final FormStyleConverter INSTANCE = new FormStyleConverter();
@@ -94,7 +94,7 @@ public class FormStyleConverter {
       }
     }
 
-    return !result.isEmpty() ? result : null;
+    return result.isEmpty() ? null : result;
   }
 
   private JsonNode getNotExplodedObjectValues(OAIContext context, AbsParameter<?> param, String paramName, MultiStringMap<String> values, List<String> visitedParams) {

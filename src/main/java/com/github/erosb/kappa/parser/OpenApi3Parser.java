@@ -1,6 +1,5 @@
 package com.github.erosb.kappa.parser;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.erosb.kappa.core.exception.ResolutionException;
 import com.github.erosb.kappa.core.model.AuthOption;
 import com.github.erosb.kappa.core.model.v3.OAI3Context;
@@ -31,11 +30,10 @@ public class OpenApi3Parser extends OpenApiParser<OpenApi3> {
 
     try {
       OAI3Context context = new OAI3Context(url, authOptions);
-      JsonNode baseDocument = context.getBaseDocument();
-      api = TreeUtil.json.convertValue(baseDocument, OpenApi3.class);
+      api = TreeUtil.json.convertValue(context.getBaseDocument(), OpenApi3.class);
       api.setContext(context);
     } catch (IllegalArgumentException e) {
-      throw new ResolutionException(String.format(INVALID_SPEC, url.toString()), e);
+      throw new ResolutionException(String.format(INVALID_SPEC, url), e);
     }
 
     return api;

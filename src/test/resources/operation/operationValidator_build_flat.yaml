@@ -11,12 +11,6 @@ paths:
       - $ref: '#/components/parameters/paramWithSchema'
       - $ref: '#/components/parameters/paramWithContent'
       requestBody:
-#        description: request
-#        required: true
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/schema'
         $ref: '#/components/requestBodies/requestBody'
       responses:
         '200':

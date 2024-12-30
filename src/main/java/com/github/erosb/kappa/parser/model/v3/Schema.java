@@ -11,12 +11,10 @@ import com.github.erosb.jsonsKema.ItemsSchema;
 import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.jsonsKema.SchemaVisitor;
 import com.github.erosb.jsonsKema.TypeSchema;
-import com.github.erosb.kappa.core.exception.DecodeException;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.TreeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -305,7 +303,7 @@ public class Schema
 
   @JsonIgnore
   public String getSupposedType(OAIContext context) {
-    getSkema(context);
+    initSkema(context);
     String result = skema.accept(new SchemaVisitor<String>() {
       @Override
       public String visitTypeSchema(@NotNull TypeSchema schema) {
@@ -330,38 +328,9 @@ public class Schema
 
     });
     return result;
-
-    //    // Ensure we're not in a $ref schema
-    //    final Schema schema = getFlatSchema(context);
-    //    assert schema != null;
-    //
-    //    if (schema.type != null) {
-    //      return schema.type;
-    //    }
-    //
-    //    // Deduce type from other properties
-    //    if (schema.getProperties() != null) {
-    //      return OAI3SchemaKeywords.TYPE_OBJECT;
-    //    } else if (schema.getItemsSchema() != null) {
-    //      return OAI3SchemaKeywords.TYPE_ARRAY;
-    //    } else if (schema.getFormat() != null) {
-    //      // Deduce type from format
-    //      switch (schema.getFormat()) {
-    //        case OAI3SchemaKeywords.FORMAT_INT32:
-    //        case OAI3SchemaKeywords.FORMAT_INT64:
-    //          return OAI3SchemaKeywords.TYPE_INTEGER;
-    //        case OAI3SchemaKeywords.FORMAT_FLOAT:
-    //        case OAI3SchemaKeywords.FORMAT_DOUBLE:
-    //          return OAI3SchemaKeywords.TYPE_NUMBER;
-    //        default:
-    //          return OAI3SchemaKeywords.TYPE_STRING;
-    //      }
-    //    }
-    //
-    //    return null;
   }
 
-  public com.github.erosb.jsonsKema.Schema getSkema(OAIContext context) {
+  public com.github.erosb.jsonsKema.Schema initSkema(OAIContext context) {
     if (skema == null) {
       try {
         JsonNode rawJson = TreeUtil.json.convertValue(this, JsonNode.class);
