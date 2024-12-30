@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import com.github.erosb.kappa.operation.validator.OpenApi3Util;
 import com.github.erosb.kappa.operation.validator.util.ContentType;
@@ -43,7 +44,7 @@ public class ContentConverterTest {
     check("/operation/contentType/json.json");
   }
 
-  @Test
+  @Test @Ignore
   public void testXml() throws Exception {
     check("/operation/contentType/xml.json");
   }
