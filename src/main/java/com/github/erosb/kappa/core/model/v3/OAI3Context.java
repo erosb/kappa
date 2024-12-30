@@ -107,7 +107,6 @@ public class OAI3Context implements OAIContext {
     mappingResolver.resolve();
     referenceRegistry.mergeRefs(mappingRefsRegistry);
 
-    System.out.println("---links refs start----");
     // Links JSON references
     ReferenceRegistry operationRefsRegistry = new ReferenceRegistry(baseUrl);
     ReferenceResolver operationResolver = new ReferenceResolver(baseUrl, authOptions, baseDocument, OPERATION_REF, operationRefsRegistry);

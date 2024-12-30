@@ -314,9 +314,6 @@ public class OperationValidator {
         break;
       }
     }
-    System.out.println("contentType = " + contentType);
-    System.out.println("validator = " + validator);
-    System.out.println("validators = " + validators);
     if (validator == null) {
       validation.add(OpenApiValidationFailure.wrongContentType(rawContentType));
       return;
@@ -362,8 +359,6 @@ public class OperationValidator {
     if (operation.getRequestBody() == null) {
       return null;
     }
-    System.out.println(
-      "operation.getRequestBody().getContentMediaTypes() = " + operation.getRequestBody().getContentMediaTypes());
     return createBodyValidators(operation.getRequestBody().getContentMediaTypes(), URIFactory.forRequest());
   }
 
@@ -388,13 +383,10 @@ public class OperationValidator {
 
   private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes, URIFactory uriFactory) {
     final Map<MediaTypeContainer, BodyValidator> validators = new HashMap<>();
-    System.out.println("createBodyValidators()");
     if (mediaTypes == null) {
-      System.out.println(" > null");
       validators.put(MediaTypeContainer.create(null), new BodyValidator(context, null, uriFactory));
     } else {
       for (Map.Entry<String, MediaType> entry : mediaTypes.entrySet()) {
-        System.out.println(" > " + entry.getKey());
         validators.put(MediaTypeContainer.create(entry.getKey()), new BodyValidator(context, entry.getValue(), uriFactory));
       }
     }
@@ -512,7 +504,6 @@ public class OperationValidator {
         if (flatResponse.getHeaders() != null) {
           for (Map.Entry<String, Header> entryHeader : flatResponse.getHeaders().entrySet()) {
             Header flatHeader = getFlatModel(entryHeader.getValue(), Header.class);
-//            flatHeader.setSchema(getFlatSchema(flatHeader.getSchema()));
             flatResponse.setHeader(entryHeader.getKey(), flatHeader);
 
             getFlatMediaTypes(entryHeader.getValue().getContentMediaTypes());
@@ -569,8 +560,6 @@ public class OperationValidator {
       for (Map.Entry<String, MediaType> entry : mediaTypes.entrySet()) {
         MediaType mediaType = entry.getValue();
         if (mediaType.getSchema() != null) {
-//          mediaType.setSchema(
-//            getFlatModel(mediaType.getSchema(), Schema.class));
         }
       }
     }

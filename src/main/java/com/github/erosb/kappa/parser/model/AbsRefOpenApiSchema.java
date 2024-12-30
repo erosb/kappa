@@ -40,7 +40,6 @@ public abstract class AbsRefOpenApiSchema<M extends OpenApiSchema<M>> extends Ab
   }
 
   public Reference getReference(OAIContext context) {
-    System.out.println("getRef: " + (canonicalRef != null ? canonicalRef : ref));
     return context.getReferenceRegistry().getRef(canonicalRef != null ? canonicalRef : ref);
   }
 

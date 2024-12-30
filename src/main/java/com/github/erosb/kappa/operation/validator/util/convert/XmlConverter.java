@@ -49,7 +49,6 @@ class XmlConverter {
   }
 
   private JsonNode convert(OAIContext context, final Schema schema, final JSONObject xml) {
-    System.out.println(xml);
     if (xml.isEmpty()) {
       return JsonNodeFactory.instance.nullNode();
     }
@@ -60,16 +59,9 @@ class XmlConverter {
     } catch (IOException e) {
       return JsonNodeFactory.instance.nullNode();
     }
-      try {
-          System.out.println(TreeUtil.json.writeValueAsString(schema));
-      } catch (JsonProcessingException e) {
-          throw new RuntimeException(e);
-      }
-      // Specific case of xml2json mapping : Unwrap first key to match JSON content
-    System.out.println("schema.getSupposedType(context) = " + schema.getSupposedType(context));
+    // Specific case of xml2json mapping : Unwrap first key to match JSON content
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(schema.getSupposedType(context))) {
       content = content.fields().next().getValue();
-      System.out.println("content = " + content);
     }
 
     return processNode(context, schema, content);

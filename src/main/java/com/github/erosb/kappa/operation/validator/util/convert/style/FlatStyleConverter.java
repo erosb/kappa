@@ -28,7 +28,6 @@ abstract class FlatStyleConverter implements StyleConverter {
     Map<String, Object> values = new HashMap<>();
 
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(param.getSchema().getSupposedType(context))) {
-      System.out.println("object");
       if (param.isExplode()) {
         handleExplodedObject(param, splitPattern, rawValue, values);
       } else {
@@ -44,7 +43,6 @@ abstract class FlatStyleConverter implements StyleConverter {
   }
 
   private void handleExplodedObject(AbsParameter<?> param, String splitPattern, String rawValue, Map<String, Object> values) {
-    System.out.println("exploded");
     Scanner scanner = new Scanner(rawValue);
     scanner.useDelimiter(splitPattern);
     while (scanner.hasNext()) {

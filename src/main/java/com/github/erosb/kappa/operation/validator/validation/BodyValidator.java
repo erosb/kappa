@@ -53,7 +53,6 @@ class BodyValidator {
 
   private SKemaBackedJsonValidator initValidator() {
     if (mediaType == null || mediaType.getSchema() == null) {
-      System.out.println("BodyValidator#initValidator() RET NULL " + mediaType);
       return null;
     }
 

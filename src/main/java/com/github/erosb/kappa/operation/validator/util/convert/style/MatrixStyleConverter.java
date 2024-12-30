@@ -40,7 +40,6 @@ public class MatrixStyleConverter extends FlatStyleConverter {
 
   private Map<String, Object> getValues(OAIContext context, AbsParameter<?> param, String paramName, String rawValue, String splitPattern) {
     String type = param.getSchema().getSupposedType(context);
-    System.out.println("type = " + type);
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(type)) {
       return getObjectValues(context, param, paramName, rawValue, splitPattern);
     } else {
@@ -75,7 +74,6 @@ public class MatrixStyleConverter extends FlatStyleConverter {
       while (matcher.find()) {
         values.put(matcher.group(1), matcher.group(2));
       }
-      System.out.println("values = " + values);
       return values;
     } else {
       return (matcher.find())

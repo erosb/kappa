@@ -21,7 +21,6 @@ public class SimpleStyleConverter extends FlatStyleConverter {
   public JsonNode convert(OAIContext context, AbsParameter<?> param, String paramName, String rawValue) {
     final Map<String, Object> paramValues;
     paramValues = getParameterValues(context, param, paramName, rawValue, ",");
-    System.out.println("paramValues = " + paramValues);
     return convert(context, param, paramName, paramValues);
   }
 }

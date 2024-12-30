@@ -31,7 +31,6 @@ public final class ContentConverter {
     if (ContentType.isJson(contentType)) {
       return is != null ? jsonToNode(is) : jsonToNode(str);
     } else if (ContentType.isXml(contentType)) {
-      System.out.println("yes it is xml " + is);
       return is != null
         ? xmlToNode(context, mediaType.getSchema(), is)
         : xmlToNode(context, mediaType.getSchema(), str);

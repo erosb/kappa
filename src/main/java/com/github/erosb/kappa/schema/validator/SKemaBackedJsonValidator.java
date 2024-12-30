@@ -46,7 +46,6 @@ public class SKemaBackedJsonValidator
 
   public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context, URI baseURI) {
     JsonNode rawJson = TreeUtil.json.convertValue(schema, JsonNode.class);
-    System.out.println("body schema copy: " + rawJson);
     if (rawJson instanceof ObjectNode) {
       ObjectNode obj = (ObjectNode) rawJson;
       obj.set("components", context.getContext().getBaseDocument().get("components"));
@@ -62,22 +61,7 @@ public class SKemaBackedJsonValidator
     }
   }
 
-  public SKemaBackedJsonValidator(JsonNode rawJson, URI documentSource) {
-    String schemaJsonString = rawJson.toPrettyString();
-    System.out.println("construct SKemaBackedJsonValidator()");
-      try {
-          schema = new SchemaLoader(new JsonParser(
-            schemaJsonString,
-            rewriteProbableJarUrl(documentSource)
-          ).parse()).load();
-        System.out.println("schema = " + schema);
-      } catch (URISyntaxException e) {
-          throw new RuntimeException(e);
-      }
-  }
-
   public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
-    System.out.println("validating ");
     ValidationFailure failure = Validator.create(schema, new ValidatorConfig(FormatValidationPolicy.ALWAYS)).validate(jsonValue);
     if (failure != null) {
       validation.add(failure);

@@ -32,7 +32,6 @@ public class OpenApi3Parser extends OpenApiParser<OpenApi3> {
     try {
       OAI3Context context = new OAI3Context(url, authOptions);
       JsonNode baseDocument = context.getBaseDocument();
-      System.out.println("baseDocument = " + baseDocument);
       api = TreeUtil.json.convertValue(baseDocument, OpenApi3.class);
       api.setContext(context);
     } catch (IllegalArgumentException e) {
