@@ -7,11 +7,15 @@ import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.MultiStringMap;
 import com.github.erosb.kappa.core.util.StringUtil;
+import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.Schema;
-import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class FormStyleConverter {
   private static final FormStyleConverter INSTANCE = new FormStyleConverter();
@@ -34,8 +38,6 @@ public class FormStyleConverter {
     }
 
     JsonNode result;
-
-    param.setSchema(param.getSchema().getFlatSchema(context));
     String type = param.getSchema().getSupposedType(context);
     if (OAI3SchemaKeywords.TYPE_ARRAY.equals(type)) {
       result = getArrayValues(context, param, paramPairs.get(paramName));
@@ -46,7 +48,6 @@ public class FormStyleConverter {
       result = getPrimitiveValue(context, param, paramPairs.get(paramName));
       visitedParams.add(paramName);
     }
-
     return result;
   }
 
@@ -63,7 +64,6 @@ public class FormStyleConverter {
         values.addAll(StringUtil.tokenize(paramValue, ",", false, false));
       }
     }
-
     return TypeConverter.instance().convertArray(context, param.getSchema().getItemsSchema(), values);
   }
 
@@ -94,7 +94,7 @@ public class FormStyleConverter {
       }
     }
 
-    return result.size() != 0 ? result : null;
+    return result.isEmpty() ? null : result;
   }
 
   private JsonNode getNotExplodedObjectValues(OAIContext context, AbsParameter<?> param, String paramName, MultiStringMap<String> values, List<String> visitedParams) {

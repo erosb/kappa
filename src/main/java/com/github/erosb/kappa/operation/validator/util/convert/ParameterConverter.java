@@ -115,7 +115,6 @@ public final class ParameterConverter {
 
       if (param.getSchema() != null) {
         final String style = param.getStyle();
-
         if (LABEL.equals(style)) {
           convertedValue = LabelStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
         } else if (MATRIX.equals(style)) {

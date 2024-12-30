@@ -42,6 +42,6 @@ public class OAI3ContextTest {
 
     OAI3Context apiContext = new OAI3Context(specPath);
     assertEquals(specPath, apiContext.getBaseUrl());
-    assertNotNull(apiContext.getReferenceRegistry().getRef("#/components/schemas/Pet"));
+    assertNotNull(apiContext.getReferenceRegistry().getRef("#/components/requestBodies/UserArray"));
   }
 }

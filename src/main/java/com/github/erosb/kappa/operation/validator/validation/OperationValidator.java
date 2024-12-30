@@ -1,8 +1,17 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.kappa.core.exception.DecodeException;
+import com.github.erosb.kappa.core.model.v3.OAI3;
+import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.URIFactory;
+import com.github.erosb.kappa.operation.validator.model.Request;
 import com.github.erosb.kappa.operation.validator.model.Response;
+import com.github.erosb.kappa.operation.validator.model.impl.Body;
+import com.github.erosb.kappa.operation.validator.model.impl.MediaTypeContainer;
+import com.github.erosb.kappa.operation.validator.util.PathResolver;
+import com.github.erosb.kappa.operation.validator.util.convert.ParameterConverter;
+import com.github.erosb.kappa.parser.model.AbsRefOpenApiSchema;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.Callback;
 import com.github.erosb.kappa.parser.model.v3.Header;
@@ -11,21 +20,15 @@ import com.github.erosb.kappa.parser.model.v3.OpenApi3;
 import com.github.erosb.kappa.parser.model.v3.Operation;
 import com.github.erosb.kappa.parser.model.v3.Parameter;
 import com.github.erosb.kappa.parser.model.v3.Path;
-import com.github.erosb.kappa.core.exception.DecodeException;
-import com.github.erosb.kappa.core.model.v3.OAI3;
-import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
-import com.github.erosb.kappa.operation.validator.model.Request;
-import com.github.erosb.kappa.operation.validator.model.impl.Body;
-import com.github.erosb.kappa.operation.validator.model.impl.MediaTypeContainer;
-import com.github.erosb.kappa.operation.validator.util.PathResolver;
-import com.github.erosb.kappa.operation.validator.util.convert.ParameterConverter;
-import com.github.erosb.kappa.parser.model.AbsRefOpenApiSchema;
 import com.github.erosb.kappa.parser.model.v3.RequestBody;
-import com.github.erosb.kappa.parser.model.v3.Schema;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -314,7 +317,6 @@ public class OperationValidator {
         break;
       }
     }
-
     if (validator == null) {
       validation.add(OpenApiValidationFailure.wrongContentType(rawContentType));
       return;
@@ -360,7 +362,6 @@ public class OperationValidator {
     if (operation.getRequestBody() == null) {
       return null;
     }
-
     return createBodyValidators(operation.getRequestBody().getContentMediaTypes(), URIFactory.forRequest());
   }
 
@@ -385,7 +386,6 @@ public class OperationValidator {
 
   private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes, URIFactory uriFactory) {
     final Map<MediaTypeContainer, BodyValidator> validators = new HashMap<>();
-
     if (mediaTypes == null) {
       validators.put(MediaTypeContainer.create(null), new BodyValidator(context, null, uriFactory));
     } else {
@@ -415,7 +415,7 @@ public class OperationValidator {
       }
     }
 
-    return validators.size() != 0 ? validators : null;
+    return validators.isEmpty() ? null : validators;
   }
 
   private <T> T getResponseValidator(final Map<String, T> validators,
@@ -485,8 +485,6 @@ public class OperationValidator {
     if (operation.hasParameters()) {
       for (Parameter parameter : operation.getParameters()) {
         Parameter flatParam = getFlatModel(parameter, Parameter.class);
-        flatParam.setSchema(getFlatSchema(flatParam.getSchema()));
-        getFlatMediaTypes(flatParam.getContentMediaTypes());
         result.addParameter(flatParam);
       }
     }
@@ -495,7 +493,6 @@ public class OperationValidator {
     RequestBody rqBody = operation.getRequestBody();
     if (rqBody != null) {
       RequestBody flatBody = getFlatModel(rqBody, RequestBody.class);
-      getFlatMediaTypes(flatBody.getContentMediaTypes());
       result.setRequestBody(flatBody);
     }
 
@@ -507,13 +504,9 @@ public class OperationValidator {
         if (flatResponse.getHeaders() != null) {
           for (Map.Entry<String, Header> entryHeader : flatResponse.getHeaders().entrySet()) {
             Header flatHeader = getFlatModel(entryHeader.getValue(), Header.class);
-            flatHeader.setSchema(getFlatSchema(flatHeader.getSchema()));
             flatResponse.setHeader(entryHeader.getKey(), flatHeader);
-
-            getFlatMediaTypes(entryHeader.getValue().getContentMediaTypes());
           }
         }
-        getFlatMediaTypes(flatResponse.getContentMediaTypes());
         result.setResponse(entry.getKey(), flatResponse);
       }
     }
@@ -539,13 +532,6 @@ public class OperationValidator {
     return result;
   }
 
-  private Schema getFlatSchema(Schema schema) {
-    if (schema != null) {
-      return getFlatModel(schema, Schema.class);
-    }
-    return null;
-  }
-
   private <M extends AbsRefOpenApiSchema<M>> M getFlatModel(M model, Class<M> clazz) {
     try {
       if (model.isRef()) {
@@ -556,17 +542,5 @@ public class OperationValidator {
     }
 
     return model.copy();
-  }
-
-  private void getFlatMediaTypes(Map<String, MediaType> mediaTypes) {
-    if (mediaTypes != null) {
-      for (Map.Entry<String, MediaType> entry : mediaTypes.entrySet()) {
-        MediaType mediaType = entry.getValue();
-        if (mediaType.getSchema() != null) {
-          mediaType.setSchema(
-            getFlatModel(mediaType.getSchema(), Schema.class));
-        }
-      }
-    }
   }
 }

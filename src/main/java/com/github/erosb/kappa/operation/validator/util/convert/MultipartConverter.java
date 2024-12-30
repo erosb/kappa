@@ -110,17 +110,16 @@ class MultipartConverter {
     }
 
     // Cheking by default value
-    Schema flatSchema = propSchema.getFlatSchema(context);
-    switch (flatSchema.getSupposedType(context)) {
+    switch (propSchema.getSupposedType(context)) {
       case OAI3SchemaKeywords.TYPE_OBJECT:
         // for object - application/json
         return itemContentType.equals("application/json") ? 1 : 0;
       case OAI3SchemaKeywords.TYPE_ARRAY:
         // for array - defined based on the inner type
-        return checkContentType(context, flatSchema.getItemsSchema(), encProperty, item);
+        return checkContentType(context, propSchema.getItemsSchema(), encProperty, item);
       case OAI3SchemaKeywords.TYPE_STRING:
         // for string with format being binary - application/octet-stream
-        if (OAI3SchemaKeywords.FORMAT_BINARY.equals(flatSchema.getFormat())) {
+        if (OAI3SchemaKeywords.FORMAT_BINARY.equals(propSchema.getFormat())) {
           return itemContentType.equals("application/octet-stream") ? 1 : 0;
         }
       default:

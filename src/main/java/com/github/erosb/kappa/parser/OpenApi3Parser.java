@@ -33,7 +33,7 @@ public class OpenApi3Parser extends OpenApiParser<OpenApi3> {
       api = TreeUtil.json.convertValue(context.getBaseDocument(), OpenApi3.class);
       api.setContext(context);
     } catch (IllegalArgumentException e) {
-      throw new ResolutionException(String.format(INVALID_SPEC, url.toString()), e);
+      throw new ResolutionException(String.format(INVALID_SPEC, url), e);
     }
 
     return api;

@@ -32,7 +32,7 @@ public class DeepObjectStyleConverter {
                           List<String> visitedParams) {
 
     ObjectNode result = JsonNodeFactory.instance.objectNode();
-    Schema propSchema = param.getSchema().getFlatSchema(context);
+    Schema propSchema = param.getSchema();
     String type = propSchema.getSupposedType(context);
 
     for (Map.Entry<String, Collection<String>> valueEntry : paramPairs.entrySet()) {

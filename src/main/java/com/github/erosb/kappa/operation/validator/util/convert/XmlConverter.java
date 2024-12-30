@@ -1,5 +1,6 @@
 package com.github.erosb.kappa.operation.validator.util.convert;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -58,14 +59,12 @@ class XmlConverter {
     } catch (IOException e) {
       return JsonNodeFactory.instance.nullNode();
     }
-
     // Specific case of xml2json mapping : Unwrap first key to match JSON content
-    Schema flatSchema = schema.getFlatSchema(context);
-    if (OAI3SchemaKeywords.TYPE_OBJECT.equals(flatSchema.getSupposedType(context))) {
+    if (OAI3SchemaKeywords.TYPE_OBJECT.equals(schema.getSupposedType(context))) {
       content = content.fields().next().getValue();
     }
 
-    return processNode(context, flatSchema, content);
+    return processNode(context, schema, content);
   }
 
   private JsonNode processNode(OAIContext context, final Schema schema, final JsonNode node) {
@@ -74,13 +73,12 @@ class XmlConverter {
       return null;
     }
 
-    Schema flatSchema = schema.getFlatSchema(context);
-    if (OAI3SchemaKeywords.TYPE_ARRAY.equals(flatSchema.getSupposedType(context))) {
-      return parseArray(context, flatSchema, content);
-    } else if (OAI3SchemaKeywords.TYPE_OBJECT.equals(flatSchema.getSupposedType(context))) {
-      return parseObject(context, flatSchema, content);
+    if (OAI3SchemaKeywords.TYPE_ARRAY.equals(schema.getSupposedType(context))) {
+      return parseArray(context, schema, content);
+    } else if (OAI3SchemaKeywords.TYPE_OBJECT.equals(schema.getSupposedType(context))) {
+      return parseObject(context, schema, content);
     } else {
-      return TypeConverter.instance().convertPrimitive(context, flatSchema, content.asText());
+      return TypeConverter.instance().convertPrimitive(context, schema, content.asText());
     }
   }
 
@@ -121,8 +119,7 @@ class XmlConverter {
   private JsonNode unwrap(OAIContext context, final Schema schema, final JsonNode content, final String defaultKey) {
     Xml xmlConf = schema.getXml();
 
-    Schema flatSchema = schema.getFlatSchema(context);
-    if (OAI3SchemaKeywords.TYPE_ARRAY.equals(flatSchema.getSupposedType(context))) {
+    if (OAI3SchemaKeywords.TYPE_ARRAY.equals(schema.getSupposedType(context))) {
       // is array wrapped ?
       if (xmlConf != null && xmlConf.isWrapped()) {
         if (xmlConf.getName() != null) {
@@ -138,11 +135,11 @@ class XmlConverter {
       }
 
       // is unwrapped array has a renamed node ?
-      xmlConf = flatSchema.getItemsSchema().getXml();
+      xmlConf = schema.getItemsSchema().getXml();
       if (xmlConf != null) {
         return getRenamedNode(xmlConf, content, xmlConf.getName());
       }
-    } else if (OAI3SchemaKeywords.TYPE_OBJECT.equals(flatSchema.getSupposedType(context))) {
+    } else if (OAI3SchemaKeywords.TYPE_OBJECT.equals(schema.getSupposedType(context))) {
       return getRenamedNode(xmlConf, content, defaultKey);
     }
 

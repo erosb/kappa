@@ -21,8 +21,7 @@ interface StyleConverter {
     }
 
     String style = param.getSchema().getSupposedType(context);
-    Schema schema = param.getSchema().getFlatSchema(context);
-
+    Schema schema = param.getSchema();
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(style)) {
       return TypeConverter.instance().convertObject(context, schema, paramValues);
     } else if (OAI3SchemaKeywords.TYPE_ARRAY.equals(style)) {

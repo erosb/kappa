@@ -154,7 +154,6 @@ public abstract class AbstractReferenceResolver {
 
       resolveReference(referenceRegistry.getRef(canonicalRefValue), visitedRefs);
     }
-
     ref.setContent(valueNode);
   }
 
