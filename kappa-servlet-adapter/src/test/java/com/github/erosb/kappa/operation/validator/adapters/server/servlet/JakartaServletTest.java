@@ -1,21 +1,16 @@
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+package com.github.erosb.kappa.operation.validator.adapters.server.servlet;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.erosb.kappa.operation.validator.model.Request;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import com.github.erosb.kappa.operation.validator.adapters.server.servlet.JakartaServletRequest;
-import com.github.erosb.kappa.operation.validator.model.Request;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Vector;
-
-import jakarta.servlet.ReadListener;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
 public class JakartaServletTest {
   private static final String URL = "http://localhost:8080/path";
@@ -27,21 +22,19 @@ public class JakartaServletTest {
   private Cookie cookie;
 
   @Before
-  public void setUp() throws IOException {
+  public void setUp()
+    throws IOException {
     servletRequest = Mockito.mock(HttpServletRequest.class);
     cookie = null;
 
     Mockito.when(servletRequest.getRequestURL()).thenReturn(new StringBuffer(URL));
     Mockito.when(servletRequest.getQueryString()).thenReturn("id=2&name=foo");
-
-    MockServletInputStream msis = new MockServletInputStream(new ByteArrayInputStream("a body".getBytes()));
-    Mockito.when(servletRequest.getInputStream()).thenReturn(msis);
   }
 
   private void mockCookies(boolean enable) {
     if (enable) {
       cookie = new Cookie("bis", "cuit");
-      Cookie[] cookies = new Cookie[] {cookie};
+      Cookie[] cookies = new Cookie[]{cookie};
       Mockito.when(servletRequest.getCookies()).thenReturn(cookies);
     } else {
       Mockito.when(servletRequest.getCookies()).thenReturn(null);
@@ -68,10 +61,12 @@ public class JakartaServletTest {
   }
 
   @Test
-  public void basicTest() throws IOException {
-    mockCookies(false);
-    mockHeaders(false);
-    Mockito.when(servletRequest.getMethod()).thenReturn("GET");
+  public void basicTest()
+    throws IOException {
+    servletRequest = MockHttpServletRequestBuilder.get()
+      .withDefaultCookies(false)
+      .withDefaultHeaders(false)
+      .build();
 
     Request rq = JakartaServletRequest.of(servletRequest);
     checkCommons(rq, false, false);
@@ -80,10 +75,11 @@ public class JakartaServletTest {
   }
 
   @Test
-  public void getTest() throws IOException {
+  public void getTest()
+    throws IOException {
     mockCookies(true);
     mockHeaders(true);
-    Mockito.when(servletRequest.getMethod()).thenReturn("GET");
+    servletRequest = MockHttpServletRequestBuilder.get().build();
 
     Request rq = JakartaServletRequest.of(servletRequest);
     checkCommons(rq, true, true);
@@ -92,10 +88,11 @@ public class JakartaServletTest {
   }
 
   @Test
-  public void postTest() throws IOException {
+  public void postTest()
+    throws IOException {
     mockCookies(true);
     mockHeaders(true);
-    Mockito.when(servletRequest.getMethod()).thenReturn("POST");
+    servletRequest = MockHttpServletRequestBuilder.post().build();
 
     Request rq = JakartaServletRequest.of(servletRequest);
     checkCommons(rq, true, true);
@@ -103,7 +100,7 @@ public class JakartaServletTest {
     Assert.assertNull(rq.getQuery());
 
     Assert.assertEquals(
-      JsonNodeFactory.instance.textNode("a body"),
+      JsonNodeFactory.instance.textNode("{}"),
       rq.getBody().getContentAsNode(null, null, null));
   }
 
@@ -117,52 +114,10 @@ public class JakartaServletTest {
     }
 
     if (checkHeaders) {
-      Assert.assertEquals("atype", rq.getContentType());
+      Assert.assertEquals("application/json", rq.getContentType());
       Assert.assertNotNull(rq.getHeaders());
       Assert.assertTrue(rq.getHeaders().containsKey(H_NAME));
       Assert.assertEquals(H_VALUE, rq.getHeaders().get(H_NAME).iterator().next());
-    }
-  }
-
-  private static class MockServletInputStream extends ServletInputStream {
-    private final InputStream sourceStream;
-
-    MockServletInputStream(InputStream sourceStream) {
-      this.sourceStream = sourceStream;
-    }
-
-    @Override
-    public int read() throws IOException {
-      return sourceStream.read();
-    }
-
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-      return sourceStream.read(b, off, len);
-    }
-
-    @Override
-    public int read(byte[] b) throws IOException {
-      return sourceStream.read(b);
-    }
-
-    public void close() throws IOException {
-      sourceStream.close();
-    }
-
-    @Override
-    public boolean isFinished() {
-      return false;
-    }
-
-    @Override
-    public boolean isReady() {
-      return false;
-    }
-
-    @Override
-    public void setReadListener(ReadListener readListener) {
-
     }
   }
 }
