@@ -18,16 +18,22 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static java.util.Objects.requireNonNull;
+
 public class OpenApiBasedRequestValidationFilter implements Filter {
 
   public static OpenApiBasedRequestValidationFilter forApiDescription(OpenApi3 api) {
-    return new OpenApiBasedRequestValidationFilter(api);
+    return new OpenApiBasedRequestValidationFilter(path -> api);
   }
 
-  private final OpenApi3 api;
+  public static OpenApiBasedRequestValidationFilter forApiLookup(OpenApiLookup lookupFn) {
+    return new OpenApiBasedRequestValidationFilter(lookupFn);
+  }
 
-  private OpenApiBasedRequestValidationFilter(OpenApi3 api) {
-    this.api = api;
+  private final OpenApiLookup lookupFn;
+
+  private OpenApiBasedRequestValidationFilter(OpenApiLookup lookupFn) {
+    this.lookupFn = requireNonNull(lookupFn);
   }
 
   @Override
@@ -49,7 +55,7 @@ public class OpenApiBasedRequestValidationFilter implements Filter {
       Request jakartaRequest = JakartaServletRequest.of(memoizedReq);
 
       // we do the validation
-      new RequestValidator(api).validate(jakartaRequest);
+      new RequestValidator(lookupFn.apply(jakartaRequest.getPath())).validate(jakartaRequest);
 
       // if no request validation error was found, we proceed with the request execution
       chain.doFilter(memoizedReq, httpResp);
