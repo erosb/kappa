@@ -8,7 +8,7 @@ description = "Kappa adapter for working with the Servlet API"
 
 dependencies {
   api(project(":"))
-  implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
+  api("jakarta.servlet:jakarta.servlet-api:6.0.0")
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.mockito:mockito-inline:3.1.0")

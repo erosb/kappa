@@ -66,6 +66,7 @@ public class OpenApiBasedRequestValidationFilter implements Filter {
       ObjectMapper objectMapper = new ObjectMapper();
       ObjectNode respObj = objectMapper.createObjectNode();
       ArrayNode itemsJson = objectMapper.createArrayNode();
+      System.out.println(ex);
       ex.results().forEach(item -> {
         ObjectNode itemJson = objectMapper.createObjectNode();
         itemJson.put("dataLocation", item.describeInstanceLocation());
