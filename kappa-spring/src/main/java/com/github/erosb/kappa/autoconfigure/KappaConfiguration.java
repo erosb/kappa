@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.autoconfigure;
 
 import com.github.erosb.kappa.operation.validator.adapters.server.servlet.OpenApiBasedRequestValidationFilter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,9 +10,15 @@ import org.springframework.context.annotation.Configuration;
 public class KappaConfiguration {
 
   @Bean
+  @ConfigurationProperties(prefix = "kappa")
+  public KappaSpringConfiguration configuration() {
+    return new KappaSpringConfiguration();
+  }
+
+  @Bean
   public FilterRegistrationBean<OpenApiBasedRequestValidationFilter> openApiBasedRequestValidationFilter() {
     OpenApiBasedRequestValidationFilter filter = OpenApiBasedRequestValidationFilter.forApiLookup(
-      new SpringOpenApiLookup()
+      new SpringOpenApiLookup(configuration())
     );
     FilterRegistrationBean<OpenApiBasedRequestValidationFilter> registration = new FilterRegistrationBean<>();
     registration.setFilter(filter);

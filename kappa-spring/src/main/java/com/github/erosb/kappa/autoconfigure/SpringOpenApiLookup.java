@@ -5,14 +5,43 @@ import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.operation.validator.adapters.server.servlet.OpenApiLookup;
 import com.github.erosb.kappa.parser.OpenApi3Parser;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
+import org.springframework.http.server.PathContainer;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
-public class SpringOpenApiLookup implements OpenApiLookup {
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class SpringOpenApiLookup
+  implements OpenApiLookup {
+
+  private final Map<PathPattern, OpenApi3> pathPatternToApiDescr;
+
+  public SpringOpenApiLookup(KappaSpringConfiguration configuration) {
+    pathPatternToApiDescr = new LinkedHashMap<>();
+    configuration.getOpenapiDescriptions().forEach((rawPathPattern, apiDescriptionPath) -> {
+        try {
+          if (!rawPathPattern.startsWith("/")) {
+            rawPathPattern = "/" + rawPathPattern;
+          }
+          pathPatternToApiDescr.put(new PathPatternParser().parse(rawPathPattern),
+            new OpenApi3Parser().parse(getClass().getResource(apiDescriptionPath), false));
+        } catch (ResolutionException | ValidationException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    );
+  }
+
   @Override
   public OpenApi3 apply(String requestPath) {
-    try {
-      return new OpenApi3Parser().parse(getClass().getResource("/openapi/users-api.yaml"), false);
-    } catch (ResolutionException | ValidationException e) {
-      throw new RuntimeException(e);
+    PathContainer path = PathContainer.parsePath(requestPath);
+    for (Map.Entry<PathPattern, OpenApi3> entry : pathPatternToApiDescr.entrySet()) {
+      System.out.println(requestPath + " -> " + entry.getKey());
+      if (entry.getKey().matches(path)) {
+        return entry.getValue();
+      }
     }
+    throw new RuntimeException("not found");
   }
 }
