@@ -1,11 +1,11 @@
 package com.github.erosb.kappa.samplecontroller;
 
-import com.github.erosb.kappa.autoconfigure.EnableKappa;
+import com.github.erosb.kappa.autoconfigure.EnableKappaRequestValidation;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnableKappa
+@EnableKappaRequestValidation
 public class UsersApplication {
 
   public static void main(String[] args) {
