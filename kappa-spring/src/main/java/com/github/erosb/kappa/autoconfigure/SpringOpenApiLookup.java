@@ -37,7 +37,6 @@ public class SpringOpenApiLookup
   public OpenApi3 apply(String requestPath) {
     PathContainer path = PathContainer.parsePath(requestPath);
     for (Map.Entry<PathPattern, OpenApi3> entry : pathPatternToApiDescr.entrySet()) {
-      System.out.println(requestPath + " -> " + entry.getKey());
       if (entry.getKey().matches(path)) {
         return entry.getValue();
       }

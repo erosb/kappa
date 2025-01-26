@@ -1,5 +1,6 @@
 package com.github.erosb.kappa.autoconfigure;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
@@ -9,6 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@EnableAutoConfiguration()
 @Import(KappaConfiguration.class)
 public @interface EnableKappaRequestValidation {
 }

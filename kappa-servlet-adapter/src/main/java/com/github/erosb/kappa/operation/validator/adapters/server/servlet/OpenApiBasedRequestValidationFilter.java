@@ -20,7 +20,8 @@ import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;
 
-public class OpenApiBasedRequestValidationFilter implements Filter {
+public class OpenApiBasedRequestValidationFilter
+  implements Filter {
 
   public static OpenApiBasedRequestValidationFilter forApiDescription(OpenApi3 api) {
     return new OpenApiBasedRequestValidationFilter(path -> api);
@@ -37,7 +38,8 @@ public class OpenApiBasedRequestValidationFilter implements Filter {
   }
 
   @Override
-  public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException {
+  public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+    throws IOException {
     HttpServletResponse httpResp = (HttpServletResponse) resp;
     try {
 
@@ -66,7 +68,6 @@ public class OpenApiBasedRequestValidationFilter implements Filter {
       ObjectMapper objectMapper = new ObjectMapper();
       ObjectNode respObj = objectMapper.createObjectNode();
       ArrayNode itemsJson = objectMapper.createArrayNode();
-      System.out.println(ex);
       ex.results().forEach(item -> {
         ObjectNode itemJson = objectMapper.createObjectNode();
         itemJson.put("dataLocation", item.describeInstanceLocation());
@@ -97,6 +98,5 @@ public class OpenApiBasedRequestValidationFilter implements Filter {
       throw new RuntimeException(e);
     }
   }
-
 
 }
