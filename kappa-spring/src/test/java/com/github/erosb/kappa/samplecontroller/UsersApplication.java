@@ -16,10 +16,10 @@ public class UsersApplication {
     SpringApplication.run(UsersApplication.class);
   }
 
-  @Bean
+  //@Bean
   public KappaSpringConfiguration kappaSpringConfiguration() {
     KappaSpringConfiguration kappaConfig = new KappaSpringConfiguration();
-    LinkedHashMap<String, String> pathPatternToOpenapiDescription = new LinkedHashMap<>();
+    var pathPatternToOpenapiDescription = new LinkedHashMap<String, String>();
     pathPatternToOpenapiDescription.put("/users", "/openapi/users-api.yaml");
     pathPatternToOpenapiDescription.put("/customers/*/address", "/openapi/customers-api.yaml");
     kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);

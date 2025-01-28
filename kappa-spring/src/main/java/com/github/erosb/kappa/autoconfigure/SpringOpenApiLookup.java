@@ -41,6 +41,6 @@ public class SpringOpenApiLookup
         return entry.getValue();
       }
     }
-    throw new RuntimeException("not found");
+    throw new RuntimeException("OpenAPI description not found for request path " + requestPath);
   }
 }
