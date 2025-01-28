@@ -12,12 +12,12 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SpringOpenApiLookup
+public class PathPatternMatchingOpenApiLookup
   implements OpenApiLookup {
 
   private final Map<PathPattern, OpenApi3> pathPatternToApiDescr;
 
-  public SpringOpenApiLookup(KappaSpringConfiguration configuration) {
+  public PathPatternMatchingOpenApiLookup(KappaSpringConfiguration configuration) {
     pathPatternToApiDescr = new LinkedHashMap<>();
     configuration.getOpenapiDescriptions().forEach((rawPathPattern, apiDescriptionPath) -> {
         try {

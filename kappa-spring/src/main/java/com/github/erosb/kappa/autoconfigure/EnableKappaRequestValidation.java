@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@EnableAutoConfiguration()
 @Import(KappaConfiguration.class)
 public @interface EnableKappaRequestValidation {
 }
