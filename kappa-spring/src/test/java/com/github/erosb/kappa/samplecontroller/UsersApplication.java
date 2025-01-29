@@ -16,7 +16,7 @@ public class UsersApplication {
     SpringApplication.run(UsersApplication.class);
   }
 
-  //@Bean
+  @Bean
   public KappaSpringConfiguration kappaSpringConfiguration() {
     KappaSpringConfiguration kappaConfig = new KappaSpringConfiguration();
     var pathPatternToOpenapiDescription = new LinkedHashMap<String, String>();
