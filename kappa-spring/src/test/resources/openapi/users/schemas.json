@@ -1,4 +1,12 @@
 {
-  "type": "object",
-  "required": ["name", "email"]
+  "$ref": "#/$defs/CreateUser",
+  "$defs": {
+    "CreateUser": {
+      "type": "object",
+      "required": [
+        "name",
+        "email"
+      ]
+    }
+  }
 }
