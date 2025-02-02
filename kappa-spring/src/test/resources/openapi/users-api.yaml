@@ -9,4 +9,4 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "./schemas.json"
+              $ref: "./users/schemas.json"

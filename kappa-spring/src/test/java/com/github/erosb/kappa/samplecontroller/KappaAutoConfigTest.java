@@ -46,7 +46,7 @@ public class KappaAutoConfigTest {
       {
         "errors" : [ {
           "dataLocation" : "$request.body",
-          "schemaLocation" : "openapi/schemas.json#/required",
+          "schemaLocation" : "openapi/users/schemas.json#/required",
           "dynamicPath" : "#/$ref/required",
           "message" : "required properties are missing: name, email"
         } ]
