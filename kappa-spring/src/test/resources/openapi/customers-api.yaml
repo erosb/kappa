@@ -4,6 +4,8 @@ info:
   title: yet another users-api.yaml
 paths:
   /customers/{id}/address:
+    parameters:
+      - $ref: "#/components/parameters/CustomerId"
     put:
       requestBody:
         content:
@@ -42,3 +44,10 @@ components:
       type: string
       minLength: 2
       maxLength: 2
+  parameters:
+    CustomerId:
+      name: id
+      in: path
+      schema:
+        #        type: integer
+        $ref: "./common-types.yaml#/Id"
