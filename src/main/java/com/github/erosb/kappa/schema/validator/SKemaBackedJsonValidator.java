@@ -21,14 +21,14 @@ public class SKemaBackedJsonValidator
   implements JsonValidator {
 
   private static URI toURI(URL url) {
-      try {
-          return url.toURI();
-      } catch (URISyntaxException e) {
-          throw new RuntimeException(e);
-      }
+    try {
+      return url.toURI();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  static URI rewriteProbableJarUrl(URI uri)
+  public static URI rewriteProbableJarUrl(URI uri)
     throws URISyntaxException {
     String uriString = uri.toString();
     if (uriString.startsWith("jar:nested:") && uriString.indexOf('!') >= 0) {
@@ -44,7 +44,8 @@ public class SKemaBackedJsonValidator
     this(schema, context, toURI(context.getContext().getBaseUrl()));
   }
 
-  public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context, URI baseURI) {
+  public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context,
+                                  URI baseURI) {
     JsonNode rawJson = TreeUtil.json.convertValue(schema, JsonNode.class);
     if (rawJson instanceof ObjectNode) {
       ObjectNode obj = (ObjectNode) rawJson;
@@ -71,7 +72,6 @@ public class SKemaBackedJsonValidator
   }
 
   /**
-   *
    * @deprecated use validate(jsonValue, validation) instead
    */
   @Override

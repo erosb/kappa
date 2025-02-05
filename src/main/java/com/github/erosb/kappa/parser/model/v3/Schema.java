@@ -14,6 +14,7 @@ import com.github.erosb.jsonsKema.TypeSchema;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.TreeUtil;
+import com.github.erosb.kappa.schema.validator.SKemaBackedJsonValidator;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URISyntaxException;
@@ -325,7 +326,6 @@ public class Schema
         return schema.getFormat();
       }
 
-
     });
     return result;
   }
@@ -340,7 +340,8 @@ public class Schema
         }
         SchemaLoader loader = context == null
           ? new SchemaLoader(rawJson.toPrettyString())
-          : new SchemaLoader(rawJson.toPrettyString(), context.getBaseUrl().toURI());
+          : new SchemaLoader(rawJson.toPrettyString(),
+          SKemaBackedJsonValidator.rewriteProbableJarUrl(context.getBaseUrl().toURI()));
         skema = loader.load();
       } catch (URISyntaxException e) {
         throw new RuntimeException(e);
