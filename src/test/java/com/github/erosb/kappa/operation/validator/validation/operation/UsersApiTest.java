@@ -4,6 +4,7 @@ import com.github.erosb.jsonsKema.ValidationFailure;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
+import com.github.erosb.kappa.schema.validator.ValidationData;
 import org.junit.Test;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
 import com.github.erosb.kappa.operation.validator.model.impl.DefaultRequest;
@@ -88,7 +89,6 @@ public class UsersApiTest
       .body(Body.from("[{\"id\":-5}, {\"userId\":4}]"))
       .build();
 
-
     ValidationException actual = assertThrows(ValidationException.class,
       () -> new RequestValidator(api).validate(invalidResp, request)
     );
@@ -96,7 +96,6 @@ public class UsersApiTest
     assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id");
     assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
   }
-
 
   @Test
   public void testRequest()
@@ -137,7 +136,7 @@ public class UsersApiTest
     OpenApiValidationFailure wrongProp = failureByMessage(results, "the instance is not equal to any enum values");
     assertEquals(wrongProp.describeInstanceLocation(), "$response.body#/1/userId");
     System.out.println(wrongProp.describeSchemaLocation());
-//    assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames"));
+    //    assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames"));
   }
 
   @Test
@@ -171,8 +170,26 @@ public class UsersApiTest
   }
 
   @Test
-  public void testResponse() {
+  public void unknownResponseCode()
+    throws Exception {
+    URL specPath = getClass().getResource(usersApiPath);
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
 
+    DefaultRequest request = new DefaultRequest.Builder("/users", GET).build();
+    DefaultResponse invalidResp = new DefaultResponse.Builder(280)
+      .header("Content-Type", "application/json")
+      .body(Body.from("[{\"id\":-5}, {\"userId\":4}]"))
+      .build();
+
+    ValidationException exc = assertThrows(ValidationException.class, () ->
+      new RequestValidator(api).validate(invalidResp, request)
+    );
+
+    OpenApiValidationFailure.StatusCodeValidationFailure failure =
+      (OpenApiValidationFailure.StatusCodeValidationFailure) exc.results().get(0);
+
+    assertEquals("Unknown status code 280", failure.getMessage());
+    assertEquals("$response.status", failure.describeInstanceLocation());
   }
 
   @Test
@@ -200,7 +217,8 @@ public class UsersApiTest
   }
 
   @Test
-  public void requestSchemaIsParsed() throws Exception {
+  public void requestSchemaIsParsed()
+    throws Exception {
     URL specPath = getClass().getResource(usersApiPath);
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
 

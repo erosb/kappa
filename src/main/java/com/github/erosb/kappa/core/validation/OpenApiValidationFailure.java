@@ -29,7 +29,8 @@ public class OpenApiValidationFailure {
   }
 
   public static RequestBodyValidationFailure wrongContentType(String actualContentType) {
-    return new RequestBodyValidationFailure(String.format("Content type '%s' is not allowed for body content.", actualContentType));
+    return new RequestBodyValidationFailure(
+      String.format("Content type '%s' is not allowed for body content.", actualContentType));
   }
 
   public static ParameterValidationFailure missingRequiredParameter(String paramName) {
@@ -38,6 +39,20 @@ public class OpenApiValidationFailure {
 
   public static SchemaValidationFailure bodySchemaValidationFailure(ValidationFailure result) {
     return new SchemaValidationFailure(result);
+  }
+
+  public static StatusCodeValidationFailure unknownStatusCode(int unknownStatusCode) {
+    return new StatusCodeValidationFailure(unknownStatusCode);
+  }
+
+  public static class StatusCodeValidationFailure
+    extends OpenApiValidationFailure {
+
+    StatusCodeValidationFailure(int unknownStatusCode) {
+      super("Unknown status code " + unknownStatusCode, new SourceLocation(-1, -1,
+        new JsonPointer(),
+        new URIFactory().responseStatusCode()), null);
+    }
   }
 
   public static class SchemaValidationFailure
@@ -83,8 +98,9 @@ public class OpenApiValidationFailure {
     }
 
     public RequestBodyValidationFailure(String message, TextLocation parseFailure) {
-      super(message, new SourceLocation(parseFailure.getLineNumber(), parseFailure.getPosition(), new JsonPointer(), requestBody), new SourceLocation(-1, -1,
-        new JsonPointer(), new URIFactory().requestBodyDefinition()));
+      super(message, new SourceLocation(parseFailure.getLineNumber(), parseFailure.getPosition(), new JsonPointer(), requestBody),
+        new SourceLocation(-1, -1,
+          new JsonPointer(), new URIFactory().requestBodyDefinition()));
     }
   }
 

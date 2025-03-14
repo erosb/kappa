@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -171,7 +172,9 @@ public class OperationValidator {
    * @return The mapped parameters with their values.
    */
   Map<String, JsonNode> validatePath(final Request request, Pattern pathPattern, final ValidationData<?> validation) {
-    if (specRequestPathValidator == null) return null;
+    if (specRequestPathValidator == null) {
+      return null;
+    }
 
     Map<String, JsonNode> mappedValues = ParameterConverter.pathToNode(
       context.getContext(),
@@ -192,7 +195,9 @@ public class OperationValidator {
    * @return The mapped parameters with their values.
    */
   public Map<String, JsonNode> validateQuery(final Request request, final ValidationData<?> validation) {
-    if (specRequestQueryValidator == null) return null;
+    if (specRequestQueryValidator == null) {
+      return null;
+    }
 
     Map<String, JsonNode> mappedValues = ParameterConverter.queryToNode(
       context.getContext(),
@@ -213,7 +218,9 @@ public class OperationValidator {
    * @return The mapped parameters with their values.
    */
   public Map<String, JsonNode> validateHeaders(final Request request, final ValidationData<?> validation) {
-    if (specRequestHeaderValidator == null) return null;
+    if (specRequestHeaderValidator == null) {
+      return null;
+    }
 
     Map<String, JsonNode> mappedValues = ParameterConverter.headersToNode(
       context.getContext(),
@@ -233,7 +240,9 @@ public class OperationValidator {
    * @return The mapped parameters with their values.
    */
   public Map<String, JsonNode> validateCookies(final Request request, final ValidationData<?> validation) {
-    if (specRequestCookieValidator == null) return null;
+    if (specRequestCookieValidator == null) {
+      return null;
+    }
 
     final Map<String, JsonNode> mappedValues = ParameterConverter.cookiesToNode(
       context.getContext(),
@@ -252,7 +261,9 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    */
   public void validateBody(final Request request, final ValidationData<?> validation) {
-    if (specRequestBodyValidators == null) return;
+    if (specRequestBodyValidators == null) {
+      return;
+    }
 
     if (operation.getRequestBody().isRequired()) {
       if (request.getContentType() == null) {
@@ -279,8 +290,19 @@ public class OperationValidator {
    */
   public void validateResponse(final Response response,
                                final ValidationData<?> validation) {
+    Set<String> responseCodeDefinitions = operation.getResponses().keySet();
+    boolean responseCodeFound = responseCodeDefinitions.stream().anyMatch(
+      responseCodeDefinition -> responseCodeDefinitionMatches(responseCodeDefinition, response.getStatus()));
+    if (!responseCodeFound) {
+      validation.add(OpenApiValidationFailure.unknownStatusCode(response.getStatus()));
+    }
+
     validateHeaders(response, validation);
     validateBody(response, validation);
+  }
+
+  private boolean responseCodeDefinitionMatches(String responseCodeDefinition, int status) {
+    return Integer.valueOf(responseCodeDefinition) == status;
   }
 
   /**
@@ -294,7 +316,9 @@ public class OperationValidator {
 
     Map<MediaTypeContainer, BodyValidator> validators = getResponseValidator(specResponseBodyValidators, response);
 
-    if (validators == null) return;
+    if (validators == null) {
+      return;
+    }
 
     validateBodyWithContentType(
       validators,
@@ -338,7 +362,9 @@ public class OperationValidator {
 
     ParameterValidator<Header> validator = getResponseValidator(specResponseHeaderValidators, response);
 
-    if (validator == null) return;
+    if (validator == null) {
+      return;
+    }
 
     Map<String, JsonNode> mappedValues = ParameterConverter.headersToNode(
       context.getContext(),
@@ -384,7 +410,8 @@ public class OperationValidator {
     return validators;
   }
 
-  private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes, URIFactory uriFactory) {
+  private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes,
+                                                                      URIFactory uriFactory) {
     final Map<MediaTypeContainer, BodyValidator> validators = new HashMap<>();
     if (mediaTypes == null) {
       validators.put(MediaTypeContainer.create(null), new BodyValidator(context, null, uriFactory));
@@ -421,7 +448,9 @@ public class OperationValidator {
   private <T> T getResponseValidator(final Map<String, T> validators,
                                      final Response response) {
 
-    if (validators == null) return null;
+    if (validators == null) {
+      return null;
+    }
 
     String statusCode = String.valueOf(response.getStatus());
 
@@ -436,7 +465,6 @@ public class OperationValidator {
       validator = validators.get(DEFAULT_RESPONSE_CODE);
     }
     // Well, we tried...
-
     return validator;
   }
 
@@ -500,7 +528,8 @@ public class OperationValidator {
     Map<String, com.github.erosb.kappa.parser.model.v3.Response> responses = operation.getResponses();
     if (responses != null) {
       for (Map.Entry<String, com.github.erosb.kappa.parser.model.v3.Response> entry : responses.entrySet()) {
-        com.github.erosb.kappa.parser.model.v3.Response flatResponse = getFlatModel(entry.getValue(), com.github.erosb.kappa.parser.model.v3.Response.class);
+        com.github.erosb.kappa.parser.model.v3.Response flatResponse = getFlatModel(entry.getValue(),
+          com.github.erosb.kappa.parser.model.v3.Response.class);
         if (flatResponse.getHeaders() != null) {
           for (Map.Entry<String, Header> entryHeader : flatResponse.getHeaders().entrySet()) {
             Header flatHeader = getFlatModel(entryHeader.getValue(), Header.class);

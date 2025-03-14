@@ -4,14 +4,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-class RequestScopedURIFactory extends URIFactory {
+class RequestScopedURIFactory
+  extends URIFactory {
   @Override
   public URI httpEntity() {
     return uri("$request.body");
   }
 }
 
-class ResponseScopedURIFactory extends URIFactory {
+class ResponseScopedURIFactory
+  extends URIFactory {
   @Override
   public URI httpEntity() {
     return uri("$response.body");
@@ -53,10 +55,14 @@ public class URIFactory {
   }
 
   public URI pathParamDefinition(URL contextbaseURL, String paramName) {
-      try {
-          return new URI(contextbaseURL.toURI() + "/paths/" + paramName);
-      } catch (URISyntaxException e) {
-          throw new RuntimeException(e);
-      }
+    try {
+      return new URI(contextbaseURL.toURI() + "/paths/" + paramName);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public URI responseStatusCode() {
+    return uri("$response.status");
   }
 }

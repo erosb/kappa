@@ -46,7 +46,7 @@ dependencies {
   api("com.fasterxml.jackson.core:jackson-databind:2.18.0")
   api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.0")
 
-  api("com.github.erosb:json-sKema:0.20.0")
+  api("com.github.erosb:json-sKema:0.21.0")
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.skyscreamer:jsonassert:1.5.0")
