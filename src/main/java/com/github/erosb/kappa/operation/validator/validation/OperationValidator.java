@@ -175,7 +175,7 @@ public class OperationValidator {
     // Check paths are matching before trying to map values
     Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns, request.getPath());
     if (pathPattern == null) {
-      validation.add(OpenApiValidationFailure.noMatchingPathPatternFound());
+      validation.add(failureFactory.noMatchingPathPatternFound());
       return null;
     }
 

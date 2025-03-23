@@ -36,11 +36,11 @@ public class ValidationFailureFactory {
     return new OpenApiValidationFailure.StatusCodeValidationFailure(unknownStatusCode, operationUri, uriFactory);
   }
 
-  public static OpenApiValidationFailure.PathValidationFailure noMatchingPathPatternFound() {
+  public OpenApiValidationFailure.PathValidationFailure noMatchingPathPatternFound() {
     return new OpenApiValidationFailure.PathValidationFailure("Path template '%s' has not been found from value '%s'.");
   }
 
-  public static OpenApiValidationFailure.ParameterValidationFailure missingRequiredParameter(String paramName) {
+  public OpenApiValidationFailure.ParameterValidationFailure missingRequiredParameter(String paramName) {
     return new OpenApiValidationFailure.ParameterValidationFailure(String.format("Missing required parameter '%s'.", paramName));
   }
 

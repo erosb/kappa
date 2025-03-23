@@ -5,6 +5,7 @@ import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.URIFactory;
+import com.github.erosb.kappa.core.validation.ValidationFailureFactory;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 import com.github.erosb.kappa.parser.model.v3.Schema;
@@ -27,11 +28,13 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
   private final Map<String, JsonValidator> specValidators;
   private final Map<String, AbsParameter<M>> specParameters;
   private final URIFactory uriFactory;
+  private final ValidationFailureFactory failureFactory;
 
   ParameterValidator(ValidationContext<OAI3> context, Map<String, AbsParameter<M>> specParameters, URIFactory uriFactory) {
     this.context = context;
     this.specParameters = specParameters;
     this.uriFactory = requireNonNull(uriFactory);
+    this.failureFactory = new ValidationFailureFactory(uriFactory);
     specValidators = initValidators(specParameters);
   }
 
@@ -95,7 +98,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
 
     if (!paramValues.containsKey(paramName)) {
       if (parameter.isRequired()) {
-        validation.add(OpenApiValidationFailure.missingRequiredParameter(paramName));
+        validation.add(failureFactory.missingRequiredParameter(paramName));
       }
       return false;
     }
