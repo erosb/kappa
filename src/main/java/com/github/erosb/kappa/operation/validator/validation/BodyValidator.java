@@ -1,14 +1,12 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonParseException;
 import com.github.erosb.kappa.core.model.v3.OAI3;
-import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.URIFactory;
+import com.github.erosb.kappa.core.validation.ValidationFailureFactory;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 import com.github.erosb.kappa.parser.model.v3.Schema;
@@ -16,7 +14,7 @@ import com.github.erosb.kappa.schema.validator.SKemaBackedJsonValidator;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;
 
-import java.net.URISyntaxException;
+import static java.util.Objects.requireNonNull;
 
 class BodyValidator {
 
@@ -24,11 +22,13 @@ class BodyValidator {
   private final MediaType mediaType;
   private final SKemaBackedJsonValidator validator;
   private final URIFactory uriFactory;
+  private final ValidationFailureFactory failureFactory;
 
   BodyValidator(ValidationContext<OAI3> context, MediaType mediaType, URIFactory uriFactory) {
     this.context = context;
     this.mediaType = mediaType;
-    this.uriFactory = uriFactory;
+    this.uriFactory = requireNonNull(uriFactory);
+    failureFactory = new ValidationFailureFactory(uriFactory);
     validator = initValidator();
   }
 
@@ -47,7 +47,7 @@ class BodyValidator {
       IJsonValue jsonBody = body.contentAsNode(rawContentType, uriFactory.httpEntity());
       validator.validate(jsonBody, validation);
     } catch (JsonParseException ex) {
-      validation.add(OpenApiValidationFailure.unparseableRequestBody(ex));
+      validation.add(failureFactory.unparseableRequestBody(ex, uriFactory.requestBodyDefinition()));
     }
   }
 

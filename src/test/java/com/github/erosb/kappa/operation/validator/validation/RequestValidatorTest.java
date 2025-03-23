@@ -26,7 +26,8 @@ import static com.github.erosb.kappa.operation.validator.model.Request.Method.PO
 public class RequestValidatorTest {
 
   @Test(expected = ValidationException.class)
-  public void operationMethodNotFound() throws ValidationException, ResolutionException {
+  public void operationMethodNotFound()
+    throws ValidationException, ResolutionException {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
     RequestValidator requestValidator = new RequestValidator(api);
@@ -63,7 +64,8 @@ public class RequestValidatorTest {
   }
 
   @Test
-  public void withoutServerPathFindOperationCheck() throws Exception {
+  public void withoutServerPathFindOperationCheck()
+    throws Exception {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
     RequestValidator requestValidator = new RequestValidator(api);
@@ -100,7 +102,8 @@ public class RequestValidatorTest {
   }
 
   @Test
-  public void withServerPathFindOperationCheck() throws Exception {
+  public void withServerPathFindOperationCheck()
+    throws Exception {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator-with-servers.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
     RequestValidator requestValidator = new RequestValidator(api);
@@ -156,7 +159,8 @@ public class RequestValidatorTest {
   }
 
   @Test
-  public void responseTest() throws Exception {
+  public void responseTest()
+    throws Exception {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator-with-servers.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
     RequestValidator requestValidator = new RequestValidator(api);
@@ -198,7 +202,7 @@ public class RequestValidatorTest {
     Path path = api.getPathItemByOperationId(opId);
     Operation operation = api.getOperationById(opId);
 
-    assertNotNull(requestValidator.getValidator(path, operation));
+    assertNotNull(requestValidator.getValidator(path, operation, null));
   }
 
   private void checkRequest(OpenApi3 api, String opId, RequestValidator requestValidator, Request rq, boolean shouldBeValid) {

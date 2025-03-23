@@ -12,46 +12,18 @@ import static java.util.Objects.requireNonNull;
 
 public class OpenApiValidationFailure {
 
-  public static PathValidationFailure noMatchingPathPatternFound() {
-    return new PathValidationFailure("Path template '%s' has not been found from value '%s'.");
-  }
-
-  public static RequestBodyValidationFailure missingRequiredBody() {
-    return new RequestBodyValidationFailure("Body is required but none provided.");
-  }
-
-  public static RequestBodyValidationFailure unparseableRequestBody(JsonParseException ex) {
-    return new RequestBodyValidationFailure("could not parse request body: " + ex.getMessage(), ex.getLocation());
-  }
-
-  public static RequestBodyValidationFailure missingContentTypeHeader() {
-    return new RequestBodyValidationFailure("Body content type cannot be determined. No 'Content-Type' header available.");
-  }
-
-  public static RequestBodyValidationFailure wrongContentType(String actualContentType) {
-    return new RequestBodyValidationFailure(
-      String.format("Content type '%s' is not allowed for body content.", actualContentType));
-  }
-
-  public static ParameterValidationFailure missingRequiredParameter(String paramName) {
-    return new ParameterValidationFailure(String.format("Missing required parameter '%s'.", paramName));
-  }
-
   public static SchemaValidationFailure bodySchemaValidationFailure(ValidationFailure result) {
     return new SchemaValidationFailure(result);
-  }
-
-  public static StatusCodeValidationFailure unknownStatusCode(int unknownStatusCode) {
-    return new StatusCodeValidationFailure(unknownStatusCode);
   }
 
   public static class StatusCodeValidationFailure
     extends OpenApiValidationFailure {
 
-    StatusCodeValidationFailure(int unknownStatusCode) {
+    StatusCodeValidationFailure(int unknownStatusCode, URI operationUri, URIFactory uriFactory) {
       super("Unknown status code " + unknownStatusCode, new SourceLocation(-1, -1,
         new JsonPointer(),
-        new URIFactory().responseStatusCode()), null);
+        uriFactory.responseStatusCode()), new SourceLocation(-1, -1, new JsonPointer(), operationUri)
+      );
     }
   }
 
@@ -84,8 +56,8 @@ public class OpenApiValidationFailure {
   public static class ParameterValidationFailure
     extends OpenApiValidationFailure {
 
-    ParameterValidationFailure(String message) {
-      super(message, new SourceLocation(-1, -1, new JsonPointer("parameters"), request),
+    ParameterValidationFailure(String message, URIFactory uriFactory) {
+      super(message, new SourceLocation(-1, -1, new JsonPointer("parameters"), uriFactory.request()),
         null);
     }
   }
@@ -93,20 +65,12 @@ public class OpenApiValidationFailure {
   public static class RequestBodyValidationFailure
     extends OpenApiValidationFailure {
 
-    public RequestBodyValidationFailure(String message) {
-      this(message, new TextLocation(-1, -1, requestBody));
-    }
-
-    public RequestBodyValidationFailure(String message, TextLocation parseFailure) {
+    public RequestBodyValidationFailure(String message, TextLocation parseFailure, URI uri, URIFactory uriFactory) {
       super(message, new SourceLocation(parseFailure.getLineNumber(), parseFailure.getPosition(), new JsonPointer(), requestBody),
         new SourceLocation(-1, -1,
-          new JsonPointer(), new URIFactory().requestBodyDefinition()));
+          new JsonPointer(), uriFactory.requestBodyDefinition()));
     }
   }
-
-  private static final URI request = new URIFactory().request();
-
-  private static final URI requestBody = new URIFactory().httpEntity();
 
   private final String message;
 

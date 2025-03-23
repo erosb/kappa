@@ -5,6 +5,7 @@ import com.github.erosb.kappa.core.exception.DecodeException;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.URIFactory;
+import com.github.erosb.kappa.core.validation.ValidationFailureFactory;
 import com.github.erosb.kappa.operation.validator.model.Request;
 import com.github.erosb.kappa.operation.validator.model.Response;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
@@ -24,6 +25,8 @@ import com.github.erosb.kappa.parser.model.v3.RequestBody;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +70,10 @@ public class OperationValidator {
   private final Operation operation;
   private final String templatePath;
   private final List<Pattern> pathPatterns;
+
+  private final URIFactory uriFactory;
+
+  private final ValidationFailureFactory failureFactory;
 
   /**
    * Creates a validator for the given operation.
@@ -116,6 +123,17 @@ public class OperationValidator {
 
     // Clone operation
     this.operation = buildFlatOperation(operation);
+
+    try {
+      this.uriFactory = new URIFactory(context.getContext().getBaseUrl().toURI().resolve(
+        pathPatterns.get(0).toString()).toURL()
+      );
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+    this.failureFactory = new ValidationFailureFactory(uriFactory);
 
     // Merge parameters with default parameters
     // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
@@ -267,10 +285,10 @@ public class OperationValidator {
 
     if (operation.getRequestBody().isRequired()) {
       if (request.getContentType() == null) {
-        validation.add(OpenApiValidationFailure.missingContentTypeHeader());
+        validation.add(failureFactory.missingContentTypeHeader());
         return;
       } else if (request.getBody() == null) {
-        validation.add(OpenApiValidationFailure.missingRequiredBody());
+        validation.add(failureFactory.missingRequiredBody());
         return;
       }
     }
@@ -290,11 +308,17 @@ public class OperationValidator {
    */
   public void validateResponse(final Response response,
                                final ValidationData<?> validation) {
+    System.out.println("pathPatterns = " + pathPatterns);
     Set<String> responseCodeDefinitions = operation.getResponses().keySet();
     boolean responseCodeFound = responseCodeDefinitions.stream().anyMatch(
       responseCodeDefinition -> responseCodeDefinitionMatches(responseCodeDefinition, response.getStatus()));
     if (!responseCodeFound) {
-      validation.add(OpenApiValidationFailure.unknownStatusCode(response.getStatus()));
+      try {
+        validation.add(
+          failureFactory.unknownStatusCode(response.getStatus(), context.getContext().getBaseUrl().toURI()));
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
     }
 
     validateHeaders(response, validation);
@@ -342,7 +366,7 @@ public class OperationValidator {
       }
     }
     if (validator == null) {
-      validation.add(OpenApiValidationFailure.wrongContentType(rawContentType));
+      validation.add(failureFactory.wrongContentType(rawContentType));
       return;
     }
 
@@ -381,14 +405,14 @@ public class OperationValidator {
       .stream()
       .collect(Collectors.toMap(Parameter::getName, parameter -> parameter));
 
-    return parameters.isEmpty() ? null : new ParameterValidator<>(context, parameters);
+    return parameters.isEmpty() ? null : new ParameterValidator<>(context, parameters, uriFactory);
   }
 
   private Map<MediaTypeContainer, BodyValidator> createRequestBodyValidators() {
     if (operation.getRequestBody() == null) {
       return null;
     }
-    return createBodyValidators(operation.getRequestBody().getContentMediaTypes(), URIFactory.forRequest());
+    return createBodyValidators(operation.getRequestBody().getContentMediaTypes(), uriFactory.forRequest());
   }
 
   private Map<String, Map<MediaTypeContainer, BodyValidator>> createResponseBodyValidators() {
@@ -404,7 +428,7 @@ public class OperationValidator {
       final String statusCode = entryStatusCode.getKey();
       final com.github.erosb.kappa.parser.model.v3.Response response = entryStatusCode.getValue();
 
-      validators.put(statusCode, createBodyValidators(response.getContentMediaTypes(), URIFactory.forResponse()));
+      validators.put(statusCode, createBodyValidators(response.getContentMediaTypes(), uriFactory.forResponse()));
     }
 
     return validators;
@@ -437,7 +461,7 @@ public class OperationValidator {
         if (response.getHeaders() != null) {
           Map<String, AbsParameter<Header>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
           headers.putAll(response.getHeaders());
-          validators.put(statusCode, new ParameterValidator<>(context, headers));
+          validators.put(statusCode, new ParameterValidator<>(context, headers, uriFactory));
         }
       }
     }

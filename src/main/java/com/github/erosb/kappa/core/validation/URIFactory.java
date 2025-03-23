@@ -6,6 +6,11 @@ import java.net.URL;
 
 class RequestScopedURIFactory
   extends URIFactory {
+
+  RequestScopedURIFactory(URL contextBaseURL) {
+    super(contextBaseURL);
+  }
+
   @Override
   public URI httpEntity() {
     return uri("$request.body");
@@ -14,6 +19,11 @@ class RequestScopedURIFactory
 
 class ResponseScopedURIFactory
   extends URIFactory {
+
+  ResponseScopedURIFactory(URL contextBaseURL) {
+    super(contextBaseURL);
+  }
+
   @Override
   public URI httpEntity() {
     return uri("$response.body");
@@ -22,20 +32,20 @@ class ResponseScopedURIFactory
 
 public class URIFactory {
 
-  public static URIFactory forRequest() {
-    return new RequestScopedURIFactory();
-  }
-
-  public static URIFactory forResponse() {
-    return new ResponseScopedURIFactory();
-  }
-
   static URI uri(String s) {
     try {
       return new URI(s);
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private final URL contextBaseURL;
+
+  private String pathName;
+
+  public URIFactory(URL contextBaseURL) {
+    this.contextBaseURL = contextBaseURL;
   }
 
   public URI httpEntity() {
@@ -54,9 +64,9 @@ public class URIFactory {
     return uri("$request.path." + paramName);
   }
 
-  public URI pathParamDefinition(URL contextbaseURL, String paramName) {
+  public URI pathParamDefinition(String paramName) {
     try {
-      return new URI(contextbaseURL.toURI() + "/paths/" + paramName);
+      return new URI(contextBaseURL.toURI() + "/paths/" + paramName);
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
@@ -64,5 +74,13 @@ public class URIFactory {
 
   public URI responseStatusCode() {
     return uri("$response.status");
+  }
+
+  public URIFactory forRequest() {
+    return new RequestScopedURIFactory(contextBaseURL);
+  }
+
+  public URIFactory forResponse() {
+    return new ResponseScopedURIFactory(contextBaseURL);
   }
 }

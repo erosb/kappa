@@ -190,6 +190,8 @@ public class UsersApiTest
 
     assertEquals("Unknown status code 280", failure.getMessage());
     assertEquals("$response.status", failure.describeInstanceLocation());
+    System.out.println(failure.describeSchemaLocation());
+    assertTrue(failure.describeSchemaLocation().endsWith("#/paths/~01users/get"));
   }
 
   @Test

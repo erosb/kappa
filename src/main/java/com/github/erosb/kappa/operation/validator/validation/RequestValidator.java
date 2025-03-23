@@ -2,6 +2,7 @@ package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.erosb.kappa.core.model.v3.OAI3;
+import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.operation.validator.model.Request;
 import com.github.erosb.kappa.operation.validator.model.Response;
@@ -14,6 +15,8 @@ import com.github.erosb.kappa.schema.validator.ValidationData;
 import com.github.erosb.kappa.operation.validator.util.PathResolver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,14 +86,15 @@ public class RequestValidator {
    * @return The generated validator for the operation or cached version.
    * @throws ValidationException A validation report containing validation errors
    */
-  public OperationValidator getValidator(final Request request) throws ValidationException {
+  public OperationValidator getValidator(final Request request)
+    throws ValidationException {
     requireNonNull(request, REQUEST_REQUIRED_ERR_MSG);
 
     final Pattern pathPattern = getRequiredPathPattern(request);
     final Path path = getRequiredPath(request, pathPattern);
     final Operation operation = getRequiredOperation(request, path);
 
-    return getValidator(path, operation);
+    return getValidator(path, operation, pathPattern);
   }
 
   /**
@@ -100,7 +104,7 @@ public class RequestValidator {
    * @param operation The operation object from specification.
    * @return The generated validator for the operation or cached version.
    */
-  public OperationValidator getValidator(final Path path, final Operation operation) {
+  public OperationValidator getValidator(final Path path, final Operation operation, Pattern pathPattern) {
     requireNonNull(path, PATH_REQUIRED_ERR_MSG);
     requireNonNull(operation, OPERATION_REQUIRED_ERR_MSG);
 
@@ -114,7 +118,10 @@ public class RequestValidator {
             patterns.add(patternPathEntry.getKey());
           }
         }
-        return new OperationValidator(context, patterns, openApi, path, op);
+        System.out.println(patterns + " --------");
+        System.out.println("path = " + path);
+        System.out.println("pathPattern = " + pathPattern);
+        return new OperationValidator(context, Collections.singletonList(pathPattern), openApi, path, op);
       });
   }
 
@@ -129,7 +136,8 @@ public class RequestValidator {
    * @param request The request to validate. Must be {@code nonnull}.
    * @throws ValidationException A validation report containing validation errors
    */
-  public RequestParameters validate(final Request request) throws ValidationException {
+  public RequestParameters validate(final Request request)
+    throws ValidationException {
     return validate(request, new ValidationData<>());
   }
 
@@ -149,10 +157,13 @@ public class RequestValidator {
    * @see #getValidator(Request)
    */
   public void validate(final Response response,
-                       final Request request) throws ValidationException {
+                       final Request request)
+    throws ValidationException {
     requireNonNull(response, RESPONSE_REQUIRED_ERR_MSG);
 
     final OperationValidator validator = getValidator(request);
+
+    System.out.println("validator = " + validator);
     final ValidationData<?> validation = new ValidationData<>();
 
     validateResponse(response, validator, validation);
@@ -166,7 +177,8 @@ public class RequestValidator {
    * @throws ValidationException A validation report containing validation errors
    */
   public RequestParameters validate(final Request request,
-                                    final ValidationData<?> validation) throws ValidationException {
+                                    final ValidationData<?> validation)
+    throws ValidationException {
     final Pattern pathPattern = getRequiredPathPattern(request);
     final Path path = getRequiredPath(request, pathPattern);
     final Operation operation = getRequiredOperation(request, path);
@@ -184,7 +196,8 @@ public class RequestValidator {
    */
   public RequestParameters validate(final Request request,
                                     final Path path,
-                                    final Operation operation) throws ValidationException {
+                                    final Operation operation)
+    throws ValidationException {
     return validate(request, path, operation, new ValidationData<>());
   }
 
@@ -200,7 +213,8 @@ public class RequestValidator {
   public RequestParameters validate(final Request request,
                                     final Path path,
                                     final Operation operation,
-                                    final ValidationData<?> validation) throws ValidationException {
+                                    final ValidationData<?> validation)
+    throws ValidationException {
     return validate(request, null, path, operation, validation);
   }
 
@@ -214,8 +228,9 @@ public class RequestValidator {
    */
   public void validate(final Response response,
                        final Path path,
-                       final Operation operation) throws ValidationException {
-    validate(response, path, operation, new ValidationData<>());
+                       final Operation operation)
+    throws ValidationException {
+    validate(response, path, operation, new ValidationData<>(), null);
   }
 
   /**
@@ -230,11 +245,13 @@ public class RequestValidator {
   public void validate(final Response response,
                        final Path path,
                        final Operation operation,
-                       final ValidationData<?> validation) throws ValidationException {
+                       final ValidationData<?> validation,
+                       final Pattern pathPattern)
+    throws ValidationException {
 
     requireNonNull(response, RESPONSE_REQUIRED_ERR_MSG);
 
-    final OperationValidator opValidator = getValidator(path, operation);
+    final OperationValidator opValidator = getValidator(path, operation, pathPattern);
 
     validateResponse(response, opValidator, validation);
   }
@@ -253,11 +270,12 @@ public class RequestValidator {
                                      final Pattern pathPattern,
                                      final Path path,
                                      final Operation operation,
-                                     final ValidationData<?> validation) throws ValidationException {
+                                     final ValidationData<?> validation)
+    throws ValidationException {
 
     requireNonNull(request, REQUEST_REQUIRED_ERR_MSG);
 
-    final OperationValidator opValidator = getValidator(path, operation);
+    final OperationValidator opValidator = getValidator(path, operation, pathPattern);
 
     final Map<String, JsonNode> pathParameters
       = (pathPattern != null)
@@ -282,7 +300,8 @@ public class RequestValidator {
   }
 
   private Operation getRequiredOperation(final Request request,
-                                         final Path path) throws ValidationException {
+                                         final Path path)
+    throws ValidationException {
     final Operation operation = path.getOperation(request.getMethod().name().toLowerCase());
     if (operation == null) {
       throw new ValidationException(String.format(INVALID_OP_ERR_MSG, request.getURL(), request.getMethod().name()));
@@ -290,7 +309,8 @@ public class RequestValidator {
     return operation;
   }
 
-  private Pattern getRequiredPathPattern(final Request request) throws ValidationException {
+  private Pattern getRequiredPathPattern(final Request request)
+    throws ValidationException {
     final Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns.keySet(), request.getPath());
     if (pathPattern == null) {
       throw new ValidationException(String.format(INVALID_OP_PATH_ERR_MSG, request.getURL()));
@@ -298,7 +318,8 @@ public class RequestValidator {
     return pathPattern;
   }
 
-  private Path getRequiredPath(Request request, Pattern pathPattern) throws ValidationException {
+  private Path getRequiredPath(Request request, Pattern pathPattern)
+    throws ValidationException {
     final Path path = pathPatterns.get(pathPattern);
     if (path == null) {
       throw new ValidationException(String.format(INVALID_OP_PATH_ERR_MSG, request.getURL()));
@@ -308,7 +329,8 @@ public class RequestValidator {
 
   private void validateResponse(final Response response,
                                 final OperationValidator opValidator,
-                                final ValidationData<?> validation) throws ValidationException {
+                                final ValidationData<?> validation)
+    throws ValidationException {
     opValidator.validateResponse(response, validation);
     if (!validation.isValid()) {
       throw new ValidationException(INVALID_RESPONSE_ERR_MSG, validation.results());
