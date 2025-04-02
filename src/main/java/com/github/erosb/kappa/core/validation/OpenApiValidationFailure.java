@@ -67,7 +67,7 @@ public class OpenApiValidationFailure {
 
     public RequestBodyValidationFailure(String message, TextLocation parseFailure, URI uri, URIFactory uriFactory) {
       super(message, new SourceLocation(parseFailure.getLineNumber(), parseFailure.getPosition(), new JsonPointer(),
-          uriFactory.requestBodyDefinition()),
+          uriFactory.forRequest().httpEntity()),
         new SourceLocation(-1, -1,
           new JsonPointer(), uriFactory.requestBodyDefinition()));
     }
