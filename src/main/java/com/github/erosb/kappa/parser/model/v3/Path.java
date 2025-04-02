@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class Path extends AbsExtendedRefOpenApiSchema<Path> {
+public class Path
+  extends AbsExtendedRefOpenApiSchema<Path> {
   private String description;
   @JsonAlias({"get", "put", "post", "delete", "options", "head", "patch", "trace"})
   @JsonIgnore
@@ -16,6 +17,7 @@ public class Path extends AbsExtendedRefOpenApiSchema<Path> {
   private List<Parameter> parameters;
   private List<Server> servers;
   private String summary;
+  private String pathPattern;
 
   public Operation getGet() {
     return mapGet(operations, "get");
@@ -216,5 +218,13 @@ public class Path extends AbsExtendedRefOpenApiSchema<Path> {
     }
 
     return copy;
+  }
+
+  public void setPathPattern(String pathPattern) {
+    this.pathPattern = pathPattern;
+  }
+
+  public String getPathPattern() {
+    return pathPattern;
   }
 }

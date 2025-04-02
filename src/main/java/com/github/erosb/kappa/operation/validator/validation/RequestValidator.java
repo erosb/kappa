@@ -2,7 +2,6 @@ package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.erosb.kappa.core.model.v3.OAI3;
-import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.operation.validator.model.Request;
 import com.github.erosb.kappa.operation.validator.model.Response;
@@ -15,9 +14,7 @@ import com.github.erosb.kappa.schema.validator.ValidationData;
 import com.github.erosb.kappa.operation.validator.util.PathResolver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,7 +68,7 @@ public class RequestValidator {
     this.openApi = openApi;
     this.context = context;
     this.operationValidators = new ConcurrentHashMap<>();
-    this.pathPatterns = buildPathPatterns();
+    this.pathPatterns = openApi.findPathPatterns();
   }
 
   /**
@@ -335,22 +332,5 @@ public class RequestValidator {
     if (!validation.isValid()) {
       throw new ValidationException(INVALID_RESPONSE_ERR_MSG, validation.results());
     }
-  }
-
-  private Map<Pattern, Path> buildPathPatterns() {
-    Map<Pattern, Path> patterns = new HashMap<>();
-
-    for (Map.Entry<String, Path> pathEntry : openApi.getPaths().entrySet()) {
-      List<Pattern> builtPathPatterns = PathResolver.instance().buildPathPatterns(
-        openApi.getContext(),
-        openApi.getServers(),
-        pathEntry.getKey());
-
-      for (Pattern pathPattern : builtPathPatterns) {
-        patterns.put(pathPattern, pathEntry.getValue());
-      }
-    }
-
-    return patterns;
   }
 }

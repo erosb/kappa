@@ -25,8 +25,11 @@ import com.github.erosb.kappa.parser.model.v3.RequestBody;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -123,14 +126,11 @@ public class OperationValidator {
 
     // Clone operation
     this.operation = buildFlatOperation(operation);
-
     try {
       this.uriFactory = new URIFactory(context.getContext().getBaseUrl().toURI().resolve(
-        pathPatterns.get(0).toString()).toURL()
-      );
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    } catch (MalformedURLException e) {
+        URLEncoder.encode(path.getPathPattern(), Charset.defaultCharset().toString())
+      ).toURL());
+    } catch (URISyntaxException | MalformedURLException | UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
     this.failureFactory = new ValidationFailureFactory(uriFactory);

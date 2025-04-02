@@ -5,12 +5,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.erosb.kappa.core.model.OAI;
 import com.github.erosb.kappa.core.model.OAIContext;
+import com.github.erosb.kappa.operation.validator.util.PathResolver;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
-public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI {
+public class OpenApi3
+  extends AbsExtendedOpenApiSchema<OpenApi3>
+  implements OAI {
   private String openapi;
   private Info info;
   private List<Server> servers;
@@ -79,8 +84,26 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
     return paths;
   }
 
+  public Map<Pattern, Path> findPathPatterns() {
+    Map<Pattern, Path> patterns = new HashMap<>();
+
+    for (Map.Entry<String, Path> pathEntry : paths.entrySet()) {
+      List<Pattern> builtPathPatterns = PathResolver.instance().buildPathPatterns(
+        context,
+        servers,
+        pathEntry.getKey());
+
+      for (Pattern pathPattern : builtPathPatterns) {
+        patterns.put(pathPattern, pathEntry.getValue());
+      }
+    }
+
+    return patterns;
+  }
+
   public OpenApi3 setPaths(Map<String, Path> paths) {
     this.paths = paths;
+    paths.forEach((key, value) -> value.setPathPattern(key));
     return this;
   }
 
@@ -190,7 +213,6 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
     this.context = context;
   }
 
-
   //////////////////////////////////////////////////////////////
   // UTILITY METHODS
   //////////////////////////////////////////////////////////////
@@ -200,7 +222,9 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
    * @return Get the corresponding operation with the given ID
    */
   public Operation getOperationById(String operationId) {
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
     for (Path path : paths.values()) {
       if (path.getOperations() == null) {
@@ -218,7 +242,9 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
   }
 
   public String getPathFrom(Path specPath) {
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
     for (Map.Entry<String, Path> path : paths.entrySet()) {
       if (path.getValue().equals(specPath)) {
@@ -234,7 +260,9 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
    * @return Get the corresponding operation with the given ID
    */
   public Path getPathItemByOperationId(String operationId) {
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
     for (Path path : paths.values()) {
       if (path.getOperations() == null) {

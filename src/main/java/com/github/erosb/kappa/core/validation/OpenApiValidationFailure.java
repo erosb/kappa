@@ -45,9 +45,9 @@ public class OpenApiValidationFailure {
   public static class PathValidationFailure
     extends OpenApiValidationFailure {
 
-    PathValidationFailure(String message) {
+    PathValidationFailure(String message, URIFactory uriFactory) {
       super(message,
-        new SourceLocation(-1, -1, new JsonPointer("path"), request),
+        new SourceLocation(-1, -1, new JsonPointer("path"), uriFactory.request()),
         null);
     }
 
@@ -66,7 +66,8 @@ public class OpenApiValidationFailure {
     extends OpenApiValidationFailure {
 
     public RequestBodyValidationFailure(String message, TextLocation parseFailure, URI uri, URIFactory uriFactory) {
-      super(message, new SourceLocation(parseFailure.getLineNumber(), parseFailure.getPosition(), new JsonPointer(), requestBody),
+      super(message, new SourceLocation(parseFailure.getLineNumber(), parseFailure.getPosition(), new JsonPointer(),
+          uriFactory.requestBodyDefinition()),
         new SourceLocation(-1, -1,
           new JsonPointer(), uriFactory.requestBodyDefinition()));
     }

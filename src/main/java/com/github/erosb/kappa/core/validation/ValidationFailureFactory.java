@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.core.validation;
 
 import com.github.erosb.jsonsKema.JsonParseException;
+import com.github.erosb.jsonsKema.TextLocation;
 
 import java.net.URI;
 
@@ -14,7 +15,10 @@ public class ValidationFailureFactory {
   }
 
   public OpenApiValidationFailure.RequestBodyValidationFailure missingRequiredBody() {
-    return new OpenApiValidationFailure.RequestBodyValidationFailure("Body is required but none provided.");
+    return new OpenApiValidationFailure.RequestBodyValidationFailure("Body is required but none provided.",
+      new TextLocation(-1, -1, uriFactory.request()),
+      uriFactory.request(),
+      uriFactory);
   }
 
   public OpenApiValidationFailure.RequestBodyValidationFailure unparseableRequestBody(JsonParseException ex, URI uri) {
@@ -24,12 +28,19 @@ public class ValidationFailureFactory {
 
   public OpenApiValidationFailure.RequestBodyValidationFailure missingContentTypeHeader() {
     return new OpenApiValidationFailure.RequestBodyValidationFailure(
-      "Body content type cannot be determined. No 'Content-Type' header available.", uriFactory);
+      "Body content type cannot be determined. No 'Content-Type' header available.",
+      new TextLocation(-1, -1, uriFactory.request()),
+      uriFactory.request(),
+      uriFactory);
   }
 
   public OpenApiValidationFailure.RequestBodyValidationFailure wrongContentType(String actualContentType) {
     return new OpenApiValidationFailure.RequestBodyValidationFailure(
-      String.format("Content type '%s' is not allowed for body content.", actualContentType));
+      String.format("Content type '%s' is not allowed for body content.", actualContentType),
+      new TextLocation(-1, -1, uriFactory.request()),
+      uriFactory.request(),
+      uriFactory
+    );
   }
 
   public OpenApiValidationFailure.StatusCodeValidationFailure unknownStatusCode(int unknownStatusCode, URI operationUri) {
@@ -37,11 +48,13 @@ public class ValidationFailureFactory {
   }
 
   public OpenApiValidationFailure.PathValidationFailure noMatchingPathPatternFound() {
-    return new OpenApiValidationFailure.PathValidationFailure("Path template '%s' has not been found from value '%s'.");
+    return new OpenApiValidationFailure.PathValidationFailure("Path template '%s' has not been found from value '%s'.",
+      uriFactory);
   }
 
   public OpenApiValidationFailure.ParameterValidationFailure missingRequiredParameter(String paramName) {
-    return new OpenApiValidationFailure.ParameterValidationFailure(String.format("Missing required parameter '%s'.", paramName));
+    return new OpenApiValidationFailure.ParameterValidationFailure(String.format("Missing required parameter '%s'.", paramName),
+      uriFactory);
   }
 
 }
