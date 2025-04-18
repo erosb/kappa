@@ -10,6 +10,8 @@ import static java.util.Objects.requireNonNull;
 public class ValidationFailureFactory {
   private final URIFactory uriFactory;
 
+  private String templatePath;
+
   public ValidationFailureFactory(URIFactory uriFactory) {
     this.uriFactory = requireNonNull(uriFactory);
   }
@@ -44,6 +46,7 @@ public class ValidationFailureFactory {
   }
 
   public OpenApiValidationFailure.StatusCodeValidationFailure unknownStatusCode(int unknownStatusCode, URI operationUri) {
+    System.out.println("tempplatePath = " + templatePath);
     return new OpenApiValidationFailure.StatusCodeValidationFailure(unknownStatusCode, operationUri, uriFactory);
   }
 
@@ -57,5 +60,8 @@ public class ValidationFailureFactory {
       uriFactory);
   }
 
+  public void setPath(String templatePath) {
+    this.templatePath = templatePath;
+  }
 }
 

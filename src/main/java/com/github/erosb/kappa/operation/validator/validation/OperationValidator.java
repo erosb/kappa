@@ -309,16 +309,14 @@ public class OperationValidator {
   public void validateResponse(final Response response,
                                final ValidationData<?> validation) {
     System.out.println("pathPatterns = " + pathPatterns);
+    System.out.println("templatePath = " + templatePath);
+    failureFactory.setPath(templatePath);
     Set<String> responseCodeDefinitions = operation.getResponses().keySet();
     boolean responseCodeFound = responseCodeDefinitions.stream().anyMatch(
       responseCodeDefinition -> responseCodeDefinitionMatches(responseCodeDefinition, response.getStatus()));
     if (!responseCodeFound) {
-      try {
-        validation.add(
-          failureFactory.unknownStatusCode(response.getStatus(), context.getContext().getBaseUrl().toURI()));
-      } catch (URISyntaxException e) {
-        throw new RuntimeException(e);
-      }
+      validation.add(
+        failureFactory.unknownStatusCode(response.getStatus(), uriFactory.forResponse().pathParam("TODO")));
     }
 
     validateHeaders(response, validation);

@@ -208,7 +208,7 @@ public class UsersApiTest
 
     DefaultRequest request = new DefaultRequest.Builder("/users", POST)
       .header("content-type", "application/json")
-      .body(Body.from("{\"email\":\"xx123\"}")).build();
+         .body(Body.from("{\"email\":\"xx123\"}")).build();
     ValidationException actual = assertThrows(ValidationException.class, () ->
       new RequestValidator(api).validate(request));
 
