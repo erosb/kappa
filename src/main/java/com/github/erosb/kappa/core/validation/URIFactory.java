@@ -72,8 +72,17 @@ public class URIFactory {
     }
   }
 
-  public URI responseStatusCode() {
+  public URI instanceResponseStatusCode() {
     return uri("$response.status");
+  }
+
+  public URI definitionResponseStatusCode(String pathName, String methodName) {
+    System.out.println("contextBaseURL = " + contextBaseURL);
+    try {
+      return uri(contextBaseURL.toURI() + "/" + methodName + "/responses");
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public URIFactory forRequest() {

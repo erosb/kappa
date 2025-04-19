@@ -47,7 +47,10 @@ public class ValidationFailureFactory {
 
   public OpenApiValidationFailure.StatusCodeValidationFailure unknownStatusCode(int unknownStatusCode, URI operationUri) {
     System.out.println("tempplatePath = " + templatePath);
-    return new OpenApiValidationFailure.StatusCodeValidationFailure(unknownStatusCode, operationUri, uriFactory);
+    System.out.println(uriFactory.instanceResponseStatusCode());
+
+    return new OpenApiValidationFailure.StatusCodeValidationFailure(unknownStatusCode,
+      uriFactory.definitionResponseStatusCode(templatePath, "get"), uriFactory);
   }
 
   public OpenApiValidationFailure.PathValidationFailure noMatchingPathPatternFound() {

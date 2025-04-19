@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -191,7 +192,8 @@ public class UsersApiTest
     assertEquals("Unknown status code 280", failure.getMessage());
     assertEquals("$response.status", failure.describeInstanceLocation());
     System.out.println(failure.describeSchemaLocation());
-    assertTrue(failure.describeSchemaLocation().endsWith("#/paths/~01users/get"));
+    System.out.println(URLDecoder.decode(failure.describeSchemaLocation()));
+    assertTrue(failure.describeSchemaLocation().endsWith("#/paths/~01users/get/responses"));
   }
 
   @Test
@@ -208,7 +210,7 @@ public class UsersApiTest
 
     DefaultRequest request = new DefaultRequest.Builder("/users", POST)
       .header("content-type", "application/json")
-         .body(Body.from("{\"email\":\"xx123\"}")).build();
+      .body(Body.from("{\"email\":\"xx123\"}")).build();
     ValidationException actual = assertThrows(ValidationException.class, () ->
       new RequestValidator(api).validate(request));
 

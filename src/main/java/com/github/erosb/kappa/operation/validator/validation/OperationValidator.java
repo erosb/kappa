@@ -28,6 +28,7 @@ import com.github.erosb.kappa.schema.validator.ValidationData;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class OperationValidator {
    * @param operation The Operation to validate.
    */
   public OperationValidator(final OpenApi3 openApi, final Path path, final Operation operation) {
-    this(new ValidationContext<>(openApi.getContext()), openApi, path, operation);
+    this(new ValidationContext<>(openApi.getContext()), openApi, path, path.findHttpMethodByOperation(operation), operation);
   }
 
   /**
@@ -101,6 +102,7 @@ public class OperationValidator {
   public OperationValidator(final ValidationContext<OAI3> context,
                             final OpenApi3 openApi,
                             final Path path,
+                            String methodName,
                             final Operation operation) {
     this(context, null, openApi, path, operation);
   }
@@ -127,9 +129,9 @@ public class OperationValidator {
     // Clone operation
     this.operation = buildFlatOperation(operation);
     try {
-      this.uriFactory = new URIFactory(context.getContext().getBaseUrl().toURI().resolve(
-        URLEncoder.encode(path.getPathPattern(), Charset.defaultCharset().toString())
-      ).toURL());
+      System.out.println("getBaseUrl() = " + context.getContext().getBaseUrl().toURI());
+      String encodedPathPattern = URLEncoder.encode(path.getPathPattern(), Charset.defaultCharset().toString());
+      this.uriFactory = new URIFactory(new URL(context.getContext().getBaseUrl().toURI() + "#/paths/" + encodedPathPattern));
     } catch (URISyntaxException | MalformedURLException | UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -311,6 +313,7 @@ public class OperationValidator {
     System.out.println("pathPatterns = " + pathPatterns);
     System.out.println("templatePath = " + templatePath);
     failureFactory.setPath(templatePath);
+
     Set<String> responseCodeDefinitions = operation.getResponses().keySet();
     boolean responseCodeFound = responseCodeDefinitions.stream().anyMatch(
       responseCodeDefinition -> responseCodeDefinitionMatches(responseCodeDefinition, response.getStatus()));

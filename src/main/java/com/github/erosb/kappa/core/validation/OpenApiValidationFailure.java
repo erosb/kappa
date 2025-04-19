@@ -1,6 +1,5 @@
 package com.github.erosb.kappa.core.validation;
 
-import com.github.erosb.jsonsKema.JsonParseException;
 import com.github.erosb.jsonsKema.JsonPointer;
 import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.jsonsKema.TextLocation;
@@ -22,7 +21,7 @@ public class OpenApiValidationFailure {
     StatusCodeValidationFailure(int unknownStatusCode, URI operationUri, URIFactory uriFactory) {
       super("Unknown status code " + unknownStatusCode, new SourceLocation(-1, -1,
         new JsonPointer(),
-        uriFactory.responseStatusCode()), new SourceLocation(-1, -1, new JsonPointer(), operationUri)
+        uriFactory.instanceResponseStatusCode()), new SourceLocation(-1, -1, new JsonPointer(), operationUri)
       );
     }
   }
