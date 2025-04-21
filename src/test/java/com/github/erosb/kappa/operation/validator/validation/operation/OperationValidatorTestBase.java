@@ -14,7 +14,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class OperationValidatorTestBase {
-  protected OperationValidator loadOperationValidator(String path, String opId) throws Exception {
+  protected OperationValidator loadOperationValidator(String path, String opId)
+    throws Exception {
     URL specPath = OperationValidatorTestBase.class.getResource(path);
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
 
@@ -25,8 +26,8 @@ public class OperationValidatorTestBase {
   }
 
   protected void check(Request rq,
-                     BiConsumer<Request, ValidationData<Void>> func,
-                     boolean shouldBeValid) {
+                       BiConsumer<Request, ValidationData<Void>> func,
+                       boolean shouldBeValid) {
 
     ValidationData<Void> validation = new ValidationData<>();
     func.accept(rq, validation);
@@ -36,13 +37,16 @@ public class OperationValidatorTestBase {
     if (shouldBeValid) {
       assertTrue(validation.results().toString(), validation.isValid());
     } else {
+      System.out.println("isValid() = " + validation.isValid());
+      System.out.println("results = ");
+      validation.results().stream().forEach(System.out::println);
       assertFalse(validation.results().toString(), validation.isValid());
     }
   }
 
   protected void check(Response resp,
-                     BiConsumer<Response, ValidationData<Void>> func,
-                     boolean shouldBeValid) {
+                       BiConsumer<Response, ValidationData<Void>> func,
+                       boolean shouldBeValid) {
 
     ValidationData<Void> validation = new ValidationData<>();
     func.accept(resp, validation);

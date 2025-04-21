@@ -192,6 +192,7 @@ public class OperationValidator {
    * @return The mapped parameters with their values.
    */
   Map<String, JsonNode> validatePath(final Request request, Pattern pathPattern, final ValidationData<?> validation) {
+    System.out.println("ReqValidator.validate() , pathPattern = " + pathPattern);
     if (specRequestPathValidator == null) {
       return null;
     }
@@ -201,7 +202,7 @@ public class OperationValidator {
       specRequestPathValidator.getParameters(),
       pathPattern,
       request.getPath());
-
+    System.out.println("mappedValues = " + mappedValues);
     specRequestPathValidator.validate(mappedValues, validation);
 
     return mappedValues;
