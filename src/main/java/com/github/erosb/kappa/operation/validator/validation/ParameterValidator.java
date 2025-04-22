@@ -80,6 +80,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
       if (paramSchema != null) {
         URL contextBaseURL = context.getContext().getBaseUrl();
         URI pathParamDefinitionURI = uriFactory.pathParamDefinition(contextBaseURL, paramName);
+        System.out.println("from ParameterValidator, for " + paramName);
         JsonValidator v = new SKemaBackedJsonValidator(paramSchema.copy(), context, pathParamDefinitionURI);
         validators.put(paramName, v);
       }
