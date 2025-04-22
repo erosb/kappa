@@ -49,6 +49,7 @@ public class SKemaBackedJsonValidator
     JsonNode rawJson = TreeUtil.json.convertValue(schema, JsonNode.class);
     if (rawJson instanceof ObjectNode) {
       ObjectNode obj = (ObjectNode) rawJson;
+      System.out.println("  create validator: " + rawJson.toPrettyString());
       obj.set("components", context.getContext().getBaseDocument().get("components"));
     }
     try {
