@@ -39,6 +39,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
   void validate(final Map<String, JsonNode> values,
                 final ValidationData<?> validation) {
 
+    System.out.println("specValidators = " + specValidators);
     if (specValidators == null) {
       return;
     }
@@ -48,6 +49,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
 
       if (checkRequired(paramName, specParameters.get(paramName), values, validation)) {
         JsonNode paramValue = values.get(paramName);
+        System.out.println("paramValue = " + paramValue);
         entry.getValue().validate(paramValue, uriFactory.pathParam(paramName), validation);
       }
     }

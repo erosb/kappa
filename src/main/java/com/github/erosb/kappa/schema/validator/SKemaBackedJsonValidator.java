@@ -63,7 +63,9 @@ public class SKemaBackedJsonValidator
   }
 
   public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
+    System.out.println("validate " + jsonValue + " against schema ");
     ValidationFailure failure = Validator.create(schema, new ValidatorConfig(FormatValidationPolicy.ALWAYS)).validate(jsonValue);
+    System.out.println("   -> failure = " + failure);
     if (failure != null) {
       validation.add(failure);
       return false;
