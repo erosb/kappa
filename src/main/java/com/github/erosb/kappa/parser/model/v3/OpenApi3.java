@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI {
+public class OpenApi3
+  extends AbsExtendedOpenApiSchema<OpenApi3>
+  implements OAI {
   private String openapi;
   private Info info;
   private List<Server> servers;
@@ -190,7 +192,6 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
     this.context = context;
   }
 
-
   //////////////////////////////////////////////////////////////
   // UTILITY METHODS
   //////////////////////////////////////////////////////////////
@@ -200,7 +201,9 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
    * @return Get the corresponding operation with the given ID
    */
   public Operation getOperationById(String operationId) {
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
     for (Path path : paths.values()) {
       if (path.getOperations() == null) {
@@ -218,7 +221,9 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
   }
 
   public String getPathFrom(Path specPath) {
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
     for (Map.Entry<String, Path> path : paths.entrySet()) {
       if (path.getValue().equals(specPath)) {
@@ -234,7 +239,9 @@ public class OpenApi3 extends AbsExtendedOpenApiSchema<OpenApi3> implements OAI 
    * @return Get the corresponding operation with the given ID
    */
   public Path getPathItemByOperationId(String operationId) {
-    if (paths == null) return null;
+    if (paths == null) {
+      return null;
+    }
 
     for (Path path : paths.values()) {
       if (path.getOperations() == null) {

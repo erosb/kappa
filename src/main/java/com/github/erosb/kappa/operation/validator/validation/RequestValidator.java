@@ -83,7 +83,8 @@ public class RequestValidator {
    * @return The generated validator for the operation or cached version.
    * @throws ValidationException A validation report containing validation errors
    */
-  public OperationValidator getValidator(final Request request) throws ValidationException {
+  public OperationValidator getValidator(final Request request)
+    throws ValidationException {
     requireNonNull(request, REQUEST_REQUIRED_ERR_MSG);
 
     final Pattern pathPattern = getRequiredPathPattern(request);
@@ -129,7 +130,8 @@ public class RequestValidator {
    * @param request The request to validate. Must be {@code nonnull}.
    * @throws ValidationException A validation report containing validation errors
    */
-  public RequestParameters validate(final Request request) throws ValidationException {
+  public RequestParameters validate(final Request request)
+    throws ValidationException {
     return validate(request, new ValidationData<>());
   }
 
@@ -149,7 +151,8 @@ public class RequestValidator {
    * @see #getValidator(Request)
    */
   public void validate(final Response response,
-                       final Request request) throws ValidationException {
+                       final Request request)
+    throws ValidationException {
     requireNonNull(response, RESPONSE_REQUIRED_ERR_MSG);
 
     final OperationValidator validator = getValidator(request);
@@ -166,7 +169,8 @@ public class RequestValidator {
    * @throws ValidationException A validation report containing validation errors
    */
   public RequestParameters validate(final Request request,
-                                    final ValidationData<?> validation) throws ValidationException {
+                                    final ValidationData<?> validation)
+    throws ValidationException {
     final Pattern pathPattern = getRequiredPathPattern(request);
     final Path path = getRequiredPath(request, pathPattern);
     final Operation operation = getRequiredOperation(request, path);
@@ -184,7 +188,8 @@ public class RequestValidator {
    */
   public RequestParameters validate(final Request request,
                                     final Path path,
-                                    final Operation operation) throws ValidationException {
+                                    final Operation operation)
+    throws ValidationException {
     return validate(request, path, operation, new ValidationData<>());
   }
 
@@ -200,7 +205,8 @@ public class RequestValidator {
   public RequestParameters validate(final Request request,
                                     final Path path,
                                     final Operation operation,
-                                    final ValidationData<?> validation) throws ValidationException {
+                                    final ValidationData<?> validation)
+    throws ValidationException {
     return validate(request, null, path, operation, validation);
   }
 
@@ -214,7 +220,8 @@ public class RequestValidator {
    */
   public void validate(final Response response,
                        final Path path,
-                       final Operation operation) throws ValidationException {
+                       final Operation operation)
+    throws ValidationException {
     validate(response, path, operation, new ValidationData<>());
   }
 
@@ -230,7 +237,8 @@ public class RequestValidator {
   public void validate(final Response response,
                        final Path path,
                        final Operation operation,
-                       final ValidationData<?> validation) throws ValidationException {
+                       final ValidationData<?> validation)
+    throws ValidationException {
 
     requireNonNull(response, RESPONSE_REQUIRED_ERR_MSG);
 
@@ -253,7 +261,8 @@ public class RequestValidator {
                                      final Pattern pathPattern,
                                      final Path path,
                                      final Operation operation,
-                                     final ValidationData<?> validation) throws ValidationException {
+                                     final ValidationData<?> validation)
+    throws ValidationException {
 
     requireNonNull(request, REQUEST_REQUIRED_ERR_MSG);
 
@@ -282,7 +291,8 @@ public class RequestValidator {
   }
 
   private Operation getRequiredOperation(final Request request,
-                                         final Path path) throws ValidationException {
+                                         final Path path)
+    throws ValidationException {
     final Operation operation = path.getOperation(request.getMethod().name().toLowerCase());
     if (operation == null) {
       throw new ValidationException(String.format(INVALID_OP_ERR_MSG, request.getURL(), request.getMethod().name()));
@@ -290,7 +300,8 @@ public class RequestValidator {
     return operation;
   }
 
-  private Pattern getRequiredPathPattern(final Request request) throws ValidationException {
+  private Pattern getRequiredPathPattern(final Request request)
+    throws ValidationException {
     final Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns.keySet(), request.getPath());
     if (pathPattern == null) {
       throw new ValidationException(String.format(INVALID_OP_PATH_ERR_MSG, request.getURL()));
@@ -298,7 +309,8 @@ public class RequestValidator {
     return pathPattern;
   }
 
-  private Path getRequiredPath(Request request, Pattern pathPattern) throws ValidationException {
+  private Path getRequiredPath(Request request, Pattern pathPattern)
+    throws ValidationException {
     final Path path = pathPatterns.get(pathPattern);
     if (path == null) {
       throw new ValidationException(String.format(INVALID_OP_PATH_ERR_MSG, request.getURL()));
@@ -308,7 +320,8 @@ public class RequestValidator {
 
   private void validateResponse(final Response response,
                                 final OperationValidator opValidator,
-                                final ValidationData<?> validation) throws ValidationException {
+                                final ValidationData<?> validation)
+    throws ValidationException {
     opValidator.validateResponse(response, validation);
     if (!validation.isValid()) {
       throw new ValidationException(INVALID_RESPONSE_ERR_MSG, validation.results());
