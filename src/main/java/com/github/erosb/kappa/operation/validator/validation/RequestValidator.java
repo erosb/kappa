@@ -68,7 +68,7 @@ public class RequestValidator {
     this.openApi = openApi;
     this.context = context;
     this.operationValidators = new ConcurrentHashMap<>();
-    this.pathPatterns = buildPathPatterns();
+    this.pathPatterns = openApi.findPathPatterns();
   }
 
   /**
@@ -326,22 +326,5 @@ public class RequestValidator {
     if (!validation.isValid()) {
       throw new ValidationException(INVALID_RESPONSE_ERR_MSG, validation.results());
     }
-  }
-
-  private Map<Pattern, Path> buildPathPatterns() {
-    Map<Pattern, Path> patterns = new HashMap<>();
-
-    for (Map.Entry<String, Path> pathEntry : openApi.getPaths().entrySet()) {
-      List<Pattern> builtPathPatterns = PathResolver.instance().buildPathPatterns(
-        openApi.getContext(),
-        openApi.getServers(),
-        pathEntry.getKey());
-
-      for (Pattern pathPattern : builtPathPatterns) {
-        patterns.put(pathPattern, pathEntry.getValue());
-      }
-    }
-
-    return patterns;
   }
 }
