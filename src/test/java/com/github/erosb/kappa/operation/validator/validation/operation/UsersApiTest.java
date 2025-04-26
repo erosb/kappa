@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -190,6 +191,9 @@ public class UsersApiTest
 
     assertEquals("Unknown status code 280", failure.getMessage());
     assertEquals("$response.status", failure.describeInstanceLocation());
+    System.out.println(failure.describeSchemaLocation());
+    System.out.println(URLDecoder.decode(failure.describeSchemaLocation()));
+    assertTrue(failure.describeSchemaLocation().endsWith("#/paths/~1users/get/responses"));
   }
 
   @Test

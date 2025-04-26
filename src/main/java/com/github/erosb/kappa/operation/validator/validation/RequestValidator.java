@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.kappa.core.model.OAI;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.operation.validator.model.Request;
@@ -41,7 +42,6 @@ public class RequestValidator {
   private static final String INVALID_OP_PATH_ERR_MSG = "Operation path not found from URL '%s'.";
 
   private final OpenApi3 openApi;
-  private final ValidationContext<OAI3> context;
   private final Map<Operation, OperationValidator> operationValidators;
   private final Map<Pattern, Path> pathPatterns;
 
@@ -51,7 +51,7 @@ public class RequestValidator {
    * @param openApi The loaded open API model
    */
   public RequestValidator(final OpenApi3 openApi) {
-    this(new ValidationContext<>(openApi.getContext()), openApi);
+    this(new ValidationContext<>(openApi.getContext(), null, null), openApi);
   }
 
   /**
@@ -62,11 +62,9 @@ public class RequestValidator {
    */
   public RequestValidator(final ValidationContext<OAI3> context, final OpenApi3 openApi) {
     requireNonNull(openApi, OAI_REQUIRED_ERR_MSG);
-    requireNonNull(context, VALIDATION_CTX_REQUIRED_ERR_MSG);
     requireNonNull(openApi.getPaths(), PATHS_REQUIRED_ERR_MSG);
 
     this.openApi = openApi;
-    this.context = context;
     this.operationValidators = new ConcurrentHashMap<>();
     this.pathPatterns = openApi.findPathPatterns();
   }
@@ -115,7 +113,10 @@ public class RequestValidator {
             patterns.add(patternPathEntry.getKey());
           }
         }
-        return new OperationValidator(context, patterns, openApi, path, op);
+        return new OperationValidator(
+          new ValidationContext<OAI3>(openApi.getContext(), openApi.getPathFrom(path), path.findHttpMethodByOperation(operation)),
+          patterns,
+          openApi, path, op);
       });
   }
 

@@ -41,17 +41,17 @@ public class OpenApiValidationFailure {
     return new SchemaValidationFailure(result);
   }
 
-  public static StatusCodeValidationFailure unknownStatusCode(int unknownStatusCode) {
-    return new StatusCodeValidationFailure(unknownStatusCode);
+  public static StatusCodeValidationFailure unknownStatusCode(int unknownStatusCode, SourceLocation schemaLocation) {
+    return new StatusCodeValidationFailure(unknownStatusCode, schemaLocation);
   }
 
   public static class StatusCodeValidationFailure
     extends OpenApiValidationFailure {
 
-    StatusCodeValidationFailure(int unknownStatusCode) {
+    StatusCodeValidationFailure(int unknownStatusCode, SourceLocation schemaLocation) {
       super("Unknown status code " + unknownStatusCode, new SourceLocation(-1, -1,
         new JsonPointer(),
-        new URIFactory().responseStatusCode()), null);
+        new URIFactory().responseStatusCode()), schemaLocation);
     }
   }
 

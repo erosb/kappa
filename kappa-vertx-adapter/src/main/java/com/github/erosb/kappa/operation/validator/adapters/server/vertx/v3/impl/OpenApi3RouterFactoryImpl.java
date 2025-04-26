@@ -31,7 +31,8 @@ import io.vertx.ext.web.handler.BodyHandler;
 
 import static com.github.erosb.kappa.operation.validator.util.PathResolver.Options.END_STRING;
 
-public class OpenApi3RouterFactoryImpl implements OpenApi3RouterFactory {
+public class OpenApi3RouterFactoryImpl
+  implements OpenApi3RouterFactory {
   private static final String OP_ID_NOT_FOUND_ERR_MSG = "Operation with id '%s' not found.";
 
   private final Vertx vertx;
@@ -40,7 +41,7 @@ public class OpenApi3RouterFactoryImpl implements OpenApi3RouterFactory {
   private final SecurityRequirementHelper securityHelper;
 
   public OpenApi3RouterFactoryImpl(Vertx vertx, OpenApi3 openApi) {
-    this(vertx, new ValidationContext<>(openApi.getContext()), openApi);
+    this(vertx, new ValidationContext<>(openApi.getContext(), null, null), openApi);
   }
 
   @SuppressWarnings("WeakerAccess")
@@ -60,20 +61,23 @@ public class OpenApi3RouterFactoryImpl implements OpenApi3RouterFactory {
   }
 
   @Override
-  public OpenApi3RouterFactory addSecurityScopedHandler(String securityRequirementName, String scopeName, Handler<RoutingContext> handler) {
+  public OpenApi3RouterFactory addSecurityScopedHandler(String securityRequirementName, String scopeName,
+                                                        Handler<RoutingContext> handler) {
     securityHelper.addSecurityScopedHandler(securityRequirementName, scopeName, handler);
     return this;
   }
 
   @Override
-  public OpenApi3RouterFactory addOperationHandler(String operationId, Handler<RoutingContext> handler) throws
-          ResolutionException {
+  public OpenApi3RouterFactory addOperationHandler(String operationId, Handler<RoutingContext> handler)
+    throws
+    ResolutionException {
     addOperationHandler(operationId, null, handler);
     return this;
   }
 
   @Override
-  public OpenApi3RouterFactory addOperationHandler(String operationId, BodyHandler bodyHandler, Handler<RoutingContext> handler) throws ResolutionException {
+  public OpenApi3RouterFactory addOperationHandler(String operationId, BodyHandler bodyHandler, Handler<RoutingContext> handler)
+    throws ResolutionException {
     OperationSpec op = operationSpecs.get(operationId);
     if (op == null) {
       throw new ResolutionException(String.format(OP_ID_NOT_FOUND_ERR_MSG, operationId));
@@ -84,7 +88,8 @@ public class OpenApi3RouterFactoryImpl implements OpenApi3RouterFactory {
   }
 
   @Override
-  public Router getRouter() throws ResolutionException {
+  public Router getRouter()
+    throws ResolutionException {
     Router router = Router.router(vertx);
 
     for (OperationSpec operationSpec : operationSpecs.values()) {
@@ -100,7 +105,8 @@ public class OpenApi3RouterFactoryImpl implements OpenApi3RouterFactory {
         route.handler(operationSpec.bodyHandler);
       }
       // Security handlers
-      Collection<Handler<RoutingContext>> opSecurityHandlers = securityHelper.getHandlers(opValidator.getOperation().getSecurityRequirements());
+      Collection<Handler<RoutingContext>> opSecurityHandlers = securityHelper.getHandlers(
+        opValidator.getOperation().getSecurityRequirements());
       for (Handler<RoutingContext> handler : opSecurityHandlers) {
         route.handler(handler);
       }

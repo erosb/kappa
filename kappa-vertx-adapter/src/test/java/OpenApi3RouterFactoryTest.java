@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.json.JSONException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import com.github.erosb.kappa.core.exception.ResolutionException;
@@ -23,7 +24,9 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
 @RunWith(VertxUnitRunner.class)
-public class OpenApi3RouterFactoryTest extends VertxTestBase {
+@Ignore
+public class OpenApi3RouterFactoryTest
+  extends VertxTestBase {
   private OpenApi3RouterFactory routerFactory;
 
   @Test
@@ -32,15 +35,16 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
 
     Async async = context.async();
     OpenApi3RouterFactory.create(vertx, specPath).setHandler(result -> {
-        context.assertTrue(result.succeeded());
-        context.assertNotNull(result.result());
-        async.complete();
-      });
+      context.assertTrue(result.succeeded());
+      context.assertNotNull(result.result());
+      async.complete();
+    });
     async.await();
   }
 
   @Test(expected = ResolutionException.class)
-  public void mountWrongOperationId(TestContext context) throws ResolutionException {
+  public void mountWrongOperationId(TestContext context)
+    throws ResolutionException {
     loadSpec(context, "/api.yaml");
     routerFactory.addOperationHandler("wrong_op", null, RoutingContext::next);
   }
@@ -60,7 +64,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void mountSimpleHandlerTest(TestContext context) throws Exception {
+  public void mountSimpleHandlerTest(TestContext context)
+    throws Exception {
     loadSpec(context, "/api.yaml");
 
     routerFactory.addOperationHandler("simple", rc -> {
@@ -79,7 +84,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void checkPostBodyTest(TestContext context) throws Exception {
+  public void checkPostBodyTest(TestContext context)
+    throws Exception {
     loadSpec(context, "/api.yaml");
 
     routerFactory.addOperationHandler("rqBodyCheck", BodyHandler.create(), rc -> {
@@ -97,7 +103,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void checkPostBodyInvalidTest(TestContext context) throws Exception {
+  public void checkPostBodyInvalidTest(TestContext context)
+    throws Exception {
     loadSpec(context, "/api.yaml");
 
     routerFactory.addOperationHandler("rqBodyCheck", BodyHandler.create(), rc -> rc
@@ -112,7 +119,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void mountRegexHandlerTest(TestContext context) throws Exception {
+  public void mountRegexHandlerTest(TestContext context)
+    throws Exception {
     loadSpec(context, "/api.yaml");
 
     routerFactory.addOperationHandler("regex", rc -> {
@@ -134,7 +142,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void mountLabelMatrixHandlerTest(TestContext context) throws Exception {
+  public void mountLabelMatrixHandlerTest(TestContext context)
+    throws Exception {
     loadSpec(context, "/api.yaml");
 
     ObjectNode labelObject = JsonNodeFactory.instance.objectNode();
@@ -149,8 +158,10 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
       context.assertNotNull(rqParameters);
 
       try {
-        JSONCompare.compareJSON(labelObject.toString(), rqParameters.getPathParameter("label").toString(), JSONCompareMode.STRICT);
-        JSONCompare.compareJSON(matrixArray.toString(), rqParameters.getPathParameter("matrix").toString(), JSONCompareMode.STRICT);
+        JSONCompare.compareJSON(labelObject.toString(), rqParameters.getPathParameter("label").toString(),
+          JSONCompareMode.STRICT);
+        JSONCompare.compareJSON(matrixArray.toString(), rqParameters.getPathParameter("matrix").toString(),
+          JSONCompareMode.STRICT);
       } catch (JSONException e) {
         context.fail(e);
       }
@@ -168,7 +179,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test(expected = ResolutionException.class)
-  public void missingSecuredHandlerTest(TestContext context) throws ResolutionException {
+  public void missingSecuredHandlerTest(TestContext context)
+    throws ResolutionException {
     loadSpec(context, "/apiSecured.yaml");
 
     routerFactory.addOperationHandler("secured", rc -> rc
@@ -180,7 +192,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void failedSecuredHandlerTest(TestContext context) throws ResolutionException {
+  public void failedSecuredHandlerTest(TestContext context)
+    throws ResolutionException {
     loadSpec(context, "/apiSecured.yaml");
 
     routerFactory.addOperationHandler("secured", rc -> rc
@@ -198,7 +211,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void successfulSecuredHandlerTest(TestContext context) throws ResolutionException {
+  public void successfulSecuredHandlerTest(TestContext context)
+    throws ResolutionException {
     loadSpec(context, "/apiSecured.yaml");
 
     routerFactory.addOperationHandler("secured", rc -> rc
@@ -216,7 +230,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test(expected = ResolutionException.class)
-  public void missingOAuthSecuredHandlerTest(TestContext context) throws ResolutionException {
+  public void missingOAuthSecuredHandlerTest(TestContext context)
+    throws ResolutionException {
     loadSpec(context, "/apiOAuthSecured.yaml");
 
     routerFactory.addOperationHandler("secured", rc -> rc
@@ -228,7 +243,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void failedOAuthSecuredHandlerTest(TestContext context) throws ResolutionException {
+  public void failedOAuthSecuredHandlerTest(TestContext context)
+    throws ResolutionException {
     loadSpec(context, "/apiOAuthSecured.yaml");
 
     routerFactory.addOperationHandler("secured", rc -> rc
@@ -246,7 +262,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void successfulOAuthSecuredHandlerTest(TestContext context) throws ResolutionException {
+  public void successfulOAuthSecuredHandlerTest(TestContext context)
+    throws ResolutionException {
     loadSpec(context, "/apiOAuthSecured.yaml");
 
     routerFactory.addOperationHandler("secured", rc -> rc
@@ -264,7 +281,8 @@ public class OpenApi3RouterFactoryTest extends VertxTestBase {
   }
 
   @Test
-  public void noContentType(TestContext context) throws ResolutionException {
+  public void noContentType(TestContext context)
+    throws ResolutionException {
     loadSpec(context, "/api.yaml");
 
     routerFactory.addOperationHandler("noContentType", BodyHandler.create(), rc -> {

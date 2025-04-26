@@ -76,7 +76,8 @@ public class OperationValidator {
    * @param operation The Operation to validate.
    */
   public OperationValidator(final OpenApi3 openApi, final Path path, final Operation operation) {
-    this(new ValidationContext<>(openApi.getContext()), openApi, path, operation);
+    this(new ValidationContext<>(openApi.getContext(), openApi.getPathFrom(path), path.findHttpMethodByOperation(operation)),
+      openApi, path, operation);
   }
 
   /**
@@ -294,7 +295,8 @@ public class OperationValidator {
     boolean responseCodeFound = responseCodeDefinitions.stream().anyMatch(
       responseCodeDefinition -> responseCodeDefinitionMatches(responseCodeDefinition, response.getStatus()));
     if (!responseCodeFound) {
-      validation.add(OpenApiValidationFailure.unknownStatusCode(response.getStatus()));
+      validation.add(
+        OpenApiValidationFailure.unknownStatusCode(response.getStatus(), context.uriFactory().definitionStatusCode()));
     }
 
     validateHeaders(response, validation);
