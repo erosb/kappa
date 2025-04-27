@@ -49,7 +49,6 @@ public class SKemaBackedJsonValidator
     JsonNode rawJson = TreeUtil.json.convertValue(schema, JsonNode.class);
     if (rawJson instanceof ObjectNode) {
       ObjectNode obj = (ObjectNode) rawJson;
-      System.out.println("  create validator: " + rawJson.toPrettyString());
       obj.set("components", context.getContext().getBaseDocument().get("components"));
     }
     try {
@@ -64,9 +63,7 @@ public class SKemaBackedJsonValidator
   }
 
   public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
-    System.out.println("validate " + jsonValue + " against schema ");
     ValidationFailure failure = Validator.create(schema, new ValidatorConfig(FormatValidationPolicy.ALWAYS)).validate(jsonValue);
-    System.out.println("   -> failure = " + failure);
     if (failure != null) {
       validation.add(failure);
       return false;
