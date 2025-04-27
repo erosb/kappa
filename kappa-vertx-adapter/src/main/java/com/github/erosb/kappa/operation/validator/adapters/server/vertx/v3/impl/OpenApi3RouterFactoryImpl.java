@@ -40,17 +40,12 @@ public class OpenApi3RouterFactoryImpl
   private final Map<String, OperationSpec> operationSpecs;
   private final SecurityRequirementHelper securityHelper;
 
-  public OpenApi3RouterFactoryImpl(Vertx vertx, OpenApi3 openApi) {
-    this(vertx, new ValidationContext<>(openApi.getContext(), null, null), openApi);
-  }
-
   @SuppressWarnings("WeakerAccess")
-  public OpenApi3RouterFactoryImpl(Vertx vertx, ValidationContext<OAI3> context, OpenApi3 openApi) {
+  public OpenApi3RouterFactoryImpl(Vertx vertx, OpenApi3 openApi) {
     this.vertx = vertx;
     this.operationSpecs = new LinkedHashMap<>();
     securityHelper = new SecurityRequirementHelper();
-    rqValidator = new RequestValidator(context, openApi);
-
+    rqValidator = new RequestValidator(openApi);
     setupOperations(openApi);
   }
 

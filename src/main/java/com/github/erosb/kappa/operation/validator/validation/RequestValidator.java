@@ -51,16 +51,6 @@ public class RequestValidator {
    * @param openApi The loaded open API model
    */
   public RequestValidator(final OpenApi3 openApi) {
-    this(new ValidationContext<>(openApi.getContext(), null, null), openApi);
-  }
-
-  /**
-   * Construct a new request validator with the given open API.
-   *
-   * @param context The validation context to attach options and keyword overrides.
-   * @param openApi The loaded open API model
-   */
-  public RequestValidator(final ValidationContext<OAI3> context, final OpenApi3 openApi) {
     requireNonNull(openApi, OAI_REQUIRED_ERR_MSG);
     requireNonNull(openApi.getPaths(), PATHS_REQUIRED_ERR_MSG);
 
