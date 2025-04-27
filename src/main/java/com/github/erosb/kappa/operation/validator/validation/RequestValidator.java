@@ -103,10 +103,7 @@ public class RequestValidator {
             patterns.add(patternPathEntry.getKey());
           }
         }
-        return new OperationValidator(
-          new ValidationContext<OAI3>(openApi.getContext(), openApi.getPathFrom(path), path.findHttpMethodByOperation(operation)),
-          patterns,
-          openApi, path, op);
+        return new OperationValidator(patterns, openApi, path, op);
       });
   }
 

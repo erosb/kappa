@@ -76,42 +76,24 @@ public class OperationValidator {
    * @param operation The Operation to validate.
    */
   public OperationValidator(final OpenApi3 openApi, final Path path, final Operation operation) {
-    this(new ValidationContext<>(openApi.getContext(), openApi.getPathFrom(path), path.findHttpMethodByOperation(operation)),
-      openApi, path, operation);
+    this(null, openApi, path, operation);
   }
 
   /**
    * Creates a validator for the given operation.
    *
-   * @param context   The validation context for additional or changing behaviours.
-   * @param openApi   The full Document Description where the Operation is located.
-   * @param path      The Path of the Operation.
-   * @param operation The Operation to validate.
-   */
-  @SuppressWarnings("WeakerAccess")
-  public OperationValidator(final ValidationContext<OAI3> context,
-                            final OpenApi3 openApi,
-                            final Path path,
-                            final Operation operation) {
-    this(context, null, openApi, path, operation);
-  }
-
-  /**
-   * Creates a validator for the given operation.
-   *
-   * @param context      The validation context for additional or changing behaviours.
    * @param pathPatterns Pattern for the current path related to servers or OAI Document origin.
    * @param openApi      The full Document Description where the Operation is located.
    * @param path         The Path of the Operation.
    * @param operation    The Operation to validate.
    */
-  OperationValidator(final ValidationContext<OAI3> context,
-                     final List<Pattern> pathPatterns,
+  OperationValidator(final List<Pattern> pathPatterns,
                      final OpenApi3 openApi,
                      final Path path,
                      final Operation operation) {
 
-    this.context = requireNonNull(context, VALIDATION_CTX_REQUIRED_ERR_MSG);
+    this.context = new ValidationContext<>(openApi.getContext(), openApi.getPathFrom(path),
+      path.findHttpMethodByOperation(operation));
     requireNonNull(operation, OPERATION_REQUIRED_ERR_MSG);
     this.templatePath = openApi.getPathFrom(requireNonNull(path, PATH_REQUIRED_ERR_MSG));
 
