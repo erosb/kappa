@@ -42,7 +42,6 @@ public interface OpenApi3RouterFactory {
   static void create(Vertx vertx,
                      URL url,
                      Handler<AsyncResult<OpenApi3RouterFactory>> handler) {
-
     vertx.executeBlocking((Promise<OpenApi3RouterFactory> future) -> {
       try {
         OpenApi3 openApi = new OpenApi3Parser().parse(url, true);
@@ -72,7 +71,8 @@ public interface OpenApi3RouterFactory {
    * @return this
    */
   @Fluent
-  OpenApi3RouterFactory addSecurityScopedHandler(String securityRequirementName, String scopeName, Handler<RoutingContext> handler);
+  OpenApi3RouterFactory addSecurityScopedHandler(String securityRequirementName, String scopeName,
+                                                 Handler<RoutingContext> handler);
 
   /**
    * Add operation handler from operationId field in Operation object.
@@ -82,7 +82,8 @@ public interface OpenApi3RouterFactory {
    * @return this
    */
   @Fluent
-  OpenApi3RouterFactory addOperationHandler(String operationId, Handler<RoutingContext> handler) throws ResolutionException;
+  OpenApi3RouterFactory addOperationHandler(String operationId, Handler<RoutingContext> handler)
+    throws ResolutionException;
 
   /**
    * Add operation handler from operationId field in Operation object.
@@ -93,7 +94,8 @@ public interface OpenApi3RouterFactory {
    * @return this
    */
   @Fluent
-  OpenApi3RouterFactory addOperationHandler(String operationId, BodyHandler bodyHandler, Handler<RoutingContext> handler) throws ResolutionException;
+  OpenApi3RouterFactory addOperationHandler(String operationId, BodyHandler bodyHandler, Handler<RoutingContext> handler)
+    throws ResolutionException;
 
   /**
    * Construct a new router based on spec. It will fail if you are trying to mount a spec with security schemes
@@ -102,5 +104,6 @@ public interface OpenApi3RouterFactory {
    * @return The built router.
    * @throws ResolutionException In case of missing security handler.
    */
-  Router getRouter() throws ResolutionException;
+  Router getRouter()
+    throws ResolutionException;
 }

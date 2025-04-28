@@ -3,7 +3,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.json.JSONException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import com.github.erosb.kappa.core.exception.ResolutionException;
@@ -24,7 +23,6 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
 @RunWith(VertxUnitRunner.class)
-@Ignore
 public class OpenApi3RouterFactoryTest
   extends VertxTestBase {
   private OpenApi3RouterFactory routerFactory;

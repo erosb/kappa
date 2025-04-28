@@ -92,6 +92,9 @@ public class RequestValidator {
   public OperationValidator getValidator(final Path path, final Operation operation) {
     requireNonNull(path, PATH_REQUIRED_ERR_MSG);
     requireNonNull(operation, OPERATION_REQUIRED_ERR_MSG);
+    if (!path.getOperations().containsValue(operation)) {
+      throw new IllegalArgumentException("path does not contain operation");
+    }
 
     return operationValidators.computeIfAbsent(
       operation,

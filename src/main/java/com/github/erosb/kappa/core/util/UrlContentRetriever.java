@@ -41,7 +41,8 @@ public final class UrlContentRetriever {
    * @return The content of the resource.
    * @throws ResolutionException wrapped exception for any error, depending of the underlying handler.
    */
-  public InputStream get(final URL url, final List<AuthOption> authOptions) throws ResolutionException {
+  public InputStream get(final URL url, final List<AuthOption> authOptions)
+    throws ResolutionException {
     URLConnection conn;
     URL inUrl = url;
     int nbRedirects = 0;
@@ -96,11 +97,14 @@ public final class UrlContentRetriever {
     }
   }
 
-  private URL handleAuthInQuery(URL inUrl, List<AuthOption> queryParams) throws URISyntaxException, UnsupportedEncodingException, MalformedURLException {
+  private URL handleAuthInQuery(URL inUrl, List<AuthOption> queryParams)
+    throws URISyntaxException, UnsupportedEncodingException, MalformedURLException {
     URI inUri = inUrl.toURI();
     StringBuilder newQuery = new StringBuilder(inUri.getQuery() == null ? "" : inUri.getQuery());
     for (AuthOption param : queryParams) {
-      if (newQuery.length() > 0) newQuery.append("&");
+      if (newQuery.length() > 0) {
+        newQuery.append("&");
+      }
 
       newQuery
         .append(URLEncoder.encode(param.getKey(), UTF_8.name()))
@@ -119,7 +123,8 @@ public final class UrlContentRetriever {
     }
   }
 
-  private URL handleRedirection(URLConnection conn, int nbRedirects) throws IOException, ResolutionException {
+  private URL handleRedirection(URLConnection conn, int nbRedirects)
+    throws IOException, ResolutionException {
     if (conn instanceof HttpURLConnection) {
       int statusCode = ((HttpURLConnection) conn).getResponseCode();
       String newLocation = conn.getHeaderField("Location");

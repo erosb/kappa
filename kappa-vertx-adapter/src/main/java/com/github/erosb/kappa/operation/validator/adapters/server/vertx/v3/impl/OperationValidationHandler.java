@@ -9,7 +9,8 @@ import com.github.erosb.kappa.parser.model.v3.Operation;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
-class OperationValidationHandler implements Handler<RoutingContext> {
+class OperationValidationHandler
+  implements Handler<RoutingContext> {
   private static final String RQ_PARAMETERS = "rqParameters";
 
   private final RequestValidator requestValidator;
@@ -20,6 +21,9 @@ class OperationValidationHandler implements Handler<RoutingContext> {
     this.requestValidator = requestValidator;
     this.path = path;
     this.operation = operation;
+    if (!path.getOperations().containsValue(operation)) {
+      throw new IllegalArgumentException("operation is not contained in the path");
+    }
   }
 
   @Override

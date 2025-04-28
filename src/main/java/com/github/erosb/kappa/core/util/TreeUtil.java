@@ -45,7 +45,8 @@ public final class TreeUtil {
    * @return a String containing the JSON representation of the given POJO.
    * @throws EncodeException if a property cannot be encoded.
    */
-  public static String toJson(Object obj) throws EncodeException {
+  public static String toJson(Object obj)
+    throws EncodeException {
     try {
       return json.writeValueAsString(obj);
     } catch (Exception e) {
@@ -60,7 +61,8 @@ public final class TreeUtil {
    * @return a JsonNode containing the JSON representation of the given POJO.
    * @throws EncodeException if a property cannot be encoded.
    */
-  public static JsonNode toJsonNode(Object obj) throws EncodeException {
+  public static JsonNode toJsonNode(Object obj)
+    throws EncodeException {
     try {
       return json.valueToTree(obj);
     } catch (Exception e) {
@@ -75,7 +77,8 @@ public final class TreeUtil {
    * @return a String containing the YAML representation of the given POJO.
    * @throws EncodeException if a property cannot be encoded.
    */
-  public static String toYaml(Object obj) throws EncodeException {
+  public static String toYaml(Object obj)
+    throws EncodeException {
     try {
       return yaml.writeValueAsString(obj);
     } catch (Exception e) {
@@ -91,7 +94,8 @@ public final class TreeUtil {
    * @return The content mapped.
    * @throws DecodeException In case wrong URL or content resolution.
    */
-  public static <T> T load(final URL url, Class<T> clazz) throws DecodeException {
+  public static <T> T load(final URL url, Class<T> clazz)
+    throws DecodeException {
     return load(url, null, clazz);
   }
 
@@ -104,7 +108,8 @@ public final class TreeUtil {
    * @return The content mapped.
    * @throws DecodeException In case wrong URL or content resolution.
    */
-  public static <T> T load(final URL url, final List<AuthOption> authOptions, Class<T> clazz) throws DecodeException {
+  public static <T> T load(final URL url, final List<AuthOption> authOptions, Class<T> clazz)
+    throws DecodeException {
     requireNonNull(url, URL_REQUIRED_ERR_MSG);
 
     try {
@@ -128,7 +133,8 @@ public final class TreeUtil {
    * @return The content mapped.
    * @throws DecodeException In case wrong URL or content resolution.
    */
-  public static JsonNode load(final URL url) throws DecodeException {
+  public static JsonNode load(final URL url)
+    throws DecodeException {
     return load(url, (List<AuthOption>) null);
   }
 
@@ -140,13 +146,13 @@ public final class TreeUtil {
    * @return The content mapped.
    * @throws DecodeException In case wrong URL or content resolution.
    */
-  public static JsonNode load(final URL url, final List<AuthOption> authOptions) throws DecodeException {
+  public static JsonNode load(final URL url, final List<AuthOption> authOptions)
+    throws DecodeException {
     requireNonNull(url, URL_REQUIRED_ERR_MSG);
 
     try {
       InputStream in = UrlContentRetriever.instance().get(url, authOptions);
       String content = IOUtil.toString(in, StandardCharsets.UTF_8.name());
-
       if (isJsonContent(content)) {
         return TreeUtil.json.readTree(content);
       } else {

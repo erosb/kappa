@@ -106,13 +106,15 @@ public class OpenApi3RouterFactoryImpl
         route.handler(handler);
       }
       // Content validation handler
-      route.handler(new OperationValidationHandler(rqValidator, operationSpec.pathModel, opValidator.getOperation()));
+      route.handler(new OperationValidationHandler(rqValidator, operationSpec.pathModel,
+        //opValidator.getOperation()
+        operationSpec.operation
+      ));
       // User handlers
       for (Handler<RoutingContext> handler : operationSpec.handlers) {
         route.handler(handler);
       }
     }
-
     return router;
   }
 

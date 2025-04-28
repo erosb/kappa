@@ -231,7 +231,8 @@ public class Path
   public String findHttpMethodByOperation(Operation operation) {
     return operations.entrySet().stream()
       .filter(entry -> entry.getValue().equals(operation))
-      .findFirst().orElseThrow(() -> new IllegalArgumentException("operation not found by any method"))
+      .findFirst().orElseThrow(() -> new IllegalArgumentException(
+        "operation not found by any method (supported methods are " + operations.keySet() + ")"))
       .getKey();
   }
 }
