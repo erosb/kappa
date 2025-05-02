@@ -12,8 +12,8 @@ import static java.util.Objects.requireNonNull;
 
 public class OpenApiValidationFailure {
 
-  public static PathValidationFailure noMatchingPathPatternFound() {
-    return new PathValidationFailure("Path template '%s' has not been found from value '%s'.");
+  public static PathValidationFailure noMatchingPathPatternFound(SourceLocation schemaLocation) {
+    return new PathValidationFailure("Path template '%s' has not been found from value '%s'.", schemaLocation);
   }
 
   public static RequestBodyValidationFailure missingRequiredBody() {
@@ -33,8 +33,8 @@ public class OpenApiValidationFailure {
       String.format("Content type '%s' is not allowed for body content.", actualContentType));
   }
 
-  public static ParameterValidationFailure missingRequiredParameter(String paramName) {
-    return new ParameterValidationFailure(String.format("Missing required parameter '%s'.", paramName));
+  public static ParameterValidationFailure missingRequiredParameter(String paramName, SourceLocation schemaLocation) {
+    return new ParameterValidationFailure(String.format("Missing required parameter '%s'.", paramName), schemaLocation);
   }
 
   public static SchemaValidationFailure bodySchemaValidationFailure(ValidationFailure result) {
@@ -73,10 +73,10 @@ public class OpenApiValidationFailure {
   public static class PathValidationFailure
     extends OpenApiValidationFailure {
 
-    PathValidationFailure(String message) {
+    PathValidationFailure(String message, SourceLocation schemaLocation) {
       super(message,
         new SourceLocation(-1, -1, new JsonPointer("path"), request),
-        null);
+        schemaLocation);
     }
 
   }
@@ -84,9 +84,9 @@ public class OpenApiValidationFailure {
   public static class ParameterValidationFailure
     extends OpenApiValidationFailure {
 
-    ParameterValidationFailure(String message) {
+    ParameterValidationFailure(String message, SourceLocation schemaLocation) {
       super(message, new SourceLocation(-1, -1, new JsonPointer("parameters"), request),
-        null);
+        schemaLocation);
     }
   }
 
@@ -118,7 +118,7 @@ public class OpenApiValidationFailure {
                            SourceLocation schemaLocation) {
     this.message = requireNonNull(message);
     this.instanceLocation = requireNonNull(instanceLocation);
-    this.schemaLocation = schemaLocation;
+    this.schemaLocation = requireNonNull(schemaLocation);
   }
 
   public String getMessage() {

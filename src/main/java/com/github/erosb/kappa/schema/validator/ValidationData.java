@@ -33,10 +33,10 @@ public final class ValidationData<V> {
   /**
    * Add a result.
    *
-   * @param result  validation result to append.
+   * @param result validation result to append.
    */
   public void add(ValidationFailure result) {
-    result.flatten().forEach( leafResult ->
+    result.flatten().forEach(leafResult ->
       add(OpenApiValidationFailure.bodySchemaValidationFailure(leafResult))
     );
   }
@@ -44,7 +44,6 @@ public final class ValidationData<V> {
   public void add(OpenApiValidationFailure failure) {
     validationFailures.add(failure);
   }
-
 
   /**
    * Check if the results are below the {@code ValidationSeverity.ERROR}

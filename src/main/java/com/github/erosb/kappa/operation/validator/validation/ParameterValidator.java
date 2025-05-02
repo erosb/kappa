@@ -2,7 +2,6 @@ package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.erosb.kappa.core.model.v3.OAI3;
-import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
@@ -93,7 +92,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
 
     if (!paramValues.containsKey(paramName)) {
       if (parameter.isRequired()) {
-        validation.add(OpenApiValidationFailure.missingRequiredParameter(paramName));
+        validation.add(OpenApiValidationFailure.missingRequiredParameter(paramName, context.uriFactory().definitionPath()));
       }
       return false;
     }

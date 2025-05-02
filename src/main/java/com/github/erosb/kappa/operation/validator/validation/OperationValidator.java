@@ -42,7 +42,6 @@ import static java.util.Objects.requireNonNull;
  */
 public class OperationValidator {
   // Error messages
-  private static final String VALIDATION_CTX_REQUIRED_ERR_MSG = "Validation context is required.";
   private static final String PATH_REQUIRED_ERR_MSG = "Path is required.";
   private static final String OPERATION_REQUIRED_ERR_MSG = "Operation is required.";
 
@@ -140,7 +139,7 @@ public class OperationValidator {
     // Check paths are matching before trying to map values
     Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns, request.getPath());
     if (pathPattern == null) {
-      validation.add(OpenApiValidationFailure.noMatchingPathPatternFound());
+      validation.add(OpenApiValidationFailure.noMatchingPathPatternFound(context.uriFactory().definitionPaths()));
       return null;
     }
 

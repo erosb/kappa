@@ -33,4 +33,24 @@ public class OperationContextUriFactory
       throw new RuntimeException(e);
     }
   }
+
+  public SourceLocation definitionPaths() {
+    try {
+      return new SourceLocation(-1, -1, new JsonPointer("paths"), context.getBaseUrl().toURI());
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public SourceLocation definitionPath() {
+    try {
+      return new SourceLocation(
+        -1, -1,
+        new JsonPointer("paths", templatePath),
+        context.getBaseUrl().toURI()
+      );
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
