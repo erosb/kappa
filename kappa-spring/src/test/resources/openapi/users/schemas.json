@@ -3,10 +3,20 @@
   "$defs": {
     "CreateUser": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "name",
         "email"
-      ]
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        }
+      }
     }
   }
 }

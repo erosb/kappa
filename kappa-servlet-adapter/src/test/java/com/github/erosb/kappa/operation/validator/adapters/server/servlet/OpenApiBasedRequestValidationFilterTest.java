@@ -44,9 +44,10 @@ public class OpenApiBasedRequestValidationFilterTest {
     out.flush();
 
     String responseBody = new String(out.toByteArray());
+    System.out.println(responseBody);
     JSONAssert.assertEquals("{\n"
       + "  \"errors\" : [ {\n"
-      + "    \"dataLocation\" : \"$request.body\",\n"
+      + "    \"dataLocation\" : \"$request.body (line 1, position 1)\",\n"
       + "    \"dynamicPath\" : \"#/$ref/required\",\n"
       + "    \"message\" : \"required properties are missing: name, email\"\n"
       + "  } ]\n"
@@ -54,7 +55,8 @@ public class OpenApiBasedRequestValidationFilterTest {
   }
 
   @Test
-  public void multipleApiYamlLookup() throws Exception {
+  public void multipleApiYamlLookup()
+    throws Exception {
     OpenApiBasedRequestValidationFilter filter = forApiLookup(path -> usersApi);
     HttpServletResponse resp = mock(HttpServletResponse.class);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -68,7 +70,7 @@ public class OpenApiBasedRequestValidationFilterTest {
     String responseBody = new String(out.toByteArray());
     JSONAssert.assertEquals("{\n"
       + "  \"errors\" : [ {\n"
-      + "    \"dataLocation\" : \"$request.body\",\n"
+      + "    \"dataLocation\" : \"$request.body (line 1, position 1)\",\n"
       + "    \"dynamicPath\" : \"#/$ref/required\",\n"
       + "    \"message\" : \"required properties are missing: name, email\"\n"
       + "  } ]\n"

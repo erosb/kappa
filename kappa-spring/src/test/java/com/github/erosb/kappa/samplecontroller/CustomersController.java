@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomersController {
 
   @PutMapping("/customers/{id}/address")
-  void put(@PathVariable int id) {
+  void put(@PathVariable("id") int id) {
 
   }
 }
