@@ -67,7 +67,7 @@ public class OpenApiValidationFailure {
 
     @Override
     public String describeSchemaLocation() {
-      return super.describeSchemaLocation() + " \n\t(evaluated on dynamic path: " + failure.getDynamicPath() + ")";
+      return super.describeSchemaLocation();// + " \n\t(evaluated on dynamic path: " + failure.getDynamicPath() + ")";
     }
 
     public ValidationFailure getFailure() {
