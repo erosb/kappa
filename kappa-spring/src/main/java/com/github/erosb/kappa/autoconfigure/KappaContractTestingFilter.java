@@ -43,6 +43,7 @@ public class KappaContractTestingFilter
 
       filterChain.doFilter(req, resp);
     } catch (ValidationException e) {
+      System.out.println(e.getMessage());
       throw new AssertionError(e.results().stream().map(failure -> describeFailure(failure)).collect(Collectors.joining("\n")));
     }
   }
@@ -52,6 +53,15 @@ public class KappaContractTestingFilter
     return failure.getMessage() + System.lineSeparator()
       + "instance location: " + failure.describeInstanceLocation() + System.lineSeparator()
       + "schema location: " + failure.describeSchemaLocation() + System.lineSeparator()
+      + appendDynamicPathInfo(failure)
       ;
+  }
+
+  private static String appendDynamicPathInfo(OpenApiValidationFailure failure) {
+    if (failure instanceof OpenApiValidationFailure.SchemaValidationFailure) {
+      return "\tevaluated on dynamic path: "
+        + ((OpenApiValidationFailure.SchemaValidationFailure) failure).getFailure().getDynamicPath() + System.lineSeparator();
+    }
+    return "";
   }
 }
