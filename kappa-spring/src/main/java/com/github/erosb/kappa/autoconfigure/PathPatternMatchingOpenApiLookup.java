@@ -41,6 +41,6 @@ public class PathPatternMatchingOpenApiLookup
         return entry.getValue();
       }
     }
-    throw new RuntimeException("OpenAPI description not found for request path " + requestPath);
+    throw new NoMatchingPathPatternFoundException(requestPath, pathPatternToApiDescr.keySet());
   }
 }

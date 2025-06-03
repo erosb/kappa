@@ -43,8 +43,10 @@ public class KappaContractTestingFilter
 
       filterChain.doFilter(req, resp);
     } catch (ValidationException e) {
-      System.out.println(e.getMessage());
-      throw new AssertionError(e.results().stream().map(failure -> describeFailure(failure)).collect(Collectors.joining("\n")));
+      throw new AssertionError(e.getMessage() + " \n" + e.results().stream().map(KappaContractTestingFilter::describeFailure)
+        .collect(Collectors.joining("\n")));
+    } catch (NoMatchingPathPatternFoundException e) {
+      throw new AssertionError(e.getMessage());
     }
   }
 
