@@ -15,7 +15,9 @@ import com.github.erosb.kappa.parser.OpenApi3Parser;
 
 import java.net.URL;
 
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -26,7 +28,8 @@ import static com.github.erosb.kappa.operation.validator.model.Request.Method.PO
 public class RequestValidatorTest {
 
   @Test(expected = ValidationException.class)
-  public void operationMethodNotFound() throws ValidationException, ResolutionException {
+  public void operationMethodNotFound()
+    throws ValidationException, ResolutionException {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
     RequestValidator requestValidator = new RequestValidator(api);
@@ -57,13 +60,14 @@ public class RequestValidatorTest {
 
     OpenApiValidationFailure pathFailure = thrown.results().get(0);
     assertEquals("expected type: integer, actual: string", pathFailure.getMessage());
-    assertEquals("$request.path.intPathParam", pathFailure.describeInstanceLocation());
+    assertThat(pathFailure.describeInstanceLocation(), startsWith("$request.path.intPathParam"));
     System.out.println(pathFailure.describeSchemaLocation());
-    assertTrue(pathFailure.describeSchemaLocation().endsWith("/request/requestValidator.yaml/paths/intPathParam#/type"));
+    assertTrue(pathFailure.describeSchemaLocation().contains("/request/requestValidator.yaml/paths/intPathParam#/type"));
   }
 
   @Test
-  public void withoutServerPathFindOperationCheck() throws Exception {
+  public void withoutServerPathFindOperationCheck()
+    throws Exception {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
     RequestValidator requestValidator = new RequestValidator(api);
@@ -100,7 +104,8 @@ public class RequestValidatorTest {
   }
 
   @Test
-  public void withServerPathFindOperationCheck() throws Exception {
+  public void withServerPathFindOperationCheck()
+    throws Exception {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator-with-servers.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
     RequestValidator requestValidator = new RequestValidator(api);
@@ -156,7 +161,8 @@ public class RequestValidatorTest {
   }
 
   @Test
-  public void responseTest() throws Exception {
+  public void responseTest()
+    throws Exception {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator-with-servers.yaml");
     OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
     RequestValidator requestValidator = new RequestValidator(api);

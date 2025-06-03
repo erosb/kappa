@@ -81,7 +81,7 @@ public class OpenApiBasedRequestValidationFilter
         if (item instanceof OpenApiValidationFailure.SchemaValidationFailure) {
           OpenApiValidationFailure.SchemaValidationFailure schemaValidationFailure =
             (OpenApiValidationFailure.SchemaValidationFailure) item;
-          itemJson.put("dynamicPath", schemaValidationFailure.getFailure().getDynamicPath().toString());
+          itemJson.put("dynamicPath", schemaValidationFailure.getFailure().getDynamicPath().getPointer().toString());
         }
         itemJson.put("message", item.getMessage());
         itemsJson.add(itemJson);

@@ -45,7 +45,7 @@ public class KappaAutoConfigTest {
     JSONAssert.assertEquals("""
       {
         "errors" : [ {
-          "dataLocation" : "$request.body",
+          "dataLocation" : "$request.body (line 1, position 1)",
           "schemaLocation" : "openapi/users/schemas.json#/$defs/CreateUser/required",
           "dynamicPath" : "#/$ref/$ref/required",
           "message" : "required properties are missing: name, email"
@@ -69,12 +69,12 @@ public class KappaAutoConfigTest {
     JSONAssert.assertEquals("""
       {
         "errors" : [ {
-          "dataLocation" : "$request.body",
+          "dataLocation" : "$request.body (line 1, position 1)",
           "schemaLocation" : "openapi/customers-api.yaml#/required",
           "dynamicPath" : "#/required",
           "message" : "required properties are missing: city, zipCode, defaultShippingAddress"
         }, {
-          "dataLocation" : "$request.body#/country",
+          "dataLocation" : "$request.body#/country (line 1, position 13)",
           "schemaLocation" : "openapi/customers-api.yaml#/components/schemas/CountryCode/maxLength",
           "dynamicPath" : "#/properties/country/$ref/maxLength",
           "message" : "actual string length 5 exceeds maxLength 2"

@@ -65,6 +65,11 @@ public class OpenApiValidationFailure {
       this.failure = result;
     }
 
+    @Override
+    public String describeSchemaLocation() {
+      return super.describeSchemaLocation();// + " \n\t(evaluated on dynamic path: " + failure.getDynamicPath() + ")";
+    }
+
     public ValidationFailure getFailure() {
       return failure;
     }
@@ -133,11 +138,13 @@ public class OpenApiValidationFailure {
     } else {
       pointerDescr = pointer.toString();
     }
-    return loc.getDocumentSource().toString() + pointerDescr;
+    return loc.getDocumentSource() + pointerDescr;
   }
 
   public String describeInstanceLocation() {
-    return stringify(instanceLocation);
+    return stringify(instanceLocation) + ((instanceLocation.getLineNumber() > -1) ? (" (line "
+      + instanceLocation.getLineNumber() + ", position "
+      + instanceLocation.getPosition() + ")") : "");
   }
 
   public String describeSchemaLocation() {

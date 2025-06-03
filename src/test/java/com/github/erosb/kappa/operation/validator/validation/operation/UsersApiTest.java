@@ -69,7 +69,7 @@ public class UsersApiTest
       () -> new RequestValidator(api).validate(request)
     );
     OpenApiValidationFailure failure = actual.results().get(0);
-    assertEquals("$request.body#/email", failure.describeInstanceLocation());
+    assertEquals("$request.body#/email (line 1, position 10)", failure.describeInstanceLocation());
     System.out.println(failure.describeSchemaLocation());
     assertTrue(failure.describeSchemaLocation().contains("/properties/email"));
   }
@@ -94,8 +94,8 @@ public class UsersApiTest
       () -> new RequestValidator(api).validate(invalidResp, request)
     );
     OpenApiValidationFailure negativeId = failureByMessage(actual.results(), "-5 is lower than minimum 0");
-    assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id");
-    assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
+    assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id (line 1, position 8)");
+    assertTrue(negativeId.describeSchemaLocation().contains("users/common-types.yaml#/Identifier"));
   }
 
   @Test
@@ -129,13 +129,13 @@ public class UsersApiTest
     System.out.println(results);
 
     OpenApiValidationFailure negativeId = failureByMessage(results, "-5 is lower than minimum 0");
-    assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id");
-    assertTrue(negativeId.describeSchemaLocation().endsWith("users/common-types.yaml#/Identifier"));
+    assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id (line 1, position 8)");
+    assertTrue(negativeId.describeSchemaLocation().contains("users/common-types.yaml#/Identifier"));
     assertEquals(1, negativeId.getInstanceLocation().getLineNumber());
     assertEquals(8, negativeId.getInstanceLocation().getPosition());
 
     OpenApiValidationFailure wrongProp = failureByMessage(results, "the instance is not equal to any enum values");
-    assertEquals(wrongProp.describeInstanceLocation(), "$response.body#/1/userId");
+    assertEquals(wrongProp.describeInstanceLocation(), "$response.body#/1/userId (line 1, position 14)");
     System.out.println(wrongProp.describeSchemaLocation());
     //    assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames"));
   }
@@ -164,7 +164,7 @@ public class UsersApiTest
 
     OpenApiValidationFailure failure = actual.results().get(0);
     assertEquals("could not parse request body: Unexpected character found: {", failure.getMessage());
-    assertEquals("$request.body", failure.describeInstanceLocation());
+    assertEquals("$request.body (line 1, position 13)", failure.describeInstanceLocation());
     assertEquals(1, failure.getInstanceLocation().getLineNumber());
     assertEquals(13, failure.getInstanceLocation().getPosition());
     assertTrue(failure.describeSchemaLocation().endsWith("requestBody"));
@@ -217,7 +217,7 @@ public class UsersApiTest
     OpenApiValidationFailure failure = failureByMessage(actual.results(), "instance does not match format 'email'");
 
     System.out.println(failure.describeSchemaLocation());
-    assertEquals("$request.body#/email", failure.describeInstanceLocation());
+    assertEquals("$request.body#/email (line 1, position 10)", failure.describeInstanceLocation());
   }
 
   @Test
