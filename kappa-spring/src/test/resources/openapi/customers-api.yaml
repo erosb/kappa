@@ -4,6 +4,11 @@ info:
   title: yet another users-api.yaml
 paths:
   /customers/{id}/address:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
     put:
       requestBody:
         content:
