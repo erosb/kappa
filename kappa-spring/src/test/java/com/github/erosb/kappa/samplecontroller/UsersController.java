@@ -20,7 +20,7 @@ public class UsersController {
 
   @PostMapping
   public ResponseEntity<String> createUser(@RequestBody Map<String, String> body) {
-    System.out.println("recv POST " + body);
+    System.out.println("received POST " + body);
     return ResponseEntity.status(HttpStatus.OK)
       .contentType(MediaType.APPLICATION_JSON)
       .body("true")

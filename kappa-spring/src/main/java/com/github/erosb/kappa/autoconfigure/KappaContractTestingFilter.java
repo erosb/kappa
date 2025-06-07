@@ -17,9 +17,16 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.lang.Nullable;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.PrintingResultHandler;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,6 +72,42 @@ class MockMvcServletResponse
   }
 }
 
+class KappaPrintingResultHandler
+  extends PrintingResultHandler {
+
+  protected KappaPrintingResultHandler(final PrintWriter writer) {
+    super(new PrintingResultHandler.ResultValuePrinter() {
+      public void printHeading(String heading) {
+        writer.println();
+        writer.println(String.format("%s:", heading));
+      }
+
+      public void printValue(String label, @Nullable Object value) {
+        if (value != null && value.getClass().isArray()) {
+          value = CollectionUtils.arrayToList(value);
+        }
+
+        writer.println(String.format("%17s = %s", label, value));
+      }
+    });
+  }
+
+  void handle(MockHttpServletRequest request, MockHttpServletResponse response) {
+    try {
+      ResultValuePrinter printer = getPrinter();
+      printer.printHeading("MockHttpServletRequest");
+      printRequest(request);
+      if (response != null) {
+        printer.printHeading("MockHttpServletResponse");
+        printResponse(response);
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+}
+
 public class KappaContractTestingFilter
   implements Filter {
 
@@ -81,6 +124,7 @@ public class KappaContractTestingFilter
   @Override
   public void doFilter(ServletRequest req, ServletResponse resp, FilterChain filterChain)
     throws IOException, ServletException {
+    MockHttpServletResponse mockResponse = null;
     try {
       HttpServletRequest memoizedReq = new MemoizingServletRequest((HttpServletRequest) req);
 
@@ -90,10 +134,15 @@ public class KappaContractTestingFilter
       validator.validate(jakartaRequest);
 
       filterChain.doFilter(memoizedReq, resp);
-      MockHttpServletResponse mockResponse = (MockHttpServletResponse) resp;
+      mockResponse = (MockHttpServletResponse) resp;
       MockMvcServletResponse mockResp = new MockMvcServletResponse(mockResponse);
       validator.validate(mockResp, jakartaRequest);
     } catch (ValidationException e) {
+      PrintWriter pw = new PrintWriter(System.out);
+      KappaPrintingResultHandler printingResultHandler = new KappaPrintingResultHandler(pw);
+      printingResultHandler.handle((MockHttpServletRequest) req, mockResponse);
+      pw.println();
+      pw.flush();
       throw new AssertionError(e.getMessage() + " \n" + e.results().stream().map(KappaContractTestingFilter::describeFailure)
         .collect(Collectors.joining("\n")));
     } catch (NoMatchingPathPatternFoundException e) {
