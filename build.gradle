@@ -7,7 +7,7 @@ plugins {
   id 'jacoco'
   id 'maven-publish'
   id 'signing'
-  id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+  id 'org.jreleaser' version '1.17.0'
 }
 
 allprojects {
@@ -15,7 +15,7 @@ allprojects {
   apply plugin: 'jacoco'
 
   group = "com.github.erosb"
-  version = "2.0.0-RC12"
+  version = "2.0.0-RC14.3"
   description = "Forked version of openapi4j aiming for openapi 3.1 support"
 
   java {
@@ -40,6 +40,7 @@ allprojects {
       attributes 'Implementation-Version': project.version
     }
   }
+
 }
 
 dependencies {
@@ -64,71 +65,4 @@ sonarqube {
   }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-  archiveClassifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar) {
-  archiveClassifier = 'javadoc'
-  from javadoc.destinationDir
-}
-
-publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      logger.warn(project.group + " : " + project.name + " : " + project.version)
-      logger.warn(project.description)
-
-      groupId = project.group
-      artifactId = project.name
-      version = project.version
-
-      from components.java
-      artifact sourcesJar
-      artifact javadocJar
-      pom {
-        name = project.name
-        description = project.description
-        url = "https://github.com/erosb/kappa"
-        licenses {
-          license {
-            name = "Apache License, Version 2.0"
-            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-          }
-        }
-        developers {
-          developer {
-            id = 'erosb'
-            name = 'Bence Eros'
-            email = 'ebence88@gmail.com'
-          }
-        }
-        scm {
-          connection = "scm:git:git://github.com:erosb/kappa.git"
-          developerConnection = "scm:git:https://github.com/erosb/kappa"
-          url = "https://github.com/erosb/kappa"
-        }
-      }
-    }
-  }
-}
-
-tasks.withType(Sign) {
-  onlyIf { !version.endsWith("SNAPSHOT") }
-}
-
-signing {
-  useGpgCmd()
-  sign publishing.publications.mavenJava
-}
-
-
-nexusPublishing {
-  repositories {
-    sonatype {
-      username = System.getenv("publishUsername")
-      password = System.getenv("publishPassword")
-    }
-  }
-}
+apply from: "./publish.gradle"

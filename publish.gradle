@@ -46,6 +46,14 @@ publishing {
       }
     }
   }
+
+  publishing {
+    repositories {
+      maven {
+        url = project.layout.buildDirectory.dir('staging-deploy')
+      }
+    }
+  }
 }
 
 tasks.withType(Sign) {
@@ -57,3 +65,28 @@ signing {
   sign publishing.publications.mavenJava
 }
 
+jreleaser {
+  signing {
+    active = 'ALWAYS'
+    armored = true
+  }
+  release {
+    github {
+      commitAuthor {
+        name = "Bence Eros"
+        email = "ebence88@gmail.com"
+      }
+    }
+  }
+  deploy {
+    maven {
+      mavenCentral {
+        sonatype {
+          active = 'ALWAYS'
+          url = 'https://central.sonatype.com/api/v1/publisher'
+          stagingRepository(layout.buildDirectory.dir('staging-deploy').get().toString() + '')
+        }
+      }
+    }
+  }
+}
