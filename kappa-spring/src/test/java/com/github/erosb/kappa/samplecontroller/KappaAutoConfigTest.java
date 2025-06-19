@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -81,5 +82,39 @@ public class KappaAutoConfigTest {
         } ]
       }
       """, actualResponse, true);
+  }
+
+  @Test
+  public void unsupportedMethod()
+    throws Exception {
+    String content = mockMvc.perform(MockMvcRequestBuilders.delete("/users"))
+      .andDo(print())
+      .andReturn().getResponse().getContentAsString();
+    JSONAssert.assertEquals("""
+      {
+        "errors" : [
+          {
+            "message" : "Operation not found from URL 'http://localhost/users' with method 'DELETE'."
+          }
+        ]
+      }
+      """, content, true);
+  }
+
+  @Test
+  public void undefinedPath()
+    throws Exception {
+    String content = mockMvc.perform(MockMvcRequestBuilders.delete("/users/not-found"))
+      .andDo(print())
+      .andReturn().getResponse().getContentAsString();
+    JSONAssert.assertEquals("""
+      {
+        "errors" : [
+          {
+            "message" : "Operation path not found from URL 'http://localhost/users/not-found'."
+          }
+        ]
+      }
+      """, content, true);
   }
 }

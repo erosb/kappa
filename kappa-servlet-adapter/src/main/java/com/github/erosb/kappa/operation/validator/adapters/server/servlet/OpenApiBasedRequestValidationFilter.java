@@ -68,6 +68,11 @@ public class OpenApiBasedRequestValidationFilter
       ObjectMapper objectMapper = new ObjectMapper();
       ObjectNode respObj = objectMapper.createObjectNode();
       ArrayNode itemsJson = objectMapper.createArrayNode();
+      if (ex.results().isEmpty()) {
+        ObjectNode itemJson = objectMapper.createObjectNode();
+        itemJson.put("message", ex.getMessage());
+        itemsJson.add(itemJson);
+      }
       ex.results().forEach(item -> {
         ObjectNode itemJson = objectMapper.createObjectNode();
         itemJson.put("dataLocation", item.describeInstanceLocation());
