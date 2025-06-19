@@ -20,7 +20,7 @@ public class UsersApplication {
   public KappaSpringConfiguration kappaSpringConfiguration() {
     KappaSpringConfiguration kappaConfig = new KappaSpringConfiguration();
     var pathPatternToOpenapiDescription = new LinkedHashMap<String, String>();
-    pathPatternToOpenapiDescription.put("/users", "/openapi/users-api.yaml");
+    pathPatternToOpenapiDescription.put("/users/**", "/openapi/users-api.yaml");
     pathPatternToOpenapiDescription.put("/customers/**", "/openapi/customers-api.yaml");
     kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);
     return kappaConfig;

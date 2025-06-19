@@ -139,4 +139,13 @@ public class KappaContractTestingTest {
     });
   }
 
+  @Test
+  public void internalServerErrorIsNotValidated()
+    throws Exception {
+    mockMvc.perform(
+      MockMvcRequestBuilders.get("/users/error").contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+    ).andDo(print());
+  }
+
 }

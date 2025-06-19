@@ -276,6 +276,9 @@ public class OperationValidator {
     boolean responseCodeFound = responseCodeDefinitions.stream().anyMatch(
       responseCodeDefinition -> responseCodeDefinitionMatches(responseCodeDefinition, response.getStatus()));
     if (!responseCodeFound) {
+      if (response.getStatus() >= 500) {
+        return;
+      }
       validation.add(
         OpenApiValidationFailure.unknownStatusCode(response.getStatus(), context.uriFactory().definitionStatusCode()));
     }

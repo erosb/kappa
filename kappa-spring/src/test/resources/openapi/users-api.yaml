@@ -16,3 +16,11 @@ paths:
             application/json:
               schema:
                 type: integer
+  /users/error:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
