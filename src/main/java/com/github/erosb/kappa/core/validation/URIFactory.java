@@ -10,7 +10,7 @@ import java.net.URL;
 
 import static java.util.Objects.requireNonNull;
 
-public class URIFactory {
+public abstract class URIFactory {
 
   static URI uri(String s) {
     try {
@@ -20,9 +20,7 @@ public class URIFactory {
     }
   }
 
-  public URI httpEntity() {
-    return requestBody();
-  }
+  public abstract URI httpEntity();
 
   public static URI request() {
     return uri("$request");
@@ -30,14 +28,6 @@ public class URIFactory {
 
   public URI pathParam(String paramName) {
     return uri("$request.path." + paramName);
-  }
-
-  public URI pathParamDefinition(URL contextbaseURL, String paramName) {
-    try {
-      return new URI(contextbaseURL.toURI() + "/paths/" + paramName);
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   public static URI responseStatusCode() {

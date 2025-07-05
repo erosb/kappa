@@ -7,6 +7,8 @@ import com.github.erosb.kappa.core.validation.URIFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,7 +34,7 @@ class RequestScopedURIFactory
 
   @Override
   public URI httpEntity() {
-    return uri("$request.body");
+    return URIFactory.requestBody();
   }
 }
 
@@ -107,6 +109,17 @@ public abstract class OperationContextUriFactory
   public SourceLocation definitionPaths() {
     try {
       return new SourceLocation(-1, -1, new JsonPointer("paths"), context.getBaseUrl().toURI());
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public URI pathParamDefinition(String paramName) {
+    try {
+      //      JsonPointer pointer = new JsonPointer("paths", URLEncoder.encode(templatePath), "parameters", paramName);
+      //      return new URI(context.getBaseUrl() + pointer.toString());
+      //      new SourceLocation(-1, -1, pointer, context.getBaseUrl().toURI());
+      return new URI(context.getBaseUrl() + "/paths/" + paramName);
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }

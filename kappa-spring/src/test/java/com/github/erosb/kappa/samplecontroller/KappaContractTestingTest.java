@@ -115,6 +115,9 @@ public class KappaContractTestingTest {
 
     SoftAssertions.assertSoftly(a -> {
       a.assertThat(exc.getMessage()).contains("instance location: $request.path.id (line 1, position 1)");
+      //      a.assertThat(exc.getMessage()).containsPattern(
+      //        "schema location: .*customers-api.yaml/paths/c%2Fcustomers%2F%7Bid%7D%2Faddress/parameters/id#/type"
+      //      );
       a.assertThat(exc.getMessage()).containsPattern("evaluated on dynamic path: .*openapi/customers-api.yaml/paths/id#/type");
 
       a.assertThat(exc.getMessage()).contains("instance location: $request.body#/zipCode (line 5, position 14)");

@@ -137,7 +137,7 @@ public class UsersApiTest
     OpenApiValidationFailure wrongProp = failureByMessage(results, "the instance is not equal to any enum values");
     assertEquals(wrongProp.describeInstanceLocation(), "$response.body#/1/userId (line 1, position 14)");
     System.out.println(wrongProp.describeSchemaLocation());
-    //    assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames"));
+    //    assertTrue(wrongProp.describeSchemaLocation().endsWith("users/users-api.yaml#/components/schemas/User/propertyNames/enum"));
   }
 
   @Test

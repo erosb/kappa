@@ -3,6 +3,7 @@ package com.github.erosb.kappa.operation.validator.validation;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
+import com.github.erosb.kappa.core.validation.OperationContextUriFactory;
 import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
@@ -23,7 +24,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
   private final ValidationContext<OAI3> context;
   private final Map<String, JsonValidator> specValidators;
   private final Map<String, AbsParameter<M>> specParameters;
-  private final URIFactory uriFactory;
+  private final OperationContextUriFactory uriFactory;
 
   ParameterValidator(ValidationContext<OAI3> context, Map<String, AbsParameter<M>> specParameters) {
     this.context = context;
@@ -76,8 +77,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
       }
 
       if (paramSchema != null) {
-        URL contextBaseURL = context.getContext().getBaseUrl();
-        URI pathParamDefinitionURI = uriFactory.pathParamDefinition(contextBaseURL, paramName);
+        URI pathParamDefinitionURI = uriFactory.pathParamDefinition(paramName);
         JsonValidator v = new SKemaBackedJsonValidator(paramSchema.copy(), context, pathParamDefinitionURI);
         validators.put(paramName, v);
       }
