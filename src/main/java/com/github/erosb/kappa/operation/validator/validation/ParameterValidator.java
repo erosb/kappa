@@ -23,11 +23,12 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
   private final ValidationContext<OAI3> context;
   private final Map<String, JsonValidator> specValidators;
   private final Map<String, AbsParameter<M>> specParameters;
-  private final URIFactory uriFactory = new URIFactory();
+  private final URIFactory uriFactory;
 
   ParameterValidator(ValidationContext<OAI3> context, Map<String, AbsParameter<M>> specParameters) {
     this.context = context;
     this.specParameters = specParameters;
+    this.uriFactory = context.requestScopedUriFactory();
     specValidators = initValidators(specParameters);
   }
 

@@ -52,7 +52,7 @@ public class OpenApiValidationFailure {
     StatusCodeValidationFailure(int unknownStatusCode, SourceLocation schemaLocation) {
       super("Unknown status code " + unknownStatusCode, new SourceLocation(-1, -1,
         new JsonPointer(),
-        new URIFactory().responseStatusCode()), schemaLocation);
+        URIFactory.responseStatusCode()), schemaLocation);
     }
   }
 
@@ -109,9 +109,9 @@ public class OpenApiValidationFailure {
     }
   }
 
-  private static final URI request = new URIFactory().request();
+  private static final URI request = URIFactory.request();
 
-  private static final URI requestBody = new URIFactory().httpEntity();
+  private static final URI requestBody = URIFactory.requestBody();
 
   private final String message;
 

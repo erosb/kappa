@@ -21,14 +21,10 @@ public class URIFactory {
   }
 
   public URI httpEntity() {
-    return uri("$request.body");
+    return requestBody();
   }
 
-  public URI requestBodyDefinition() {
-    return uri("requestBody");
-  }
-
-  public URI request() {
+  public static URI request() {
     return uri("$request");
   }
 
@@ -44,7 +40,11 @@ public class URIFactory {
     }
   }
 
-  public URI responseStatusCode() {
+  public static URI responseStatusCode() {
     return uri("$response.status");
+  }
+
+  public static URI requestBody() {
+    return uri("$request.body");
   }
 }

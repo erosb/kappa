@@ -94,7 +94,7 @@ public class UsersApiTest
       () -> new RequestValidator(api).validate(invalidResp, request)
     );
     OpenApiValidationFailure negativeId = failureByMessage(actual.results(), "-5 is lower than minimum 0");
-    assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id (line 1, position 8)");
+    assertEquals("$response.body#/0/id (line 1, position 8)", negativeId.describeInstanceLocation());
     assertTrue(negativeId.describeSchemaLocation().contains("users/common-types.yaml#/Identifier"));
   }
 
@@ -129,7 +129,7 @@ public class UsersApiTest
     System.out.println(results);
 
     OpenApiValidationFailure negativeId = failureByMessage(results, "-5 is lower than minimum 0");
-    assertEquals(negativeId.describeInstanceLocation(), "$response.body#/0/id (line 1, position 8)");
+    assertEquals("$response.body#/0/id (line 1, position 8)", negativeId.describeInstanceLocation());
     assertTrue(negativeId.describeSchemaLocation().contains("users/common-types.yaml#/Identifier"));
     assertEquals(1, negativeId.getInstanceLocation().getLineNumber());
     assertEquals(8, negativeId.getInstanceLocation().getPosition());
