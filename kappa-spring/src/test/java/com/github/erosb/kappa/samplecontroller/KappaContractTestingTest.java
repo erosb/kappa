@@ -19,6 +19,7 @@ import static org.springframework.http.RequestEntity.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest()
@@ -146,6 +147,39 @@ public class KappaContractTestingTest {
       MockMvcRequestBuilders.get("/users/error").contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
     ).andDo(print());
+  }
+
+  @Test
+  public void undocumentedResponseMediaType()
+    throws Exception {
+    AssertionError exc = assertThrows(AssertionError.class, () ->
+      mockMvc.perform(
+        MockMvcRequestBuilders.get("/users/feed")
+          .accept(MediaType.APPLICATION_XML)
+      ).andDo(print())
+    );
+
+    assertThat(exc.getMessage()).contains("Content type 'application/xml;charset=UTF-8' is not allowed for body content.");
+  }
+
+  @Test
+  public void malformedResponseJson()
+    throws Exception {
+    AssertionError exc = assertThrows(AssertionError.class, () ->
+      mockMvc.perform(
+        MockMvcRequestBuilders.get("/users/me")
+          .accept(MediaType.APPLICATION_JSON)
+      )
+    );
+
+    System.out.println(exc);
+
+    SoftAssertions.assertSoftly(a -> {
+      a.assertThat(exc.getMessage()).contains("could not parse HTTP entity: unexpected character M");
+      a.assertThat(exc.getMessage()).contains("instance location: $request.body");
+      a.assertThat(exc.getMessage()).containsPattern(
+        "schema location: .*users-api.yaml#/paths/~1users~1me/get/responses/200/content");
+    });
   }
 
 }

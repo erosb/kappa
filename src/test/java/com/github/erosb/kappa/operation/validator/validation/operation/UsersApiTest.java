@@ -163,7 +163,7 @@ public class UsersApiTest
       new RequestValidator(api).validate(request));
 
     OpenApiValidationFailure failure = actual.results().get(0);
-    assertEquals("could not parse request body: Unexpected character found: {", failure.getMessage());
+    assertEquals("could not parse HTTP entity: Unexpected character found: {", failure.getMessage());
     assertEquals("$request.body (line 1, position 13)", failure.describeInstanceLocation());
     assertEquals(1, failure.getInstanceLocation().getLineNumber());
     assertEquals(13, failure.getInstanceLocation().getPosition());

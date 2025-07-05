@@ -30,6 +30,16 @@ public class UsersController {
       ;
   }
 
+  @GetMapping("/me")
+  public String getMe() {
+    return "Me here!";
+  }
+
+  @GetMapping(value = "/feed", produces = "application/xml")
+  public String getFeed() {
+    return "<feed></feed>";
+  }
+
   @GetMapping("/error")
   public String getUsers() {
     throw new IllegalStateException("TODO");

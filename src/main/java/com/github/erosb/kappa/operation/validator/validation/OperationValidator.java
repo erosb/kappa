@@ -1,9 +1,11 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.kappa.core.exception.DecodeException;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
+import com.github.erosb.kappa.core.validation.OperationContextUriFactory;
 import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.operation.validator.model.Request;
 import com.github.erosb.kappa.operation.validator.model.Response;
@@ -139,7 +141,7 @@ public class OperationValidator {
     // Check paths are matching before trying to map values
     Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns, request.getPath());
     if (pathPattern == null) {
-      validation.add(OpenApiValidationFailure.noMatchingPathPatternFound(context.uriFactory().definitionPaths()));
+      validation.add(OpenApiValidationFailure.noMatchingPathPatternFound(context.requestScopedUriFactory().definitionPaths()));
       return null;
     }
 
@@ -249,10 +251,11 @@ public class OperationValidator {
 
     if (operation.getRequestBody().isRequired()) {
       if (request.getContentType() == null) {
-        validation.add(OpenApiValidationFailure.missingContentTypeHeader());
+        validation.add(
+          OpenApiValidationFailure.missingContentTypeHeader(context.requestScopedUriFactory().definitionHttpEntity()));
         return;
       } else if (request.getBody() == null) {
-        validation.add(OpenApiValidationFailure.missingRequiredBody());
+        validation.add(OpenApiValidationFailure.missingRequiredBody(context.requestScopedUriFactory().definitionHttpEntity()));
         return;
       }
     }
@@ -261,7 +264,9 @@ public class OperationValidator {
       specRequestBodyValidators,
       request.getContentType(),
       request.getBody(),
-      validation);
+      validation,
+      context.requestScopedUriFactory().definitionHttpEntity()
+    );
   }
 
   /**
@@ -280,7 +285,8 @@ public class OperationValidator {
         return;
       }
       validation.add(
-        OpenApiValidationFailure.unknownStatusCode(response.getStatus(), context.uriFactory().definitionStatusCode()));
+        OpenApiValidationFailure.unknownStatusCode(response.getStatus(),
+          context.requestScopedUriFactory().definitionStatusCode()));
     }
 
     validateHeaders(response, validation);
@@ -310,13 +316,16 @@ public class OperationValidator {
       validators,
       response.getContentType(),
       response.getBody(),
-      validation);
+      validation,
+      context.responseScopedUriFactory(String.valueOf(response.getStatus())).definitionHttpEntity()
+    );
   }
 
   private void validateBodyWithContentType(final Map<MediaTypeContainer, BodyValidator> validators,
                                            final String rawContentType,
                                            final Body body,
-                                           final ValidationData<?> validation) {
+                                           final ValidationData<?> validation,
+                                           SourceLocation bodyDefinitionLocation) {
 
     final MediaTypeContainer contentType = MediaTypeContainer.create(rawContentType);
 
@@ -328,7 +337,7 @@ public class OperationValidator {
       }
     }
     if (validator == null) {
-      validation.add(OpenApiValidationFailure.wrongContentType(rawContentType));
+      validation.add(OpenApiValidationFailure.wrongContentType(rawContentType, bodyDefinitionLocation));
       return;
     }
 
@@ -374,7 +383,8 @@ public class OperationValidator {
     if (operation.getRequestBody() == null) {
       return null;
     }
-    return createBodyValidators(operation.getRequestBody().getContentMediaTypes(), URIFactory.forRequest());
+    return createBodyValidators(operation.getRequestBody().getContentMediaTypes(),
+      context.requestScopedUriFactory());
   }
 
   private Map<String, Map<MediaTypeContainer, BodyValidator>> createResponseBodyValidators() {
@@ -390,14 +400,15 @@ public class OperationValidator {
       final String statusCode = entryStatusCode.getKey();
       final com.github.erosb.kappa.parser.model.v3.Response response = entryStatusCode.getValue();
 
-      validators.put(statusCode, createBodyValidators(response.getContentMediaTypes(), URIFactory.forResponse()));
+      validators.put(statusCode,
+        createBodyValidators(response.getContentMediaTypes(), context.responseScopedUriFactory(statusCode)));
     }
 
     return validators;
   }
 
   private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes,
-                                                                      URIFactory uriFactory) {
+                                                                      OperationContextUriFactory uriFactory) {
     final Map<MediaTypeContainer, BodyValidator> validators = new HashMap<>();
     if (mediaTypes == null) {
       validators.put(MediaTypeContainer.create(null), new BodyValidator(context, null, uriFactory));

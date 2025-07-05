@@ -92,7 +92,8 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
 
     if (!paramValues.containsKey(paramName)) {
       if (parameter.isRequired()) {
-        validation.add(OpenApiValidationFailure.missingRequiredParameter(paramName, context.uriFactory().definitionPath()));
+        validation.add(
+          OpenApiValidationFailure.missingRequiredParameter(paramName, context.requestScopedUriFactory().definitionPath()));
       }
       return false;
     }

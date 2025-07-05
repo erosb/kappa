@@ -2,10 +2,7 @@ package com.github.erosb.kappa.schema.validator;
 
 import com.github.erosb.kappa.core.model.OAI;
 import com.github.erosb.kappa.core.model.OAIContext;
-import com.github.erosb.kappa.core.validation.URIFactory;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.github.erosb.kappa.core.validation.OperationContextUriFactory;
 
 /**
  * Validation context and option bag.
@@ -28,7 +25,11 @@ public class ValidationContext<O extends OAI> {
     return context;
   }
 
-  public OperationContextUriFactory uriFactory() {
-    return new OperationContextUriFactory(context, templatePath, method);
+  public OperationContextUriFactory requestScopedUriFactory() {
+    return OperationContextUriFactory.forRequest(context, templatePath, method);
+  }
+
+  public OperationContextUriFactory responseScopedUriFactory(String statusCode) {
+    return OperationContextUriFactory.forResponse(context, templatePath, method, statusCode);
   }
 }

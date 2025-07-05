@@ -1,34 +1,16 @@
 package com.github.erosb.kappa.core.validation;
 
+import com.github.erosb.jsonsKema.JsonPointer;
+import com.github.erosb.jsonsKema.SourceLocation;
+import com.github.erosb.kappa.core.model.OAIContext;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-class RequestScopedURIFactory
-  extends URIFactory {
-  @Override
-  public URI httpEntity() {
-    return uri("$request.body");
-  }
-}
-
-class ResponseScopedURIFactory
-  extends URIFactory {
-  @Override
-  public URI httpEntity() {
-    return uri("$response.body");
-  }
-}
+import static java.util.Objects.requireNonNull;
 
 public class URIFactory {
-
-  public static URIFactory forRequest() {
-    return new RequestScopedURIFactory();
-  }
-
-  public static URIFactory forResponse() {
-    return new ResponseScopedURIFactory();
-  }
 
   static URI uri(String s) {
     try {

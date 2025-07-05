@@ -16,21 +16,22 @@ public class OpenApiValidationFailure {
     return new PathValidationFailure("Path template '%s' has not been found from value '%s'.", schemaLocation);
   }
 
-  public static RequestBodyValidationFailure missingRequiredBody() {
-    return new RequestBodyValidationFailure("Body is required but none provided.");
+  public static RequestBodyValidationFailure missingRequiredBody(SourceLocation schemaLocation) {
+    return new RequestBodyValidationFailure("Body is required but none provided.", schemaLocation);
   }
 
-  public static RequestBodyValidationFailure unparseableRequestBody(JsonParseException ex) {
-    return new RequestBodyValidationFailure("could not parse request body: " + ex.getMessage(), ex.getLocation());
+  public static RequestBodyValidationFailure unparseableHttpEntity(JsonParseException ex, SourceLocation schemaLocation) {
+    return new RequestBodyValidationFailure("could not parse HTTP entity: " + ex.getMessage(), ex.getLocation(), schemaLocation);
   }
 
-  public static RequestBodyValidationFailure missingContentTypeHeader() {
-    return new RequestBodyValidationFailure("Body content type cannot be determined. No 'Content-Type' header available.");
+  public static RequestBodyValidationFailure missingContentTypeHeader(SourceLocation schemaLocation) {
+    return new RequestBodyValidationFailure("Body content type cannot be determined. No 'Content-Type' header available.",
+      schemaLocation);
   }
 
-  public static RequestBodyValidationFailure wrongContentType(String actualContentType) {
+  public static RequestBodyValidationFailure wrongContentType(String actualContentType, SourceLocation schemaLocation) {
     return new RequestBodyValidationFailure(
-      String.format("Content type '%s' is not allowed for body content.", actualContentType));
+      String.format("Content type '%s' is not allowed for body content.", actualContentType), schemaLocation);
   }
 
   public static ParameterValidationFailure missingRequiredParameter(String paramName, SourceLocation schemaLocation) {
@@ -98,14 +99,13 @@ public class OpenApiValidationFailure {
   public static class RequestBodyValidationFailure
     extends OpenApiValidationFailure {
 
-    public RequestBodyValidationFailure(String message) {
-      this(message, new TextLocation(-1, -1, requestBody));
+    public RequestBodyValidationFailure(String message, SourceLocation schemaLocation) {
+      this(message, new TextLocation(-1, -1, requestBody), schemaLocation);
     }
 
-    public RequestBodyValidationFailure(String message, TextLocation parseFailure) {
+    public RequestBodyValidationFailure(String message, TextLocation parseFailure, SourceLocation schemaLocation) {
       super(message, new SourceLocation(parseFailure.getLineNumber(), parseFailure.getPosition(), new JsonPointer(), requestBody),
-        new SourceLocation(-1, -1,
-          new JsonPointer(), new URIFactory().requestBodyDefinition()));
+        schemaLocation);
     }
   }
 

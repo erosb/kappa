@@ -24,3 +24,18 @@ paths:
             application/json:
               schema:
                 type: array
+  /users/feed:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              type: object
+  /users/me:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
