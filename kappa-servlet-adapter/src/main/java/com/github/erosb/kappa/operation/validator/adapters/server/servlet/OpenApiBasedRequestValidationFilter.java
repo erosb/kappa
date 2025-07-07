@@ -23,18 +23,27 @@ import static java.util.Objects.requireNonNull;
 public class OpenApiBasedRequestValidationFilter
   implements Filter {
 
-  public static OpenApiBasedRequestValidationFilter forApiDescription(OpenApi3 api) {
-    return new OpenApiBasedRequestValidationFilter(path -> api);
+  public static OpenApiBasedRequestValidationFilter forApiDescription(
+    OpenApi3 api,
+    ValidationFailureSender validationFailureSender
+  ) {
+    return new OpenApiBasedRequestValidationFilter(path -> api, validationFailureSender);
   }
 
-  public static OpenApiBasedRequestValidationFilter forApiLookup(OpenApiLookup lookupFn) {
-    return new OpenApiBasedRequestValidationFilter(lookupFn);
+  public static OpenApiBasedRequestValidationFilter forApiLookup(
+    OpenApiLookup lookupFn,
+    ValidationFailureSender validationFailureSender
+  ) {
+    return new OpenApiBasedRequestValidationFilter(lookupFn, validationFailureSender);
   }
 
   private final OpenApiLookup lookupFn;
 
-  private OpenApiBasedRequestValidationFilter(OpenApiLookup lookupFn) {
+  private final ValidationFailureSender validationFailureSender;
+
+  private OpenApiBasedRequestValidationFilter(OpenApiLookup lookupFn, ValidationFailureSender validationFailureSender) {
     this.lookupFn = requireNonNull(lookupFn);
+    this.validationFailureSender = requireNonNull(validationFailureSender);
   }
 
   @Override
@@ -65,40 +74,7 @@ public class OpenApiBasedRequestValidationFilter
     } catch (ValidationException ex) {
       // if the request validation failed, we represents the validation failures in a simple
       // json response and send it back to the client
-      ObjectMapper objectMapper = new ObjectMapper();
-      ObjectNode respObj = objectMapper.createObjectNode();
-      ArrayNode itemsJson = objectMapper.createArrayNode();
-      if (ex.results().isEmpty()) {
-        ObjectNode itemJson = objectMapper.createObjectNode();
-        itemJson.put("message", ex.getMessage());
-        itemsJson.add(itemJson);
-      }
-      ex.results().forEach(item -> {
-        ObjectNode itemJson = objectMapper.createObjectNode();
-        itemJson.put("dataLocation", item.describeInstanceLocation());
-        String schemaLocation = item.describeSchemaLocation();
-        int openapiDirIndex = schemaLocation.lastIndexOf("openapi/");
-        if (openapiDirIndex >= 0) {
-          itemJson.put("schemaLocation", schemaLocation.substring(openapiDirIndex));
-        } else {
-          itemJson.put("schemaLocation", schemaLocation);
-        }
-        if (item instanceof OpenApiValidationFailure.SchemaValidationFailure) {
-          OpenApiValidationFailure.SchemaValidationFailure schemaValidationFailure =
-            (OpenApiValidationFailure.SchemaValidationFailure) item;
-          itemJson.put("dynamicPath", schemaValidationFailure.getFailure().getDynamicPath().getPointer().toString());
-        }
-        itemJson.put("message", item.getMessage());
-        itemsJson.add(itemJson);
-      });
-      respObj.put("errors", itemsJson);
-      httpResp.setStatus(400);
-      httpResp.getWriter().print(objectMapper
-        .writerWithDefaultPrettyPrinter()
-        .writeValueAsString(respObj)
-      );
-
-      httpResp.flushBuffer();
+      validationFailureSender.send(ex, httpResp);
     } catch (ServletException e) {
       throw new RuntimeException(e);
     }

@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.autoconfigure;
 
 import com.github.erosb.kappa.operation.validator.adapters.server.servlet.OpenApiBasedRequestValidationFilter;
+import com.github.erosb.kappa.operation.validator.adapters.server.servlet.ValidationFailureSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -18,11 +19,14 @@ public class KappaConfiguration {
       configuration = new KappaSpringConfiguration();
     }
     OpenApiBasedRequestValidationFilter filter = OpenApiBasedRequestValidationFilter.forApiLookup(
-      new PathPatternMatchingOpenApiLookup(configuration));
+      new PathPatternMatchingOpenApiLookup(configuration),
+      configuration.getValidationFailureSender()
+    );
     FilterRegistrationBean<OpenApiBasedRequestValidationFilter> registration = new FilterRegistrationBean<>();
     registration.setFilter(filter);
     registration.setOrder(2);
     registration.addUrlPatterns("/*");
     return registration;
   }
+
 }

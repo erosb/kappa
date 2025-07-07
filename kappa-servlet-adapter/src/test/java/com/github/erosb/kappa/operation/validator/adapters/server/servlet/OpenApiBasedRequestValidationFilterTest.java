@@ -33,7 +33,7 @@ public class OpenApiBasedRequestValidationFilterTest {
   @Test
   public void bodySchemaFailure()
     throws IOException, JSONException {
-    OpenApiBasedRequestValidationFilter filter = forApiDescription(usersApi);
+    OpenApiBasedRequestValidationFilter filter = forApiDescription(usersApi, ValidationFailureSender.defaultSender());
     HttpServletResponse resp = mock(HttpServletResponse.class);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintWriter pw = new PrintWriter(out);
@@ -57,7 +57,7 @@ public class OpenApiBasedRequestValidationFilterTest {
   @Test
   public void multipleApiYamlLookup()
     throws Exception {
-    OpenApiBasedRequestValidationFilter filter = forApiLookup(path -> usersApi);
+    OpenApiBasedRequestValidationFilter filter = forApiLookup(path -> usersApi, ValidationFailureSender.defaultSender());
     HttpServletResponse resp = mock(HttpServletResponse.class);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintWriter pw = new PrintWriter(out);
