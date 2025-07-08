@@ -93,21 +93,19 @@ public class EmployeeApiTest {
 ## Supported versions
 
 Kappa targets supporting OpenAPI 3.1. Currently it uses a draft2020-12 compliant validator for JSON Schema.
+
 ## Contributing
 
 Reporting issues, making comments, ... Any help is welcome !
 
 We accept Pull Requests via GitHub. There are some guidelines which will make applying PRs easier for us :
 
-* Respect the code style and indentation. .editorconfig file is provided to not be worried about this.
-* Create minimal diffs - disable on save actions like reformat source code or organize imports. If you feel the source code should be reformatted create a separate PR for this change.
 * Provide JUnit tests for your changes and make sure your changes don't break anything by running `gradlew clean check`.
 * Provide a self explanatory but brief commit message with issue reference if any, as it will be reported directly for release changelog.
 
 ## License
 
 Kappa is released under the Apache 2.0 license. See [LICENSE](https://github.com/openapi4j/openapi4j/blob/master/LICENSE.md) for details.
-
 
 ## Contributor notes
 
