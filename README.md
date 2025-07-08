@@ -7,106 +7,88 @@ Kappa can be used to validate HTTP requests and responses against OpenAPI 3.1 de
 
 Under the hood ist uses the [erosb/json-sKema](https://github.com/erosb/json-sKema) library for JSON Schema validation.
 
-<!-- TOC -->
-* [Kappa - OpenAPI validator for Java and JVM projects](#kappa---openapi-validator-for-java-and-jvm-projects)
-  * [Validating incoming HTTP requests](#validating-incoming-http-requests)
-    * [Installation - Maven](#installation---maven)
-    * [Add a filter to validate the request](#add-a-filter-to-validate-the-request)
-    * [Register your bean in Spring Context](#register-your-bean-in-spring-context)
-  * [Supported versions](#supported-versions)
-  * [Contributing](#contributing)
-  * [License](#license)
-  * [Contributor notes](#contributor-notes)
-<!-- TOC -->
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
-## Validating incoming HTTP requests
+- [Kappa - OpenAPI validator for Java and JVM projects](#kappa-openapi-validator-for-java-and-jvm-projects)
+   * [Installation - Maven](#installation-maven)
+   * [Contract Testing - use Kappa to ensure all your requests & responses conform to your OpenAPI descriptions](#contract-testing-use-kappa-to-ensure-all-your-requests-responses-conform-to-your-openapi-descriptions)
+      + [Programmatically configure Kappa](#programmatically-configure-kappa)
+      + [Verify that everything going through MockMvc conforms to your OpenAPI description](#verify-that-everything-going-through-mockmvc-conforms-to-your-openapi-description)
+   * [Supported versions](#supported-versions)
+   * [Contributing](#contributing)
+   * [License](#license)
+   * [Contributor notes](#contributor-notes)
 
-If you want to validate the HTTP requests received by a Spring Boot service, you can do it by implementing
-a simple `Filter` and intercepting incoming requests against your OpenAPI descriptions.
+<!-- TOC end -->
 
-### Installation - Maven
+## Installation - Maven
 
 ```xml
 <dependency>
   <groupId>com.github.erosb</groupId>
-  <artifactId>kappa-servlet-adapter</artifactId>
-  <version>2.0.0-RC8</version>
+  <artifactId>kappa-spring</artifactId>
+  <version>2.0.0-RC15</version>
 </dependency>
 
 ```
 
-### Add a filter to validate the request
 
-The best way to implement OpenAPI-based input validation is doing it in a servlet filter.
+## Contract Testing - use Kappa to ensure all your requests & responses conform to your OpenAPI descriptions
+
+### Programmatically configure Kappa
+
+Tell where are your openapi descriptions on the classpath:
 
 ```java
+public class UsersApplication {
 
-public class OpenApiBackedRequestValidationFilter implements Filter {
-  // reading the OpenAPI description of our API
-  private final OpenApi3 api = new OpenApi3Parser().parse(getClass().getResource("/openapi/pets-api.yaml"), false);
-
-  @Override
-  public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException {
-    HttpServletRequest httpReq = (HttpServletRequest) req;
-    HttpServletResponse httpResp = (HttpServletResponse) resp;
-
-    try {
-
-      // we need to wrap the original request instance into a MemoizingServletRequest,
-      // since we will need to parse the request body twice: once for the OpenAPI-validation
-      // and once for the jackson parsing.
-      // basic HttpServletRequests cannot be read twice, hence we use the
-      // MemoizingServletRequest shipped with Kappa
-      // more here: https://www.baeldung.com/spring-reading-httpservletrequest-multiple-times
-      MemoizingServletRequest memoizedReq = new MemoizingServletRequest(httpReq);
-
-      // Kappa can understand different representations of HTTP requests and responses
-      // here we use the Servlet API specific adapter of Kappa, to get a Kappa Request instance
-      // which wraps a HttpServletRequest
-      JakartaServletRequest jakartaRequest = JakartaServletRequest.of(memoizedReq);
-
-      // we do the validation
-      new RequestValidator(api).validate(jakartaRequest);
-
-      // if no request validation error was found, we proceed with the request execution
-      chain.doFilter(memoizedReq, httpResp);
-
-    } catch (ValidationException ex) {
-      // if the request validation failed, we represents the validation failures in a simple
-      // json response and send it back to the client
-      ObjectMapper objectMapper = new ObjectMapper();
-      ObjectNode respObj = objectMapper.createObjectNode();
-      ArrayNode itemsJson = objectMapper.createArrayNode();
-      ex.results().forEach(item -> {
-        ObjectNode itemJson = objectMapper.createObjectNode();
-        itemJson.put("dataLocation", item.describeInstanceLocation());
-        itemJson.put("schemaLocation", item.describeSchemaLocation());
-        itemJson.put("message", item.message);
-        itemsJson.add(itemJson);
-      });
-      respObj.put("errors", itemsJson);
-      httpResp.setStatus(400);
-      httpResp.getWriter().print(objectMapper
-        .writerWithDefaultPrettyPrinter()
-        .writeValueAsString(respObj)
-      );
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(UsersApplication.class);
   }
+
+  @Bean
+  public KappaSpringConfiguration kappaSpringConfiguration() {
+    KappaSpringConfiguration kappaConfig = new KappaSpringConfiguration();
+    var pathPatternToOpenapiDescription = new LinkedHashMap<String, String>();
+    // customize the mapping (path pattern -> api desctiption) if your description is split into multiple openapi files
+    pathPatternToOpenapiDescription.put("/**", "/api/openapi.yaml");
+    kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);
+    return kappaConfig;
+  }
+
 }
 ```
 
-### Register your bean in Spring Context
+### Verify that everything going through MockMvc conforms to your OpenAPI description
+
 
 ```java
-@Bean
-public FilterRegistrationBean<OpenApiBackedRequestValidationFilter> filterRegistration() {
-  FilterRegistrationBean<OpenApiBackedRequestValidationFilter> registration = new FilterRegistrationBean<>();
-  registration.setFilter(new OpenApiBackedRequestValidationFilter());
-  registration.setOrder(2);
-  registration.addUrlPatterns("/api/*");
-  return registration;
+@SpringBootTest()
+@AutoConfigureMockMvc
+@EnableKappaContractTesting // enable contract verification
+public class EmployeeApiTest {
+
+    @Autowired
+    MockMvc mvc;
+
+    @Test
+    void notFoundResponseBodyMismatch() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/employees/22").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                // actually, this is the json that will be returned by the endpoint, but it doesn't match the openapi description
+                // due to the missing "id" property, so the test fails
+                .andExpect(content().json("""
+                        {
+                            "message": "Could not find employee 22"
+                        }
+                        """));
+    }
+
 }
+
 ```
+
+
 
 ## Supported versions
 
@@ -129,6 +111,6 @@ Kappa is released under the Apache 2.0 license. See [LICENSE](https://github.com
 
 ## Contributor notes
 
-Release to local maven repo: `./gradlew build publishToMavenLocal`
+Build: `./gradlew clean build publish`
 
-Release to maven central: `./gradlew build publishToSonatype closeAndReleaseSonatypeStagingRepository`
+Release to maven central: `./gradlew jreleaserFullRelease`
