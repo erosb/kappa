@@ -1,5 +1,0 @@
-in: path
-name: id
-required: true
-schema:
-  $ref: 'reference.yaml#/components/schemas/EntityId'

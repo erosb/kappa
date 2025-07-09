@@ -1,8 +1,0 @@
-{
-  "resources":[
-    {"pattern":"operation/api.yaml"},
-    {"pattern":"org/openapi4j/parser/api-definition.yaml"},
-    {"pattern":"schema/data.json"},
-    {"pattern":"schema/schema-draft4.json"}
-  ]
-}
