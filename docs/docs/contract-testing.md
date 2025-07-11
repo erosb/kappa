@@ -27,7 +27,9 @@ Kappa has first-class support for testing if your API under testing conforms to 
 
 ### Add an OpenAPI definition to your classpath
 
-=== "src/main/resources/api/openapi.yaml"
+=== "Add an API definition"
+
+    `src/main/resources/api/openapi.yaml` :
 
     ```yaml
     openapi: 3.1.0
@@ -35,7 +37,7 @@ Kappa has first-class support for testing if your API under testing conforms to 
         version: 0.0.1
         title: employee API
     paths:
-    /employees: # (1)
+    /employees:
         get:
         description: get employee list
         responses:
@@ -97,15 +99,38 @@ Kappa has first-class support for testing if your API under testing conforms to 
             message:
             type: string
     ```
+=== "Tell Kappa about your API definition"
 
-    1.  :man_raising_hand: I'm an annotation! I can contain `code`, __formatted
-        text__, images, ... basically anything that can be expressed in Markdown.
-=== "src/test/java/EmployeeApiTest.java"
+    `src/main/java/EmployeeApplication.java`:
+
+    ```java
+    @SpringBootApplication
+    public class EmployeeApplication {
+
+        public static void main(String[] args) {
+            SpringApplication.run(DemoApplication.class, args);
+        }
+
+        @Bean
+        public KappaSpringConfiguration kappaSpringConfiguration() {
+            KappaSpringConfiguration kappaConfig = new KappaSpringConfiguration();
+            var pathPatternToOpenapiDescription = new LinkedHashMap<String, String>();
+            pathPatternToOpenapiDescription.put("/**", "/api/openapi.yaml");
+            kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);
+            return kappaConfig;
+        }
+
+    }
+    ```
+    
+=== "Add an API test"
+
+    `src/test/java/EmployeeApiTest.java`:
   
     ```java
-    @SpringBootTest()
+    @SpringBootTest
     @AutoConfigureMockMvc
-    @EnableKappaContractTesting // enable contract verification
+    @EnableKappaContractTesting // (1)
     public class EmployeeApiTest {
 
         @Autowired
@@ -113,16 +138,20 @@ Kappa has first-class support for testing if your API under testing conforms to 
 
         @Test
         void notFoundResponseBodyMismatch() throws Exception {
-            mvc.perform(MockMvcRequestBuilders.get("/employees/22").accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isNotFound())
+            mvc.perform(MockMvcRequestBuilders.get("/employees/22")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
                     // actually, this is the json that will be returned by the endpoint, but it doesn't match the openapi description
                     // due to the missing "id" property, so the test fails
-                    .andExpect(content().json("""
-                            {
-                                "message": "Could not find employee 22"
-                            }
-                            """));
+                .andExpect(content().json("""
+                        {
+                            "message": "Could not find employee 22"
+                        }
+                        """));
         }
 
     }
     ```
+
+    1.  This annotation enables contract verification on every request and response.
+        If either the request or response doesn't match, the API, the test fails
