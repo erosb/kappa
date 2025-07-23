@@ -91,6 +91,7 @@ class RFC9457FailureSender
   @Override
   public void send(ValidationException ex, HttpServletResponse httpResp)
     throws IOException {
+    httpResp.setContentType("application/problem+json");
     ObjectMapper objectMapper = new ObjectMapper();
     ObjectNode respObj = objectMapper.createObjectNode();
     ArrayNode errors = objectMapper.createArrayNode();

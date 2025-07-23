@@ -11,6 +11,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import java.net.URI;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class RFC9457FailureSenderTest {
 
   @Test
@@ -37,5 +39,7 @@ public class RFC9457FailureSenderTest {
          } ]
        }
       """, actual, true);
+
+    assertEquals("application/problem+json", response.getContentType());
   }
 }
