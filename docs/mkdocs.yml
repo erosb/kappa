@@ -1,3 +1,30 @@
-site_name: Kappa Docs
-theme: 
-  name: readthedocs
+site_name: Kappa - OpenAPI library for JVM
+repo_url: https://github.com/erosb/kappa
+repo_name: Kappa
+theme:
+  name: material
+  icon:
+    annotation: material/arrow-right-circle-outline
+  color_mode: dark
+  palette:
+    scheme: slate
+    primary: black
+    accent: light blue
+  features:
+    - content.code.annotate
+markdown_extensions:
+  - toc:
+      permalink: true
+  - def_list
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - attr_list
+  # - md_in_html
+  # - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
