@@ -25,133 +25,155 @@ Kappa has first-class support for testing if your API under testing conforms to 
 
 ## Add a contract-driven test
 
-### Add an OpenAPI definition to your classpath
-
 === "Add an API definition"
 
-    `src/main/resources/api/openapi.yaml` :
+    [`openapi/pets-api.yaml`](https://github.com/erosb/kappa-examples/blob/master/kappa-spring-boot-examples/src/main/resources/openapi/pets-api.yaml) :
 
     ```yaml
-    openapi: 3.1.0
+    openapi: "3.1.0"
     info:
-        version: 0.0.1
-        title: employee API
+      title: "Pets API"
+      version: 0.0.1
     paths:
-    /employees:
-        get:
-        description: get employee list
-        responses:
-            '200':
+      /api/pets:
+        post:
+          requestBody:
             content:
-                application/json:
+              application/json:
                 schema:
+                  $ref: "#/components/schemas/CreatePetRequest"
+        get:
+          responses:
+            '200':
+              content:
+                application/json:
+                  schema:
                     type: array
                     items:
-                    $ref: "#/components/schemas/Employee"
-        post:
-        requestBody:
-            required: true
-            content:
-            application/json:
-                schema:
-                $ref: "#/components/schemas/Employee"
-        responses:
-            '201':
-            description: 'successfully created'
-            content:
-                application/json:
-                schema:
-                    $ref: "#/components/schemas/Employee"
-    /employees/{id}:
-        get:
-        description: get employee list
-        responses:
-            '200':
-            content:
-                application/json:
-                schema:
-                    $ref: "#/components/schemas/Employee"
-            '404':
-            content:
-                application/json:
-                schema:
-                    $ref: "#/components/schemas/NotFoundResponseBody"
+                      $ref: "#/components/schemas/Pet"
     components:
-    schemas:
-        Employee:
-        type: object
-        additionalProperties: false
-        properties:
-            id:
-            type: integer
-            name:
-            type: string
-            role:
-            type: string
-        NotFoundResponseBody:
-        type: object
-        required:
+      schemas:
+        Name:
+          type: string
+          minLength: 1
+        Pet:
+          type: object
+          additionalProperties: false
+          required:
             - id
-            - message
-        properties:
+            - name
+          properties:
             id:
-            type: integer
-            message:
-            type: string
+              type: integer
+            name:
+              $ref: "#/components/schemas/Name"
+            owner:
+              type: object
+              additionalProperties: false
+              required:
+                - id
+                - name
+              properties:
+                id:
+                  type: integer
+                name:
+                  $ref: "#/components/schemas/Name"
+            birthDate:
+              type: string
+              format: date
+
     ```
 === "Tell Kappa about your API definition"
 
-    `src/main/java/EmployeeApplication.java`:
+    [`KappaSpringBootExampleApplication.java`](https://github.com/erosb/kappa-examples/blob/master/kappa-spring-boot-examples/src/main/java/com/github/erosb/kappa/examples/KappaSpringBootExampleApplication.java):
 
     ```java
     @SpringBootApplication
-    public class EmployeeApplication {
+    public class KappaSpringBootExampleApplication {
 
-        public static void main(String[] args) {
-            SpringApplication.run(DemoApplication.class, args);
+    	public static void main(String[] args) {
+    		SpringApplication.run(KappaSpringBootExampleApplication.class, args);
+    	}
+
+    	@Bean
+    	public KappaSpringConfiguration kappaConfig() {
+    		var kappaConfig = new KappaSpringConfiguration();
+    		var mapping = new LinkedHashMap<String, String>();
+    		mapping.put("/**", "/openapi/pets-api.yaml"); // (1)
+    		kappaConfig.setOpenapiDescriptions(mapping);
+    		return kappaConfig;
+    	}
+    }
+
+    ```
+
+    1. If your OpenAPI descriptions are split into multiple files, you can map multiple request paths to yaml files describing them
+
+=== "Implement the API"
+
+    [`PetController.java`](https://github.com/erosb/kappa-examples/blob/master/kappa-spring-boot-examples/src/main/java/com/github/erosb/kappa/examples/PetController.java):
+
+    ```java
+    record User(int id, String firstName, String lastName) {
+    }
+
+    record Pet(int id, String name, User owner, long birthDate) {
+    }
+
+    @RestController
+    @RequestMapping("/api/pets")
+    public class PetController {
+
+        @GetMapping
+        List<Pet> getPets() {
+            return List.of(
+                new Pet(
+                    1,
+                    "",
+                    new User(2, "John", "Doe"),
+                    LocalDate.parse("2017-08-08").toEpochDay()
+                )
+            );
         }
-
-        @Bean
-        public KappaSpringConfiguration kappaSpringConfiguration() {
-            KappaSpringConfiguration kappaConfig = new KappaSpringConfiguration();
-            var pathPatternToOpenapiDescription = new LinkedHashMap<String, String>();
-            pathPatternToOpenapiDescription.put("/**", "/api/openapi.yaml");
-            kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);
-            return kappaConfig;
-        }
-
     }
     ```
-    
+
 === "Add an API test"
 
-    `src/test/java/EmployeeApiTest.java`:
-  
+    [`ContractDrivenApiTest.java`](https://github.com/erosb/kappa-examples/blob/master/kappa-spring-boot-examples/src/test/java/com/github/erosb/kappa/examples/ContractDrivenApiTest.java):
+
     ```java
     @SpringBootTest
     @AutoConfigureMockMvc
-    @EnableKappaContractTesting // (1)
-    public class EmployeeApiTest {
+    @EnableKappaContractTesting //(1)
+    public class ContractDrivenApiTest {
+
 
         @Autowired
         MockMvc mvc;
 
         @Test
-        void notFoundResponseBodyMismatch() throws Exception {
-            mvc.perform(MockMvcRequestBuilders.get("/employees/22")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                    // actually, this is the json that will be returned by the endpoint, but it doesn't match the openapi description
-                    // due to the missing "id" property, so the test fails
-                .andExpect(content().json("""
-                        {
-                            "message": "Could not find employee 22"
-                        }
-                        """));
+        void testListPets() throws Exception {
+            mvc.perform(get("/api/pets")
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.size()").value(1)); // (2)
         }
-
     }
+
     ```
 
     1.  This annotation enables contract verification on every request and response.
         If either the request or response doesn't match, the API, the test fails
+    2.  The assertions of the test pass, but Kappa will catch the structural mismatches of the response
+
+
+
+If you run the above `ContractDrivenApiTest`, it will fail and report the following errors with the response structure:
+
+ * an empty pet name is returned, while it is described as a `minLength: 1` string
+ * two undefined properties of the owner are returned: `firstName` and `lastName`
+ * on the other hand, the mandatory `name` field of the owner is missing
+
+
+The complete example is available in the [Kappa Examples](https://github.com/erosb/kappa-examples/tree/master/kappa-spring-boot-examples) repo.
