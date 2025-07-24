@@ -39,7 +39,7 @@ public class RequestValidator {
   private static final String INVALID_REQUEST_ERR_MSG = "Invalid request.";
   private static final String INVALID_RESPONSE_ERR_MSG = "Invalid response.";
   private static final String INVALID_OP_ERR_MSG = "Operation not found from URL '%s' with method '%s'.";
-  private static final String INVALID_OP_PATH_ERR_MSG = "Operation path not found from URL '%s'.";
+  public static final String INVALID_OP_PATH_ERR_MSG = "Operation path not found from URL '%s'.";
 
   private final OpenApi3 openApi;
   private final Map<Operation, OperationValidator> operationValidators;

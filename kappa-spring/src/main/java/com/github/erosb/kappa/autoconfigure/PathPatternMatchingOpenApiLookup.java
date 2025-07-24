@@ -3,19 +3,27 @@ package com.github.erosb.kappa.autoconfigure;
 import com.github.erosb.kappa.core.exception.ResolutionException;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.operation.validator.adapters.server.servlet.OpenApiLookup;
+import com.github.erosb.kappa.operation.validator.validation.RequestValidator;
 import com.github.erosb.kappa.parser.OpenApi3Parser;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.server.PathContainer;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 
+import java.net.URI;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PathPatternMatchingOpenApiLookup
   implements OpenApiLookup {
 
   private final Map<PathPattern, OpenApi3> pathPatternToApiDescr;
+
+  private final List<PathPattern> ignoredPathPatterns;
 
   public PathPatternMatchingOpenApiLookup(KappaSpringConfiguration configuration) {
     pathPatternToApiDescr = new LinkedHashMap<>();
@@ -31,6 +39,9 @@ public class PathPatternMatchingOpenApiLookup
         }
       }
     );
+    ignoredPathPatterns = configuration.getIgnoredPathPatterns().stream()
+      .map(p -> new PathPatternParser().parse(p))
+      .toList();
   }
 
   @Override
@@ -42,5 +53,24 @@ public class PathPatternMatchingOpenApiLookup
       }
     }
     throw new NoMatchingPathPatternFoundException(requestPath, pathPatternToApiDescr.keySet());
+  }
+
+  @Override
+  public void handleException(Exception exception, HttpServletRequest request, HttpServletResponse response,
+                              FilterChain filterChain)
+    throws Exception {
+    URI requestURI = URI.create(request.getRequestURL().toString());
+    var requestPath = requestURI.getPath();
+    System.out.println(requestPath);
+    PathContainer path = PathContainer.parsePath(requestPath);
+    if (exception instanceof NoMatchingPathPatternFoundException) {
+      if (ignoredPathPatterns.stream().anyMatch(pattern -> pattern.matches(path))) {
+        filterChain.doFilter(request, response);
+      } else {
+        throw new ValidationException(RequestValidator.INVALID_OP_PATH_ERR_MSG.formatted(requestURI.toString()));
+      }
+    } else {
+      throw new RuntimeException(exception);
+    }
   }
 }

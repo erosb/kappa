@@ -65,17 +65,26 @@ public class OpenApiBasedRequestValidationFilter
       // which wraps a HttpServletRequest
       Request jakartaRequest = JakartaServletRequest.of(memoizedReq);
 
-      // we do the validation
-      new RequestValidator(lookupFn.apply(jakartaRequest.getPath())).validate(jakartaRequest);
+      OpenApi3 api = null;
+      try {
+        api = lookupFn.apply(jakartaRequest.getPath());
+      } catch (Exception e) {
+        lookupFn.handleException(e, memoizedReq, httpResp, chain);
+      }
 
-      // if no request validation error was found, we proceed with the request execution
-      chain.doFilter(memoizedReq, httpResp);
+      if (api != null) {
+        // we do the validation
+        new RequestValidator(api).validate(jakartaRequest);
+
+        // if no request validation error was found, we proceed with the request execution
+        chain.doFilter(memoizedReq, httpResp);
+      }
 
     } catch (ValidationException ex) {
       // if the request validation failed, we represents the validation failures in a simple
       // json response and send it back to the client
       validationFailureSender.send(ex, httpResp);
-    } catch (ServletException e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
