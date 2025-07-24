@@ -12,6 +12,7 @@ theme:
     accent: light blue
   features:
     - content.code.annotate
+    - content.code.copy
 markdown_extensions:
   - toc:
       permalink: true

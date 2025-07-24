@@ -5,27 +5,27 @@ Kappa has first-class support for testing if your API under testing conforms to 
 
 ## Installation
 
-### Maven
+=== "Maven"
 
-```xml
-<dependency>
-  <groupId>com.github.erosb</groupId>
-  <artifactId>kappa-spring</artifactId>
-  <version>2.0.0-RC15</version>
-</dependency>
-```
+    ```xml
+    <dependency>
+      <groupId>com.github.erosb</groupId>
+      <artifactId>kappa-spring</artifactId>
+      <version>2.0.0-RC16</version>
+    </dependency>
+    ```
 
-### Gradle
+=== "Gradle"
 
-```kotlin
-	testImplementation("com.github.erosb:kappa-spring:2.0.0-RC15")
-```
+    ```kotlin
+      testImplementation("com.github.erosb:kappa-spring:2.0.0-RC16")
+    ```
 
 
 
 ## Add a contract-driven test
 
-=== "Add an API definition"
+=== "Add an API description"
 
     [`openapi/pets-api.yaml`](https://github.com/erosb/kappa-examples/blob/master/kappa-spring-boot-examples/src/main/resources/openapi/pets-api.yaml) :
 
