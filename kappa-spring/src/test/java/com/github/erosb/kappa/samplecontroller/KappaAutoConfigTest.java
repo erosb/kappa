@@ -117,4 +117,18 @@ public class KappaAutoConfigTest {
       }
       """, content, true);
   }
+
+  @Test
+  public void ignorePatternsWorks()
+    throws Exception {
+    String content = mockMvc.perform(MockMvcRequestBuilders.get("/health"))
+      .andDo(print())
+      .andExpect(status().isNotFound())
+      .andReturn().getResponse().getContentAsString();
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/undefined"))
+      .andDo(print())
+      .andExpect(status().isBadRequest())
+      .andReturn().getResponse().getContentAsString();
+  }
 }
