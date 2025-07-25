@@ -127,6 +127,10 @@ public class KappaAutoConfigTest {
       .andExpect(status().isNotFound())
       .andReturn().getResponse().getContentAsString();
 
+    mockMvc.perform(MockMvcRequestBuilders.get("/swagger-ui.html"))
+      .andDo(print())
+      .andExpect(status().isNotFound());
+
     mockMvc.perform(MockMvcRequestBuilders.get("/undefined"))
       .andDo(print())
       .andExpect(status().isBadRequest())
