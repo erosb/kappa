@@ -16,7 +16,7 @@ public interface OpenApiLookup
   default void handleException(Exception exception, HttpServletRequest request, HttpServletResponse response,
                                FilterChain filterChain)
     throws Exception {
-
+    throw new RuntimeException(exception);
   }
 
 }

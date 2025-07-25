@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -129,6 +130,14 @@ public class KappaAutoConfigTest {
     mockMvc.perform(MockMvcRequestBuilders.get("/undefined"))
       .andDo(print())
       .andExpect(status().isBadRequest())
-      .andReturn().getResponse().getContentAsString();
+      .andExpect(content().json("""
+            {
+              "errors" : [
+                {
+                  "message" : "Operation path not found from URL 'http://localhost/undefined'."
+                }
+              ]
+            }
+        """));
   }
 }
