@@ -6,7 +6,7 @@ Kappa is an OpenAPI library for the JVM. It supports [contract-first API develop
  * [Request validation](./spring-boot/request-validation)
  * [Contract testing](./spring-boot/contract-testing)
 
-Kappa provides first-class Spring Boot integration for both usecases. It also has adapters to work with other HTTP-related Java frameworks and libraries, like RestAssured, Vert.x and Undertow.
+Kappa provides first-class Spring Boot integration for both usecases. It also has adapters to work with other HTTP-related Java frameworks and libraries, like RestAssured, [Vert.x](./other-frameworks/vertx.md) and [Undertow](./other-frameworks/undertow.md).
 
 ## Version compatibility
 
