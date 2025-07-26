@@ -83,7 +83,7 @@ Kappa has first-class support for testing if your API under testing conforms to 
               format: date
 
     ```
-=== "Tell Kappa about your API definition"
+=== "Configure Kappa"
 
     [`KappaSpringBootExampleApplication.java`](https://github.com/erosb/kappa-examples/blob/master/kappa-spring-boot-examples/src/main/java/com/github/erosb/kappa/examples/KappaSpringBootExampleApplication.java):
 

@@ -29,3 +29,10 @@ markdown_extensions:
   # - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+nav:
+  - 'Welcome to Kappa': 'index.md'
+  - 'Spring Boot':
+      - 'spring-boot/contract-testing.md'
+      - 'spring-boot/request-validation.md'
+  - 'Other frameworks':
+      - 'Servlet API': other-frameworks/servlet-api.md
