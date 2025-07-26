@@ -12,14 +12,14 @@ error description about what went wrong.
     <dependency>
       <groupId>com.github.erosb</groupId>
       <artifactId>kappa-spring</artifactId>
-      <version>2.0.0-RC16</version>
+      <version>{{ kappa_version }}</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```kotlin
-      testImplementation("com.github.erosb:kappa-spring:2.0.0-RC16")
+      testImplementation("com.github.erosb:kappa-spring:{{ kappa_version }}")
     ```
 
 

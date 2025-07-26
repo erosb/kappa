@@ -1,22 +1,21 @@
-# Using Kappa with the Servlet API
+# Using Kappa with Undertow
 
 ## Installation
-
 
 === "Maven"
 
     ```xml
     <dependency>
       <groupId>com.github.erosb</groupId>
-      <artifactId>kappa-servlet-adapter</artifactId>
-      <version>2.0.0-RC16</version>
+      <artifactId>kappa-undertow-adapter</artifactId>
+      <version>{{ kappa_version }}</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```kotlin
-      testImplementation("com.github.erosb:kappa-servlet-adapter:2.0.0-RC16")
+      testImplementation("com.github.erosb:kappa-undertow-adapter:{{ kappa_version }}")
     ```
 
 ## Usage
@@ -29,13 +28,16 @@ Examples:
 // openAPI & operation objects are from openapi4j parser
 RequestValidator val = new RequestValidator(openAPI);
 
-Request request = JakartaServletRequest.of(HttpServletRequest servletRequest);
+// maps Undertow's HttpServerExchange object to a Kappa Request
+// understood by the RequestValidator
+Request request = UndertowRequest.of(HttpServerExchange hse);
 
 // Default usage
 val.validate(Request request);
 // other usages
 val.validate(Request request, Path path, Operation peration);
-val.validate(Request request, ValidationData<?> validation); // If you need to get back info/warn content
+// If you need to get back info/warn content
+val.validate(Request request, ValidationData<?> validation);
 
 // With response
 val.validate(Response response, Path path, Operation operation);

@@ -36,3 +36,9 @@ nav:
       - 'spring-boot/request-validation.md'
   - 'Other frameworks':
       - 'Servlet API': other-frameworks/servlet-api.md
+      - 'Undertow': other-frameworks/undertow.md
+      - 'Vert.x': other-frameworks/vertx.md
+extra:
+  kappa_version: 2.0.0-RC16
+plugins:
+  - macros
