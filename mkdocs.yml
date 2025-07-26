@@ -40,5 +40,8 @@ nav:
       - 'Vert.x': other-frameworks/vertx.md
 extra:
   kappa_version: 2.0.0-RC16
+  analytics:
+    provider: google
+    property: G-ETPR43KXJH
 plugins:
   - macros
