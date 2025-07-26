@@ -9,7 +9,7 @@ We accept Pull Requests via GitHub. There are some guidelines which will make ap
 
 ## License
 
-Kappa is released under the Apache 2.0 license. See [LICENSE](https://github.com/openapi4j/openapi4j/blob/master/LICENSE.md) for details.
+Kappa is released under the Apache 2.0 license. See [LICENSE](https://github.com/erosb/kappa/blob/master/LICENSE.md) for details.
 
 ## Contributor notes
 
