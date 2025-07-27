@@ -61,7 +61,6 @@ public class PathPatternMatchingOpenApiLookup
     throws Exception {
     URI requestURI = URI.create(request.getRequestURL().toString());
     var requestPath = requestURI.getPath();
-    System.out.println(requestPath);
     PathContainer path = PathContainer.parsePath(requestPath);
     if (exception instanceof NoMatchingPathPatternFoundException) {
       if (ignoredPathPatterns.stream().anyMatch(pattern -> pattern.matches(path))) {
