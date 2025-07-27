@@ -11,8 +11,18 @@ We accept Pull Requests via GitHub. There are some guidelines which will make ap
 
 Kappa is released under the Apache 2.0 license. See [LICENSE](https://github.com/erosb/kappa/blob/master/LICENSE.md) for details.
 
-## Contributor notes
+## Release process
 
-Build: `./gradlew clean build publish`
-
-Release to maven central: `./gradlew jreleaserFullRelease`
+ - `git checkout -b release/v<version-number>`
+ - Bump version number in:
+     * build.gradle
+     * mkdocs.yml
+ - `git commit -am 'bump version number'`
+ - Build: `./gradlew clean build publish`
+ - Release to maven central: `./gradlew jreleaserFullRelease`
+ - Wait until the release is available in Maven Central (usually a few minutes)
+ - `git tag v<version-number>`
+ - `git checkout master && git merge release/v<version-number>`
+ - `git push origin v<version-number>`
+ - `mkdocs gh-deploy`
+ - Bump version number in `kappa-examples`, commit & push
