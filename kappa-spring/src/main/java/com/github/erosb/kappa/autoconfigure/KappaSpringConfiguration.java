@@ -9,7 +9,8 @@ public class KappaSpringConfiguration {
   private LinkedHashMap<String, String> openapiDescriptions = new LinkedHashMap<>();
 
   private ValidationFailureSender validationFailureSender = ValidationFailureSender.defaultSender();
-  private List<String> ignoredPathPatterns;
+
+  private List<String> ignoredPathPatterns = List.of();
 
   public LinkedHashMap<String, String> getOpenapiDescriptions() {
     return openapiDescriptions;
