@@ -1,9 +1,13 @@
 package com.github.erosb.kappa.operation.validator.adapters.server.servlet;
 
 import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.Part;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -12,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.util.Enumeration;
+import java.util.Map;
 
 class CachedBodyServletInputStream extends ServletInputStream {
 
@@ -60,6 +66,10 @@ public class MemoizingServletRequest extends HttpServletRequestWrapper {
 
   public MemoizingServletRequest(HttpServletRequest request) throws IOException {
     super(request);
+    System.out.println(request.getContentType());
+//    if (request.getContentType().startsWith("multipart/form-data")) {
+//      throw new IllegalArgumentException("cant memoize dis crap");
+//    }
     InputStream requestInputStream = request.getInputStream();
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     int nRead;
@@ -70,6 +80,7 @@ public class MemoizingServletRequest extends HttpServletRequestWrapper {
     }
     buffer.flush();
     this.cachedBody = buffer.toByteArray();
+    System.out.println("memoized body: " + new String(cachedBody));
   }
 
   @Override
@@ -83,5 +94,41 @@ public class MemoizingServletRequest extends HttpServletRequestWrapper {
     // and return it
     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
     return new BufferedReader(new InputStreamReader(byteArrayInputStream));
+  }
+
+  @Override
+  public ServletRequest getRequest() {
+    return super.getRequest();
+  }
+
+  @Override
+  public String getParameter(String name) {
+    return super.getParameter(name);
+  }
+
+  @Override
+  public Map<String, String[]> getParameterMap() {
+    return super.getParameterMap();
+  }
+
+  @Override
+  public Enumeration<String> getParameterNames() {
+    return super.getParameterNames();
+  }
+
+  @Override
+  public String[] getParameterValues(String name) {
+    return super.getParameterValues(name);
+  }
+
+  @Override
+  public ServletConnection getServletConnection() {
+    return super.getServletConnection();
+  }
+
+  @Override
+  public Part getPart(String name)
+    throws IOException, ServletException {
+    return super.getPart(name);
   }
 }
