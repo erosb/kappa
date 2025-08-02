@@ -48,8 +48,14 @@ public class OpenApiBasedRequestValidationFilter
 
   @Override
   public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
-    throws IOException {
+    throws IOException, ServletException {
     HttpServletResponse httpResp = (HttpServletResponse) resp;
+    HttpServletRequest httpServletRequest = (HttpServletRequest) req;
+    String contentType = httpServletRequest.getContentType();
+    if (contentType != null && contentType.toLowerCase().startsWith("multipart/form-data")) {
+      chain.doFilter(req, resp);
+      return;
+    }
     try {
 
       // we need to wrap the original request instance into a MemoizingServletRequest,
@@ -58,7 +64,7 @@ public class OpenApiBasedRequestValidationFilter
       // basic HttpServletRequests cannot be read twice, hence we use the
       // MemoizingServletRequest shipped with Kappa
       // more here: https://www.baeldung.com/spring-reading-httpservletrequest-multiple-times
-      HttpServletRequest memoizedReq = new MemoizingServletRequest((HttpServletRequest) req);
+      HttpServletRequest memoizedReq = new MemoizingServletRequest(httpServletRequest);
 
       // Kappa can understand different representations of HTTP requests and responses
       // here we use the Servlet API specific adapter of Kappa, to get a Kappa Request instance

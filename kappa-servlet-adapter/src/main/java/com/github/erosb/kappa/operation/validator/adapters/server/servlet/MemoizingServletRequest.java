@@ -19,7 +19,8 @@ import java.io.UncheckedIOException;
 import java.util.Enumeration;
 import java.util.Map;
 
-class CachedBodyServletInputStream extends ServletInputStream {
+class CachedBodyServletInputStream
+  extends ServletInputStream {
 
   private InputStream cachedBodyInputStream;
 
@@ -47,7 +48,8 @@ class CachedBodyServletInputStream extends ServletInputStream {
   }
 
   @Override
-  public int read() throws IOException {
+  public int read()
+    throws IOException {
     return cachedBodyInputStream.read();
   }
 }
@@ -60,16 +62,15 @@ class CachedBodyServletInputStream extends ServletInputStream {
  * <li><a href="https://www.baeldung.com/spring-reading-httpservletrequest-multiple-times">Reading HttpServletRequest Multiple Times in Spring</a>
  * </ul>
  */
-public class MemoizingServletRequest extends HttpServletRequestWrapper {
+public class MemoizingServletRequest
+  extends HttpServletRequestWrapper {
 
   private final byte[] cachedBody;
 
-  public MemoizingServletRequest(HttpServletRequest request) throws IOException {
+  public MemoizingServletRequest(HttpServletRequest request)
+    throws IOException {
     super(request);
     System.out.println(request.getContentType());
-//    if (request.getContentType().startsWith("multipart/form-data")) {
-//      throw new IllegalArgumentException("cant memoize dis crap");
-//    }
     InputStream requestInputStream = request.getInputStream();
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     int nRead;
@@ -84,51 +85,17 @@ public class MemoizingServletRequest extends HttpServletRequestWrapper {
   }
 
   @Override
-  public ServletInputStream getInputStream() throws IOException {
+  public ServletInputStream getInputStream()
+    throws IOException {
     return new CachedBodyServletInputStream(this.cachedBody);
   }
 
   @Override
-  public BufferedReader getReader() throws IOException {
+  public BufferedReader getReader()
+    throws IOException {
     // Create a reader from cachedContent
     // and return it
     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
     return new BufferedReader(new InputStreamReader(byteArrayInputStream));
-  }
-
-  @Override
-  public ServletRequest getRequest() {
-    return super.getRequest();
-  }
-
-  @Override
-  public String getParameter(String name) {
-    return super.getParameter(name);
-  }
-
-  @Override
-  public Map<String, String[]> getParameterMap() {
-    return super.getParameterMap();
-  }
-
-  @Override
-  public Enumeration<String> getParameterNames() {
-    return super.getParameterNames();
-  }
-
-  @Override
-  public String[] getParameterValues(String name) {
-    return super.getParameterValues(name);
-  }
-
-  @Override
-  public ServletConnection getServletConnection() {
-    return super.getServletConnection();
-  }
-
-  @Override
-  public Part getPart(String name)
-    throws IOException, ServletException {
-    return super.getPart(name);
   }
 }

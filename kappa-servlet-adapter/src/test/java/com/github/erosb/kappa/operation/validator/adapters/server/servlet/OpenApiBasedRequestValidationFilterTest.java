@@ -32,7 +32,7 @@ public class OpenApiBasedRequestValidationFilterTest {
 
   @Test
   public void bodySchemaFailure()
-    throws IOException, JSONException {
+    throws Exception {
     OpenApiBasedRequestValidationFilter filter = forApiDescription(usersApi, ValidationFailureSender.defaultSender());
     HttpServletResponse resp = mock(HttpServletResponse.class);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
