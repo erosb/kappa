@@ -66,7 +66,6 @@ public class MemoizingServletRequest extends HttpServletRequestWrapper {
 
   public MemoizingServletRequest(HttpServletRequest request) throws IOException {
     super(request);
-    System.out.println(request.getContentType());
     InputStream requestInputStream = request.getInputStream();
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     int nRead;
