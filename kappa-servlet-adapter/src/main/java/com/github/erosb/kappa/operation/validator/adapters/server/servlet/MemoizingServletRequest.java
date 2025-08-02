@@ -1,9 +1,13 @@
 package com.github.erosb.kappa.operation.validator.adapters.server.servlet;
 
 import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.Part;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -12,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.util.Enumeration;
+import java.util.Map;
 
 class CachedBodyServletInputStream extends ServletInputStream {
 

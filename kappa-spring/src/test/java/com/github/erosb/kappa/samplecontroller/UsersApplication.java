@@ -23,7 +23,7 @@ public class UsersApplication {
     pathPatternToOpenapiDescription.put("/users/**", "/openapi/users-api.yaml");
     pathPatternToOpenapiDescription.put("/customers/**", "/openapi/customers-api.yaml");
     kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);
-    kappaConfig.setIgnoredPathPatterns("/health", "/swagger-ui**");
+    kappaConfig.setIgnoredPathPatterns("/health", "/swagger-ui**", "/upload");
     return kappaConfig;
   }
 
