@@ -16,7 +16,7 @@ import java.io.UncheckedIOException;
 public class UploadController {
 
   @PostMapping()
-  public ResponseEntity<String> uploadFile(@RequestParam("myfile") MultipartFile file) {
+  public ResponseEntity<String> uploadFile(@RequestParam("myfile") MultipartFile file) throws IOException {
     System.out.println("uploadFile: " + new String(file.getInputStream().readAllBytes()));
     return new ResponseEntity<>(HttpStatus.OK);
   }
