@@ -166,6 +166,14 @@ public class KappaContractTestingTest {
   }
 
   @Test
+  public void wildcardContentType() throws Exception {
+    mockMvc.perform(
+        MockMvcRequestBuilders.get("/users/feed-wildcard"))
+      .andExpect(status().isOk())
+      .andDo(print());
+  }
+
+  @Test
   public void malformedResponseJson()
     throws Exception {
     AssertionError exc = assertThrows(AssertionError.class, () ->

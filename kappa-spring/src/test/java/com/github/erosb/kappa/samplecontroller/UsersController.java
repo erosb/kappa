@@ -42,6 +42,11 @@ public class UsersController {
     return "<feed></feed>";
   }
 
+  @GetMapping(value = "/feed-wildcard", produces = "application/json")
+  public String getFeedCorrect() {
+    return "[]";
+  }
+
   @GetMapping("/error")
   public String getUsers() {
     throw new IllegalStateException("TODO");

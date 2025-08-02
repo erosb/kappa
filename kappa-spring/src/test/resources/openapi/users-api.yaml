@@ -31,6 +31,13 @@ paths:
           content:
             application/json:
               type: object
+  /users/feed-wildcard:
+    get:
+      responses:
+        '200':
+          content:
+            '*/*':
+              type: array
   /users/me:
     get:
       responses:

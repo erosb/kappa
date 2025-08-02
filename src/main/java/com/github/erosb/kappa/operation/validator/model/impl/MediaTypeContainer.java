@@ -6,6 +6,20 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class MediaTypeContainer {
+
+  private static class AcceptAllMediaTypeContainer extends MediaTypeContainer {
+
+    private AcceptAllMediaTypeContainer(String charset) {
+      super("*/*", charset);
+    }
+
+    @Override
+    public boolean match(MediaTypeContainer mediaTypeContainer) {
+      // */* matches everything
+      return true;
+    }
+  }
+
   private static final String TEXT_TYPE = "text";
   private static final Pattern PLACEHOLDER_TYPE = Pattern.compile("^.+/\\*");
 
@@ -21,7 +35,11 @@ public class MediaTypeContainer {
 
     String charset = ContentType.getCharSetOrNull(rawContentType);
 
-    return new MediaTypeContainer(contentType, charset);
+    if (contentType.equals("*/*")) {
+      return new AcceptAllMediaTypeContainer(charset);
+    } else {
+      return new MediaTypeContainer(contentType, charset);
+    }
   }
 
   private MediaTypeContainer(String contentType, String charset) {
@@ -31,7 +49,9 @@ public class MediaTypeContainer {
   }
 
   public boolean match(MediaTypeContainer mediaTypeContainer) {
-    if (this == mediaTypeContainer) return true;
+    if (this == mediaTypeContainer) {
+      return true;
+    }
 
     if (contentType.equalsIgnoreCase(mediaTypeContainer.contentType)) {
       // Text specific case
@@ -42,7 +62,6 @@ public class MediaTypeContainer {
         return true;
       }
     }
-
     // Wildcard subtypes
     if (hasPlaceholder) {
       String definitionType = contentType.substring(0, contentType.indexOf('/'));
@@ -59,12 +78,18 @@ public class MediaTypeContainer {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     MediaTypeContainer that = (MediaTypeContainer) o;
 
-    if (!contentType.equalsIgnoreCase(that.contentType)) return false;
+    if (!contentType.equalsIgnoreCase(that.contentType)) {
+      return false;
+    }
     return Objects.equals(charset, that.charset);
   }
 
