@@ -19,8 +19,7 @@ import java.io.UncheckedIOException;
 import java.util.Enumeration;
 import java.util.Map;
 
-class CachedBodyServletInputStream
-  extends ServletInputStream {
+class CachedBodyServletInputStream extends ServletInputStream {
 
   private InputStream cachedBodyInputStream;
 
@@ -48,8 +47,7 @@ class CachedBodyServletInputStream
   }
 
   @Override
-  public int read()
-    throws IOException {
+  public int read() throws IOException {
     return cachedBodyInputStream.read();
   }
 }
@@ -62,13 +60,11 @@ class CachedBodyServletInputStream
  * <li><a href="https://www.baeldung.com/spring-reading-httpservletrequest-multiple-times">Reading HttpServletRequest Multiple Times in Spring</a>
  * </ul>
  */
-public class MemoizingServletRequest
-  extends HttpServletRequestWrapper {
+public class MemoizingServletRequest extends HttpServletRequestWrapper {
 
   private final byte[] cachedBody;
 
-  public MemoizingServletRequest(HttpServletRequest request)
-    throws IOException {
+  public MemoizingServletRequest(HttpServletRequest request) throws IOException {
     super(request);
     System.out.println(request.getContentType());
     InputStream requestInputStream = request.getInputStream();
@@ -81,18 +77,15 @@ public class MemoizingServletRequest
     }
     buffer.flush();
     this.cachedBody = buffer.toByteArray();
-    System.out.println("memoized body: " + new String(cachedBody));
   }
 
   @Override
-  public ServletInputStream getInputStream()
-    throws IOException {
+  public ServletInputStream getInputStream() throws IOException {
     return new CachedBodyServletInputStream(this.cachedBody);
   }
 
   @Override
-  public BufferedReader getReader()
-    throws IOException {
+  public BufferedReader getReader() throws IOException {
     // Create a reader from cachedContent
     // and return it
     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);

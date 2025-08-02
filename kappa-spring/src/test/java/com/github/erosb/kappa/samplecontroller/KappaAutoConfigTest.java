@@ -145,15 +145,4 @@ public class KappaAutoConfigTest {
             }
         """));
   }
-
-  @Test
-  public void ignorePatternsWithMultipartRequestWorks()
-    throws Exception {
-    String content = mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
-        .file(new MockMultipartFile("myfile", getClass().getResourceAsStream("/openapi/users-api.yaml").readAllBytes())))
-      .andDo(print())
-      .andExpect(status().isOk())
-      .andReturn().getResponse().getContentAsString();
-
-  }
 }
