@@ -24,7 +24,7 @@ publishing {
       pom {
         name = project.name
         description = project.description
-        url = "https://github.com/erosb/openapi4j"
+        url = "https://github.com/erosb/kappa"
         licenses {
           license {
             name = "Apache License, Version 2.0"
@@ -39,9 +39,9 @@ publishing {
           }
         }
         scm {
-          connection = "scm:git:https://github.com/erosb/openapi4j"
-          developerConnection = "scm:git:https://github.com/erosb/openapi4j"
-          url = "https://github.com/erosb/openapi4j"
+          connection = "scm:git:https://github.com/erosb/kappa"
+          developerConnection = "scm:git:https://github.com/erosb/kappa"
+          url = "https://github.com/erosb/kappa"
         }
       }
     }
