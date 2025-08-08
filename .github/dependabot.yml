@@ -1,0 +1,78 @@
+version: 2
+updates:
+  # Main project
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "erosb"
+    labels:
+      - "dependencies"
+      - "gradle"
+
+  # kappa-restassured-adapter subproject
+  - package-ecosystem: "gradle"
+    directory: "/kappa-restassured-adapter"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "erosb"
+    labels:
+      - "dependencies"
+      - "gradle"
+      - "kappa-restassured-adapter"
+
+  # kappa-servlet-adapter subproject
+  - package-ecosystem: "gradle"
+    directory: "/kappa-servlet-adapter"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "erosb"
+    labels:
+      - "dependencies"
+      - "gradle"
+      - "kappa-servlet-adapter"
+
+  # kappa-undertow-adapter subproject
+  - package-ecosystem: "gradle"
+    directory: "/kappa-undertow-adapter"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "erosb"
+    labels:
+      - "dependencies"
+      - "gradle"
+      - "kappa-undertow-adapter"
+
+  # kappa-vertx-adapter subproject
+  - package-ecosystem: "gradle"
+    directory: "/kappa-vertx-adapter"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "erosb"
+    labels:
+      - "dependencies"
+      - "gradle"
+      - "kappa-vertx-adapter"
+
+  # kappa-spring subproject
+  - package-ecosystem: "gradle"
+    directory: "/kappa-spring"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "erosb"
+    labels:
+      - "dependencies"
+      - "gradle"
+      - "kappa-spring"
