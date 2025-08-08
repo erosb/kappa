@@ -24,9 +24,9 @@ public final class TypeConverter {
     return INSTANCE;
   }
 
-  public JsonNode convertObject(final OAIContext context,
-                                final Schema schema,
-                                final Map<String, Object> content) {
+  public JsonNode convertObject(OAIContext context,
+                                Schema schema,
+                                Map<String, Object> content) {
     if (schema == null || content == null) {
       return JsonNodeFactory.instance.nullNode();
     }
@@ -64,9 +64,9 @@ public final class TypeConverter {
     return convertedContent;
   }
 
-  public JsonNode convertArray(final OAIContext context,
-                               final Schema schema,
-                               final Collection<Object> content) {
+  public JsonNode convertArray(OAIContext context,
+                               Schema schema,
+                               Collection<Object> content) {
 
     if (schema == null || content == null) {
       return JsonNodeFactory.instance.nullNode();
@@ -95,8 +95,8 @@ public final class TypeConverter {
     return convertedContent;
   }
 
-  public JsonNode convertPrimitive(final OAIContext context,
-                                   final Schema schema,
+  public JsonNode convertPrimitive(OAIContext context,
+                                   Schema schema,
                                    Object value) {
 
     if (value == null) {

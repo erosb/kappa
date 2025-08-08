@@ -14,7 +14,7 @@ public final class IOUtil {
   private IOUtil() {
   }
 
-  public static String toString(final InputStream input, final String charset) throws IOException {
+  public static String toString(InputStream input, String charset) throws IOException {
     ByteArrayOutputStream result = new ByteArrayOutputStream();
     byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
     int length;

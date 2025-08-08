@@ -14,9 +14,9 @@ public class DefaultResponse implements Response {
   private final Map<String, Collection<String>> headers;
   private final Body body;
 
-  private DefaultResponse(final int status,
-                          final Map<String, Collection<String>> headers,
-                          final Body body) {
+  private DefaultResponse(int status,
+                          Map<String, Collection<String>> headers,
+                          Body body) {
     this.status = status;
     this.headers = requireNonNull(headers);
     this.body = body;
@@ -38,7 +38,7 @@ public class DefaultResponse implements Response {
   }
 
   @Override
-  public Collection<String> getHeaderValues(final String name) {
+  public Collection<String> getHeaderValues(String name) {
     return headers.get(name);
   }
 
@@ -55,7 +55,7 @@ public class DefaultResponse implements Response {
      *
      * @param status the responses HTTP status code
      */
-    public Builder(final int status) {
+    public Builder(int status) {
       this.status = status;
       headers = new MultiStringMap<>(false);
     }
@@ -66,7 +66,7 @@ public class DefaultResponse implements Response {
      * @param headers The headers where the key is the header name,
      * @return This builder
      */
-    public Builder headers(final Map<String, Collection<String>> headers) {
+    public Builder headers(Map<String, Collection<String>> headers) {
       headers.forEach(this.headers::putAll);
       return this;
     }
@@ -78,7 +78,7 @@ public class DefaultResponse implements Response {
      * @param values The values for this header
      * @return This builder
      */
-    public Builder header(final String name, final Collection<String> values) {
+    public Builder header(String name, Collection<String> values) {
       headers.putAll(name, values);
       return this;
     }
@@ -90,7 +90,7 @@ public class DefaultResponse implements Response {
      * @param value A single value for this header
      * @return This builder
      */
-    public Builder header(final String name, final String value) {
+    public Builder header(String name, String value) {
       headers.put(name, value);
       return this;
     }
@@ -101,7 +101,7 @@ public class DefaultResponse implements Response {
      * @param body the response body
      * @return this builder
      */
-    public Builder body(final Body body) {
+    public Builder body(Body body) {
       this.body = body;
       return this;
     }

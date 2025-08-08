@@ -91,10 +91,10 @@ public final class ParameterConverter {
    * @param path           The rendered path from the request.
    * @return A map with parameters names associated with the value as node.
    */
-  public static Map<String, JsonNode> pathToNode(final OAIContext context,
-                                                 final Map<String, AbsParameter<Parameter>> specParameters,
-                                                 final Pattern pattern,
-                                                 final String path) {
+  public static Map<String, JsonNode> pathToNode(OAIContext context,
+                                                 Map<String, AbsParameter<Parameter>> specParameters,
+                                                 Pattern pattern,
+                                                 String path) {
 
     final Map<String, JsonNode> mappedValues = new HashMap<>();
 
@@ -140,10 +140,10 @@ public final class ParameterConverter {
    * @param rawValue       The raw query string.
    * @return A map with parameters names associated with the value as node.
    */
-  public static Map<String, JsonNode> queryToNode(final OAIContext context,
-                                                  final Map<String, AbsParameter<Parameter>> specParameters,
-                                                  final String rawValue,
-                                                  final String encoding) {
+  public static Map<String, JsonNode> queryToNode(OAIContext context,
+                                                  Map<String, AbsParameter<Parameter>> specParameters,
+                                                  String rawValue,
+                                                  String encoding) {
 
     return FormUrlConverter.instance().convert(context, specParameters, rawValue, false, encoding);
   }
@@ -155,9 +155,9 @@ public final class ParameterConverter {
    * @param specParameters The spec header parameters.
    * @return A map with parameters names associated with the value as node.
    */
-  public static <M extends OpenApiSchema<M>> Map<String, JsonNode> headersToNode(final OAIContext context,
-                                                                                 final Map<String, AbsParameter<M>> specParameters,
-                                                                                 final Map<String, Collection<String>> headers) {
+  public static <M extends OpenApiSchema<M>> Map<String, JsonNode> headersToNode(OAIContext context,
+                                                                                 Map<String, AbsParameter<M>> specParameters,
+                                                                                 Map<String, Collection<String>> headers) {
 
     final Map<String, JsonNode> mappedValues = new HashMap<>();
 
@@ -203,9 +203,9 @@ public final class ParameterConverter {
    * @param specParameters The spec cookie parameters.
    * @return A map with parameters names associated with the value as node.
    */
-  public static Map<String, JsonNode> cookiesToNode(final OAIContext context,
-                                                    final Map<String, AbsParameter<Parameter>> specParameters,
-                                                    final Map<String, String> cookies) {
+  public static Map<String, JsonNode> cookiesToNode(OAIContext context,
+                                                    Map<String, AbsParameter<Parameter>> specParameters,
+                                                    Map<String, String> cookies) {
 
     final Map<String, JsonNode> mappedValues = new HashMap<>();
 
@@ -245,9 +245,9 @@ public final class ParameterConverter {
     return mappedValues;
   }
 
-  private static JsonNode getValueFromContentType(final OAIContext context,
-                                                  final Map<String, MediaType> mediaTypes,
-                                                  final String value) {
+  private static JsonNode getValueFromContentType(OAIContext context,
+                                                  Map<String, MediaType> mediaTypes,
+                                                  String value) {
 
     if (mediaTypes != null && value != null) {
       Optional<Map.Entry<String, MediaType>> entry = mediaTypes.entrySet().stream().findFirst();

@@ -37,8 +37,8 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
     return specParameters;
   }
 
-  void validate(final Map<String, JsonNode> values,
-                final ValidationData<?> validation) {
+  void validate(Map<String, JsonNode> values,
+                ValidationData<?> validation) {
 
     if (specValidators == null) {
       return;
@@ -86,10 +86,10 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
     return validators.isEmpty() ? null : validators;
   }
 
-  private boolean checkRequired(final String paramName,
-                                final AbsParameter<?> parameter,
-                                final Map<String, JsonNode> paramValues,
-                                final ValidationData<?> validation) {
+  private boolean checkRequired(String paramName,
+                                AbsParameter<?> parameter,
+                                Map<String, JsonNode> paramValues,
+                                ValidationData<?> validation) {
 
     if (!paramValues.containsKey(paramName)) {
       if (parameter.isRequired()) {

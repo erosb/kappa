@@ -6,7 +6,7 @@ import org.perf.check.report.ReportPrinter;
 public class ParserPerfRunner {
   private static final String SCHEMA_FILE = "com/github/erosb/kappa/parser/api-definition.yaml";
 
-  public static void main(final String... args) {
+  public static void main(String... args) {
     final Swagger swagger = new Swagger();
     final OpenApi4j openApi4j = new OpenApi4j();
 
@@ -17,7 +17,7 @@ public class ParserPerfRunner {
       load(openApi4j, openApi4j.getVersion(), 10, true));
   }
 
-  private static Report load(PerfParser parser, String version, final int ntIt, boolean excluded) {
+  private static Report load(PerfParser parser, String version, int ntIt, boolean excluded) {
     final long begin = System.nanoTime();
 
     for (int i = 1; i <= ntIt; i++) {

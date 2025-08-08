@@ -41,7 +41,7 @@ public final class UrlContentRetriever {
    * @return The content of the resource.
    * @throws ResolutionException wrapped exception for any error, depending of the underlying handler.
    */
-  public InputStream get(final URL url, final List<AuthOption> authOptions)
+  public InputStream get(URL url, List<AuthOption> authOptions)
     throws ResolutionException {
     URLConnection conn;
     URL inUrl = url;

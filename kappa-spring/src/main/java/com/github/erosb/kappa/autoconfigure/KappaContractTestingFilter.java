@@ -75,7 +75,7 @@ class MockMvcServletResponse
 class KappaPrintingResultHandler
   extends PrintingResultHandler {
 
-  protected KappaPrintingResultHandler(final PrintWriter writer) {
+  protected KappaPrintingResultHandler(PrintWriter writer) {
     super(new PrintingResultHandler.ResultValuePrinter() {
       public void printHeading(String heading) {
         writer.println();

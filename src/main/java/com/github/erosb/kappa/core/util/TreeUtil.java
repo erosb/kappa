@@ -94,7 +94,7 @@ public final class TreeUtil {
    * @return The content mapped.
    * @throws DecodeException In case wrong URL or content resolution.
    */
-  public static <T> T load(final URL url, Class<T> clazz)
+  public static <T> T load(URL url, Class<T> clazz)
     throws DecodeException {
     return load(url, null, clazz);
   }
@@ -108,7 +108,7 @@ public final class TreeUtil {
    * @return The content mapped.
    * @throws DecodeException In case wrong URL or content resolution.
    */
-  public static <T> T load(final URL url, final List<AuthOption> authOptions, Class<T> clazz)
+  public static <T> T load(URL url, List<AuthOption> authOptions, Class<T> clazz)
     throws DecodeException {
     requireNonNull(url, URL_REQUIRED_ERR_MSG);
 
@@ -133,7 +133,7 @@ public final class TreeUtil {
    * @return The content mapped.
    * @throws DecodeException In case wrong URL or content resolution.
    */
-  public static JsonNode load(final URL url)
+  public static JsonNode load(URL url)
     throws DecodeException {
     return load(url, (List<AuthOption>) null);
   }
@@ -146,7 +146,7 @@ public final class TreeUtil {
    * @return The content mapped.
    * @throws DecodeException In case wrong URL or content resolution.
    */
-  public static JsonNode load(final URL url, final List<AuthOption> authOptions)
+  public static JsonNode load(URL url, List<AuthOption> authOptions)
     throws DecodeException {
     requireNonNull(url, URL_REQUIRED_ERR_MSG);
 

@@ -26,7 +26,7 @@ public abstract class JakartaServletRequest
    * @param hsr The given server request.
    * @return The wrapped request to work this.
    */
-  public static Request of(final HttpServletRequest hsr) throws IOException {
+  public static Request of(HttpServletRequest hsr) throws IOException {
     return of(hsr, hsr.getInputStream());
   }
 
@@ -37,7 +37,7 @@ public abstract class JakartaServletRequest
    * @param body The body to consume.
    * @return The wrapped request to work this.
    */
-  public static Request of(final HttpServletRequest hsr, InputStream body) {
+  public static Request of(HttpServletRequest hsr, InputStream body) {
     requireNonNull(hsr, ERR_MSG);
 
     // Method & path

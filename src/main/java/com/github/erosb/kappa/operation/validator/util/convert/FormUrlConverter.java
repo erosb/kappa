@@ -41,20 +41,20 @@ class FormUrlConverter {
 
   private final Map<MediaType, Map<String, AbsParameter<Parameter>>> mediaTypesCache = new HashMap<>();
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final InputStream body, String encoding) throws IOException {
+  JsonNode convert(OAIContext context, MediaType mediaType, InputStream body, String encoding) throws IOException {
     return convert(context, mediaType, IOUtil.toString(body, encoding), encoding);
   }
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final String body, final String encoding) {
+  JsonNode convert(OAIContext context, MediaType mediaType, String body, String encoding) {
     Map<String, JsonNode> params = convert(context, getParameters(mediaType), body, true, encoding);
     return TreeUtil.json.valueToTree(params);
   }
 
-  Map<String, JsonNode> convert(final OAIContext context,
-                                final Map<String, AbsParameter<Parameter>> specParameters,
-                                final String body,
-                                final boolean caseSensitive,
-                                final String encoding) {
+  Map<String, JsonNode> convert(OAIContext context,
+                                Map<String, AbsParameter<Parameter>> specParameters,
+                                String body,
+                                boolean caseSensitive,
+                                String encoding) {
 
     final Map<String, JsonNode> mappedValues = new HashMap<>();
 
@@ -145,11 +145,11 @@ class FormUrlConverter {
     }
   }
 
-  private JsonNode getValueFromContentType(final OAIContext context,
-                                           final Map<String, MediaType> mediaTypes,
-                                           final String paramName,
-                                           final MultiStringMap<String> paramPairs,
-                                           final List<String> visitedParams) {
+  private JsonNode getValueFromContentType(OAIContext context,
+                                           Map<String, MediaType> mediaTypes,
+                                           String paramName,
+                                           MultiStringMap<String> paramPairs,
+                                           List<String> visitedParams) {
 
     Collection<String> propValues = paramPairs.get(paramName);
     if (propValues == null) {
@@ -189,7 +189,7 @@ class FormUrlConverter {
    * @param mediaType The given meida type to transform.
    * @return The Map of parameters.
    */
-  private Map<String, AbsParameter<Parameter>> getParameters(final MediaType mediaType) {
+  private Map<String, AbsParameter<Parameter>> getParameters(MediaType mediaType) {
     // check cache
     Map<String, AbsParameter<Parameter>> specParameters = mediaTypesCache.get(mediaType);
     if (specParameters != null) {
@@ -218,9 +218,9 @@ class FormUrlConverter {
     return specParameters;
   }
 
-  private AbsParameter<Parameter> createParameter(final Map<String, EncodingProperty> encodings,
-                                                  final String propName,
-                                                  final Schema schema) {
+  private AbsParameter<Parameter> createParameter(Map<String, EncodingProperty> encodings,
+                                                  String propName,
+                                                  Schema schema) {
 
     EncodingProperty encodingProperty = encodings.get(propName);
 

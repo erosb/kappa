@@ -50,7 +50,7 @@ public class RequestValidator {
    *
    * @param openApi The loaded open API model
    */
-  public RequestValidator(final OpenApi3 openApi) {
+  public RequestValidator(OpenApi3 openApi) {
     requireNonNull(openApi, OAI_REQUIRED_ERR_MSG);
     requireNonNull(openApi.getPaths(), PATHS_REQUIRED_ERR_MSG);
 
@@ -71,7 +71,7 @@ public class RequestValidator {
    * @return The generated validator for the operation or cached version.
    * @throws ValidationException A validation report containing validation errors
    */
-  public OperationValidator getValidator(final Request request)
+  public OperationValidator getValidator(Request request)
     throws ValidationException {
     requireNonNull(request, REQUEST_REQUIRED_ERR_MSG);
 
@@ -89,7 +89,7 @@ public class RequestValidator {
    * @param operation The operation object from specification.
    * @return The generated validator for the operation or cached version.
    */
-  public OperationValidator getValidator(final Path path, final Operation operation) {
+  public OperationValidator getValidator(Path path, Operation operation) {
     requireNonNull(path, PATH_REQUIRED_ERR_MSG);
     requireNonNull(operation, OPERATION_REQUIRED_ERR_MSG);
     if (!path.getOperations().containsValue(operation)) {
@@ -121,7 +121,7 @@ public class RequestValidator {
    * @param request The request to validate. Must be {@code nonnull}.
    * @throws ValidationException A validation report containing validation errors
    */
-  public RequestParameters validate(final Request request)
+  public RequestParameters validate(Request request)
     throws ValidationException {
     return validate(request, new ValidationData<>());
   }
@@ -141,8 +141,8 @@ public class RequestValidator {
    * @throws ValidationException A validation report containing validation errors
    * @see #getValidator(Request)
    */
-  public void validate(final Response response,
-                       final Request request)
+  public void validate(Response response,
+                       Request request)
     throws ValidationException {
     requireNonNull(response, RESPONSE_REQUIRED_ERR_MSG);
 
@@ -159,8 +159,8 @@ public class RequestValidator {
    * @param validation The validation results with your own data/delegates. Must be non {@code null}.
    * @throws ValidationException A validation report containing validation errors
    */
-  public RequestParameters validate(final Request request,
-                                    final ValidationData<?> validation)
+  public RequestParameters validate(Request request,
+                                    ValidationData<?> validation)
     throws ValidationException {
     final Pattern pathPattern = getRequiredPathPattern(request);
     final Path path = getRequiredPath(request, pathPattern);
@@ -177,9 +177,9 @@ public class RequestValidator {
    * @param operation OpenAPI operation. Must be {@code nonnull}.
    * @throws ValidationException A validation report containing validation errors
    */
-  public RequestParameters validate(final Request request,
-                                    final Path path,
-                                    final Operation operation)
+  public RequestParameters validate(Request request,
+                                    Path path,
+                                    Operation operation)
     throws ValidationException {
     return validate(request, path, operation, new ValidationData<>());
   }
@@ -193,10 +193,10 @@ public class RequestValidator {
    * @param validation The validation results with your own data/delegates. Must be non {@code null}.
    * @throws ValidationException A validation report containing validation errors
    */
-  public RequestParameters validate(final Request request,
-                                    final Path path,
-                                    final Operation operation,
-                                    final ValidationData<?> validation)
+  public RequestParameters validate(Request request,
+                                    Path path,
+                                    Operation operation,
+                                    ValidationData<?> validation)
     throws ValidationException {
     return validate(request, null, path, operation, validation);
   }
@@ -209,9 +209,9 @@ public class RequestValidator {
    * @param operation OpenAPI operation. Must be {@code nonnull}.
    * @throws ValidationException A validation report containing validation errors.
    */
-  public void validate(final Response response,
-                       final Path path,
-                       final Operation operation)
+  public void validate(Response response,
+                       Path path,
+                       Operation operation)
     throws ValidationException {
     validate(response, path, operation, new ValidationData<>());
   }
@@ -225,10 +225,10 @@ public class RequestValidator {
    * @param validation The validation results with your own data/delegates. Must be non {@code null}.
    * @throws ValidationException A validation report containing validation errors.
    */
-  public void validate(final Response response,
-                       final Path path,
-                       final Operation operation,
-                       final ValidationData<?> validation)
+  public void validate(Response response,
+                       Path path,
+                       Operation operation,
+                       ValidationData<?> validation)
     throws ValidationException {
 
     requireNonNull(response, RESPONSE_REQUIRED_ERR_MSG);
@@ -248,11 +248,11 @@ public class RequestValidator {
    * @param validation  The validation results with your own data/delegates. Must be non {@code null}.
    * @throws ValidationException A validation report containing validation errors
    */
-  private RequestParameters validate(final Request request,
-                                     final Pattern pathPattern,
-                                     final Path path,
-                                     final Operation operation,
-                                     final ValidationData<?> validation)
+  private RequestParameters validate(Request request,
+                                     Pattern pathPattern,
+                                     Path path,
+                                     Operation operation,
+                                     ValidationData<?> validation)
     throws ValidationException {
 
     requireNonNull(request, REQUEST_REQUIRED_ERR_MSG);
@@ -281,8 +281,8 @@ public class RequestValidator {
     );
   }
 
-  private Operation getRequiredOperation(final Request request,
-                                         final Path path)
+  private Operation getRequiredOperation(Request request,
+                                         Path path)
     throws ValidationException {
     final Operation operation = path.getOperation(request.getMethod().name().toLowerCase());
     if (operation == null) {
@@ -291,7 +291,7 @@ public class RequestValidator {
     return operation;
   }
 
-  private Pattern getRequiredPathPattern(final Request request)
+  private Pattern getRequiredPathPattern(Request request)
     throws ValidationException {
     final Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns.keySet(), request.getPath());
     if (pathPattern == null) {
@@ -309,9 +309,9 @@ public class RequestValidator {
     return path;
   }
 
-  private void validateResponse(final Response response,
-                                final OperationValidator opValidator,
-                                final ValidationData<?> validation)
+  private void validateResponse(Response response,
+                                OperationValidator opValidator,
+                                ValidationData<?> validation)
     throws ValidationException {
     opValidator.validateResponse(response, validation);
     if (!validation.isValid()) {

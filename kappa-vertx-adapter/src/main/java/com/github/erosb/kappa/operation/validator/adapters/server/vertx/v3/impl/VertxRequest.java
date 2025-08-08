@@ -25,7 +25,7 @@ public abstract class VertxRequest implements Request {
    * @param rc The given routing context.
    * @return The wrapped request to work this.
    */
-  public static Request of(final RoutingContext rc) {
+  public static Request of(RoutingContext rc) {
     requireNonNull(rc, ERR_MSG);
 
     HttpServerRequest serverRq = rc.request();

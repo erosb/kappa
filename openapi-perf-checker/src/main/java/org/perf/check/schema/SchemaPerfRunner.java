@@ -13,7 +13,7 @@ public class SchemaPerfRunner {
   private static final String DATA_FILE = "schema/data.json";
   private static final String DATA_SCHEMAS = "schemas";
 
-  public static void main(final String... args) throws Exception {
+  public static void main(String... args) throws Exception {
     final JsonNode schema = TreeUtil.json.readTree(SchemaPerfRunner.class.getClassLoader().getResource(SCHEMA_FILE));
     final JsonNode data = TreeUtil.json.readTree(SchemaPerfRunner.class.getClassLoader().getResource(DATA_FILE)).get(DATA_SCHEMAS);
 
@@ -29,7 +29,7 @@ public class SchemaPerfRunner {
       validate(jsonTools, data, jsonTools.getVersion(), 100, true));
   }
 
-  private static Report validate(JsonValidator validator, JsonNode data, String version, final int ntIt, boolean excluded) {
+  private static Report validate(JsonValidator validator, JsonNode data, String version, int ntIt, boolean excluded) {
     final long begin = System.nanoTime();
 
     for (int i = 1; i <= ntIt; i++) {

@@ -20,11 +20,11 @@ public final class ContentConverter {
   private ContentConverter() {
   }
 
-  public static JsonNode convert(final OAIContext context,
-                                 final MediaType mediaType,
-                                 final String rawContentType,
-                                 final InputStream is,
-                                 final String str) throws IOException {
+  public static JsonNode convert(OAIContext context,
+                                 MediaType mediaType,
+                                 String rawContentType,
+                                 InputStream is,
+                                 String str) throws IOException {
 
     String contentType = ContentType.getTypeOnly(rawContentType);
 
@@ -47,22 +47,22 @@ public final class ContentConverter {
     }
   }
 
-  private static JsonNode formUrlEncodedToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, final InputStream content) throws IOException {
+  private static JsonNode formUrlEncodedToNode(OAIContext context, MediaType mediaType, String rawContentType, InputStream content) throws IOException {
     String encoding = ContentType.getCharSet(rawContentType);
     return FormUrlConverter.instance().convert(context, mediaType, content, encoding);
   }
 
-  private static JsonNode formUrlEncodedToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, final String content) {
+  private static JsonNode formUrlEncodedToNode(OAIContext context, MediaType mediaType, String rawContentType, String content) {
     String encoding = ContentType.getCharSet(rawContentType);
     return FormUrlConverter.instance().convert(context, mediaType, content, encoding);
   }
 
-  private static JsonNode multipartToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, InputStream content) throws IOException {
+  private static JsonNode multipartToNode(OAIContext context, MediaType mediaType, String rawContentType, InputStream content) throws IOException {
     String encoding = ContentType.getCharSet(rawContentType);
     return MultipartConverter.instance().convert(context, mediaType, content, rawContentType, encoding);
   }
 
-  private static JsonNode multipartToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, final String content) throws IOException {
+  private static JsonNode multipartToNode(OAIContext context, MediaType mediaType, String rawContentType, String content) throws IOException {
     String encoding = ContentType.getCharSet(rawContentType);
     return MultipartConverter.instance().convert(context, mediaType, content, rawContentType, encoding);
   }
@@ -75,11 +75,11 @@ public final class ContentConverter {
     return TreeUtil.json.readTree(content);
   }
 
-  private static JsonNode xmlToNode(final OAIContext context, final Schema schema, InputStream content) throws IOException {
+  private static JsonNode xmlToNode(OAIContext context, Schema schema, InputStream content) throws IOException {
     return XmlConverter.instance().convert(context, schema, IOUtil.toString(content, StandardCharsets.UTF_8.name()));
   }
 
-  private static JsonNode xmlToNode(final OAIContext context, final Schema schema, String content) {
+  private static JsonNode xmlToNode(OAIContext context, Schema schema, String content) {
     return XmlConverter.instance().convert(context, schema, content);
   }
 

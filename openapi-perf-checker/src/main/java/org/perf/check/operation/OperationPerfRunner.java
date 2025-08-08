@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class OperationPerfRunner {
   private static final String SCHEMA_FILE = "operation/api.yaml";
 
-  public static void main(final String... args) throws Exception {
+  public static void main(String... args) throws Exception {
     List<Report> reports = new ArrayList<>();
 
     final OpenApi4j openApi4j = new OpenApi4j(SCHEMA_FILE);
@@ -23,11 +23,11 @@ public class OperationPerfRunner {
     ReportPrinter.printReports(reports.toArray(new Report[0]));
   }
 
-  private static void process(List<Report> reports, OpenApi4j opValidator, Supplier<String> validate, String contentType, final int ntIt) {
+  private static void process(List<Report> reports, OpenApi4j opValidator, Supplier<String> validate, String contentType, int ntIt) {
     reports.add(load(opValidator, validate, contentType, ntIt));
   }
 
-  private static Report load(OpenApi4j opValidator, Supplier<String> validate, String contentType, final int ntIt) {
+  private static Report load(OpenApi4j opValidator, Supplier<String> validate, String contentType, int ntIt) {
     final long begin = System.nanoTime();
 
     for (int i = 1; i <= ntIt; i++) {

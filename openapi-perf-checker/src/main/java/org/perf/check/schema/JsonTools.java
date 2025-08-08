@@ -16,7 +16,7 @@ public class JsonTools implements JsonValidator {
   }
 
   @Override
-  public String validate(final JsonNode data) {
+  public String validate(JsonNode data) {
     try {
       jsonSchema.validate(data);
     } catch (ProcessingException e) {

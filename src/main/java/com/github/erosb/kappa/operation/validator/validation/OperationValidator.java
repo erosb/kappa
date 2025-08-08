@@ -76,7 +76,7 @@ public class OperationValidator {
    * @param path      The Path of the Operation.
    * @param operation The Operation to validate.
    */
-  public OperationValidator(final OpenApi3 openApi, final Path path, final Operation operation) {
+  public OperationValidator(OpenApi3 openApi, Path path, Operation operation) {
     this(null, openApi, path, operation);
   }
 
@@ -88,10 +88,10 @@ public class OperationValidator {
    * @param path         The Path of the Operation.
    * @param operation    The Operation to validate.
    */
-  OperationValidator(final List<Pattern> pathPatterns,
-                     final OpenApi3 openApi,
-                     final Path path,
-                     final Operation operation) {
+  OperationValidator(List<Pattern> pathPatterns,
+                     OpenApi3 openApi,
+                     Path path,
+                     Operation operation) {
 
     this.context = new ValidationContext<>(openApi.getContext(), openApi.getPathFrom(path),
       path.findHttpMethodByOperation(operation));
@@ -137,7 +137,7 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  public Map<String, JsonNode> validatePath(final Request request, final ValidationData<?> validation) {
+  public Map<String, JsonNode> validatePath(Request request, ValidationData<?> validation) {
     // Check paths are matching before trying to map values
     Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns, request.getPath());
     if (pathPattern == null) {
@@ -155,7 +155,7 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  Map<String, JsonNode> validatePath(final Request request, Pattern pathPattern, final ValidationData<?> validation) {
+  Map<String, JsonNode> validatePath(Request request, Pattern pathPattern, ValidationData<?> validation) {
     if (specRequestPathValidator == null) {
       return null;
     }
@@ -178,7 +178,7 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  public Map<String, JsonNode> validateQuery(final Request request, final ValidationData<?> validation) {
+  public Map<String, JsonNode> validateQuery(Request request, ValidationData<?> validation) {
     if (specRequestQueryValidator == null) {
       return null;
     }
@@ -201,7 +201,7 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  public Map<String, JsonNode> validateHeaders(final Request request, final ValidationData<?> validation) {
+  public Map<String, JsonNode> validateHeaders(Request request, ValidationData<?> validation) {
     if (specRequestHeaderValidator == null) {
       return null;
     }
@@ -223,7 +223,7 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  public Map<String, JsonNode> validateCookies(final Request request, final ValidationData<?> validation) {
+  public Map<String, JsonNode> validateCookies(Request request, ValidationData<?> validation) {
     if (specRequestCookieValidator == null) {
       return null;
     }
@@ -244,7 +244,7 @@ public class OperationValidator {
    * @param request    The request to validate.
    * @param validation The validation data delegate and results.
    */
-  public void validateBody(final Request request, final ValidationData<?> validation) {
+  public void validateBody(Request request, ValidationData<?> validation) {
     if (specRequestBodyValidators == null) {
       return;
     }
@@ -275,8 +275,8 @@ public class OperationValidator {
    * @param response   The response to validate.
    * @param validation The validation data delegate and results.
    */
-  public void validateResponse(final Response response,
-                               final ValidationData<?> validation) {
+  public void validateResponse(Response response,
+                               ValidationData<?> validation) {
     Set<String> responseCodeDefinitions = operation.getResponses().keySet();
     boolean responseCodeFound = responseCodeDefinitions.stream().anyMatch(
       responseCodeDefinition -> responseCodeDefinitionMatches(responseCodeDefinition, response.getStatus()));
@@ -303,8 +303,8 @@ public class OperationValidator {
    * @param response   The response to validate.
    * @param validation The validation data delegate and results.
    */
-  public void validateBody(final Response response,
-                           final ValidationData<?> validation) {
+  public void validateBody(Response response,
+                           ValidationData<?> validation) {
 
     Map<MediaTypeContainer, BodyValidator> validators = getResponseValidator(specResponseBodyValidators, response);
 
@@ -321,10 +321,10 @@ public class OperationValidator {
     );
   }
 
-  private void validateBodyWithContentType(final Map<MediaTypeContainer, BodyValidator> validators,
-                                           final String rawContentType,
-                                           final Body body,
-                                           final ValidationData<?> validation,
+  private void validateBodyWithContentType(Map<MediaTypeContainer, BodyValidator> validators,
+                                           String rawContentType,
+                                           Body body,
+                                           ValidationData<?> validation,
                                            SourceLocation bodyDefinitionLocation) {
 
     final MediaTypeContainer contentType = MediaTypeContainer.create(rawContentType);
@@ -352,8 +352,8 @@ public class OperationValidator {
    * @param response   The response to validate.
    * @param validation The validation data delegate and results.
    */
-  public void validateHeaders(final Response response,
-                              final ValidationData<?> validation) {
+  public void validateHeaders(Response response,
+                              ValidationData<?> validation) {
 
     ParameterValidator<Header> validator = getResponseValidator(specResponseHeaderValidators, response);
 
@@ -369,7 +369,7 @@ public class OperationValidator {
     validator.validate(mappedValues, validation);
   }
 
-  private ParameterValidator<Parameter> createParameterValidator(final String in) {
+  private ParameterValidator<Parameter> createParameterValidator(String in) {
     List<Parameter> specParameters = operation.getParametersIn(context.getContext(), in);
 
     Map<String, AbsParameter<Parameter>> parameters = specParameters
@@ -407,7 +407,7 @@ public class OperationValidator {
     return validators;
   }
 
-  private Map<MediaTypeContainer, BodyValidator> createBodyValidators(final Map<String, MediaType> mediaTypes,
+  private Map<MediaTypeContainer, BodyValidator> createBodyValidators(Map<String, MediaType> mediaTypes,
                                                                       OperationContextUriFactory uriFactory) {
     final Map<MediaTypeContainer, BodyValidator> validators = new HashMap<>();
     if (mediaTypes == null) {
@@ -442,8 +442,8 @@ public class OperationValidator {
     return validators.isEmpty() ? null : validators;
   }
 
-  private <T> T getResponseValidator(final Map<String, T> validators,
-                                     final Response response) {
+  private <T> T getResponseValidator(Map<String, T> validators,
+                                     Response response) {
 
     if (validators == null) {
       return null;
@@ -465,7 +465,7 @@ public class OperationValidator {
     return validator;
   }
 
-  private void mergePathToOperationParameters(final Path path) {
+  private void mergePathToOperationParameters(Path path) {
     if (path.getParameters() == null) {
       return; // Nothing to do
     }

@@ -41,14 +41,14 @@ class XmlConverter {
     return INSTANCE;
   }
 
-  JsonNode convert(OAIContext context, final Schema schema, String body) {
+  JsonNode convert(OAIContext context, Schema schema, String body) {
     return convert(
       context,
       schema,
       XML.toJSONObject(nsPattern.matcher(body).replaceAll(nsReplace), XMLParserConfiguration.KEEP_STRINGS));
   }
 
-  private JsonNode convert(OAIContext context, final Schema schema, final JSONObject xml) {
+  private JsonNode convert(OAIContext context, Schema schema, JSONObject xml) {
     if (xml.isEmpty()) {
       return JsonNodeFactory.instance.nullNode();
     }
@@ -67,7 +67,7 @@ class XmlConverter {
     return processNode(context, schema, content);
   }
 
-  private JsonNode processNode(OAIContext context, final Schema schema, final JsonNode node) {
+  private JsonNode processNode(OAIContext context, Schema schema, JsonNode node) {
     JsonNode content = unwrap(context, schema, node, null);
     if (content == null) {
       return null;
@@ -82,7 +82,7 @@ class XmlConverter {
     }
   }
 
-  private JsonNode parseArray(OAIContext context, final Schema schema, final JsonNode node) {
+  private JsonNode parseArray(OAIContext context, Schema schema, JsonNode node) {
     if (!node.isArray()) {
       return JsonNodeFactory.instance.nullNode();
     }
@@ -95,7 +95,7 @@ class XmlConverter {
     return resultNode;
   }
 
-  private JsonNode parseObject(OAIContext context, final Schema schema, final JsonNode node) {
+  private JsonNode parseObject(OAIContext context, Schema schema, JsonNode node) {
     if (!node.isObject()) {
       return JsonNodeFactory.instance.nullNode();
     }
@@ -116,7 +116,7 @@ class XmlConverter {
     return resultNode;
   }
 
-  private JsonNode unwrap(OAIContext context, final Schema schema, final JsonNode content, final String defaultKey) {
+  private JsonNode unwrap(OAIContext context, Schema schema, JsonNode content, String defaultKey) {
     Xml xmlConf = schema.getXml();
 
     if (OAI3SchemaKeywords.TYPE_ARRAY.equals(schema.getSupposedType(context))) {
@@ -146,7 +146,7 @@ class XmlConverter {
     return content;
   }
 
-  private JsonNode getRenamedNode(final Xml xmlConf, final JsonNode content, final String defaultKey) {
+  private JsonNode getRenamedNode(Xml xmlConf, JsonNode content, String defaultKey) {
     if (xmlConf != null && xmlConf.getName() != null) {
       return content.get(xmlConf.getName());
     } else if (defaultKey != null) {

@@ -28,7 +28,7 @@ public abstract class UndertowRequest implements Request {
    * @param body The body to consume.
    * @return The wrapped request to work this.
    */
-  public static Request of(final HttpServerExchange hse, InputStream body) {
+  public static Request of(HttpServerExchange hse, InputStream body) {
     requireNonNull(hse, ERR_MSG);
 
     // Method & path
@@ -66,7 +66,7 @@ public abstract class UndertowRequest implements Request {
    * @param hse The given server exchange.
    * @return The wrapped request to work this.
    */
-  public static Request of(final HttpServerExchange hse) {
+  public static Request of(HttpServerExchange hse) {
     return of(hse, hse.getInputStream());
   }
 }

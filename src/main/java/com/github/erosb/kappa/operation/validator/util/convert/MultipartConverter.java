@@ -35,12 +35,12 @@ class MultipartConverter {
     return INSTANCE;
   }
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final String body, final String rawContentType, final String encoding) throws IOException {
+  JsonNode convert(OAIContext context, MediaType mediaType, String body, String rawContentType, String encoding) throws IOException {
     InputStream is = new ByteArrayInputStream(body.getBytes(encoding));
     return convert(context, mediaType, is, rawContentType, encoding);
   }
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final InputStream body, final String rawContentType, final String encoding) throws IOException {
+  JsonNode convert(OAIContext context, MediaType mediaType, InputStream body, String rawContentType, String encoding) throws IOException {
     UploadContext requestContext = UPLOAD_CONTEXT_INSTANCE.create(body, rawContentType, encoding);
 
     ObjectNode result = JsonNodeFactory.instance.objectNode();
@@ -128,12 +128,12 @@ class MultipartConverter {
     }
   }
 
-  private JsonNode convertToJsonNode(final OAIContext context,
-                                     final ObjectNode result,
-                                     final String name,
-                                     final Schema schema,
-                                     final FileItemStream item,
-                                     final String encoding) throws IOException {
+  private JsonNode convertToJsonNode(OAIContext context,
+                                     ObjectNode result,
+                                     String name,
+                                     Schema schema,
+                                     FileItemStream item,
+                                     String encoding) throws IOException {
 
     if (schema == null) {
       return TypeConverter.instance().convertPrimitive(context, null, IOUtil.toString(item.openStream(), encoding));
@@ -184,9 +184,9 @@ class MultipartConverter {
   @FunctionalInterface
   private interface UploadContextInstance {
     UploadContext create(
-      final InputStream body,
-      final String contentType,
-      final String encoding);
+      InputStream body,
+      String contentType,
+      String encoding);
   }
 
   private static final UploadContextInstance UPLOAD_CONTEXT_INSTANCE = (body, contentType, encoding) -> new UploadContext() {

@@ -27,9 +27,9 @@ class BodyValidator {
     validator = initValidator();
   }
 
-  void validate(final Body body,
-                final String rawContentType,
-                final ValidationData<?> validation) {
+  void validate(Body body,
+                String rawContentType,
+                ValidationData<?> validation) {
 
     if (validator == null) {
       return; // No schema specified for body

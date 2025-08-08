@@ -19,7 +19,7 @@ public final class ContentType {
    * @return {@code true} if content type is json (i.e pseudo (application|text)/(json|*+json)).
    * {@code false} otherwise.
    */
-  public static boolean isJson(final String contentType) {
+  public static boolean isJson(String contentType) {
     if (contentType == null) return false;
     return JSON_PATTERN.matcher(contentType.toLowerCase()).matches();
   }
@@ -29,7 +29,7 @@ public final class ContentType {
    * @return {@code true} if content type is form URL encoded (i.e application/x-www-form-urlencoded).
    * {@code false} otherwise.
    */
-  public static boolean isFormUrlEncoded(final String contentType) {
+  public static boolean isFormUrlEncoded(String contentType) {
     if (contentType == null) return false;
     return contentType.toLowerCase().startsWith("application/x-www-form-urlencoded");
   }
@@ -39,7 +39,7 @@ public final class ContentType {
    * @return {@code true} if content type is form data (i.e multipart/form-data).
    * {@code false} otherwise.
    */
-  public static boolean isMultipartFormData(final String contentType) {
+  public static boolean isMultipartFormData(String contentType) {
     if (contentType == null) return false;
 
     return
@@ -52,7 +52,7 @@ public final class ContentType {
    * @return {@code true} if content type is xml (i.e pseudo (application|text)/(xml|*+xml)).
    * {@code false} otherwise.
    */
-  public static boolean isXml(final String contentType) {
+  public static boolean isXml(String contentType) {
     if (contentType == null) return false;
     return XML_PATTERN.matcher(contentType.toLowerCase()).matches();
   }

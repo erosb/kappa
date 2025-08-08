@@ -18,7 +18,7 @@ class Networknt implements JsonValidator {
   }
 
   @Override
-  public String validate(final JsonNode data) {
+  public String validate(JsonNode data) {
     Set<ValidationMessage> results = jsonSchema.validate(data);
     if (results.size() > 0) {
       return results.toString();

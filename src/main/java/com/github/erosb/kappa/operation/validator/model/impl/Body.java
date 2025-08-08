@@ -77,7 +77,7 @@ public class Body {
     return new Body(body);
   }
 
-  public IJsonValue contentAsNode(final String rawContentType, final URI documentSource) {
+  public IJsonValue contentAsNode(String rawContentType, URI documentSource) {
     String contentType = ContentType.getTypeOnly(rawContentType);
     if (!ContentType.isJson(contentType)) {
       throw new UnsupportedOperationException("content type " + rawContentType + " is not supported");
@@ -91,9 +91,9 @@ public class Body {
   }
 
   @Deprecated
-  public JsonNode getContentAsNode(final OAIContext context,
-                                   final MediaType mediaType,
-                                   final String rawContentType) throws IOException {
+  public JsonNode getContentAsNode(OAIContext context,
+                                   MediaType mediaType,
+                                   String rawContentType) throws IOException {
     if (bodyNode != null) {
       return bodyNode;
     } else {

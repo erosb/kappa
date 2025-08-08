@@ -65,7 +65,7 @@ public interface Request {
    * @param name The (case insensitive) name of the parameter to retrieve
    * @return The first header value for that param (if it exists)
    */
-  default String getHeaderValue(final String name) {
+  default String getHeaderValue(String name) {
     Collection<String> values = getHeaderValues(name);
     if (values != null) {
       return values.stream().findFirst().orElse(null);

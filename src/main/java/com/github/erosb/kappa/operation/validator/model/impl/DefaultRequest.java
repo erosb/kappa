@@ -20,12 +20,12 @@ public class DefaultRequest implements Request {
   private final String query;
   private final Body body;
 
-  private DefaultRequest(final String url,
-                         final Method method,
-                         final Map<String, String> cookies,
-                         final Map<String, Collection<String>> headers,
-                         final String query,
-                         final Body body) {
+  private DefaultRequest(String url,
+                         Method method,
+                         Map<String, String> cookies,
+                         Map<String, Collection<String>> headers,
+                         String query,
+                         Body body) {
 
     this.url = requireNonNull(url, "A URL is required");
     this.method = requireNonNull(method, "A method is required");
@@ -72,7 +72,7 @@ public class DefaultRequest implements Request {
   }
 
   @Override
-  public Collection<String> getHeaderValues(final String name) {
+  public Collection<String> getHeaderValues(String name) {
     return headers.get(name);
   }
 
@@ -94,7 +94,7 @@ public class DefaultRequest implements Request {
      * @param url The HTTP URL request
      * @param method The HTTP method
      */
-    public Builder(final String url, final Method method) {
+    public Builder(String url, Method method) {
       this.url = requireNonNull(url, "A URL is required");
       this.method = requireNonNull(method, "A method is required");
 
@@ -108,7 +108,7 @@ public class DefaultRequest implements Request {
      * @param cookies The cookies where the key is the cookie name,
      * @return This builder
      */
-    public Builder cookies(final Map<String, String> cookies) {
+    public Builder cookies(Map<String, String> cookies) {
       this.cookies.putAll(cookies);
       return this;
     }
@@ -120,7 +120,7 @@ public class DefaultRequest implements Request {
      * @param value A single value for this cookie
      * @return This builder
      */
-    public Builder cookie(final String name, final String value) {
+    public Builder cookie(String name, String value) {
       cookies.put(name, value);
       return this;
     }
@@ -131,7 +131,7 @@ public class DefaultRequest implements Request {
      * @param headers The headers where the key is the header name,
      * @return This builder
      */
-    public Builder headers(final Map<String, Collection<String>> headers) {
+    public Builder headers(Map<String, Collection<String>> headers) {
       headers.forEach(this.headers::putAll);
       return this;
     }
@@ -143,7 +143,7 @@ public class DefaultRequest implements Request {
      * @param values The values for this header
      * @return This builder
      */
-    public Builder header(final String name, final Collection<String> values) {
+    public Builder header(String name, Collection<String> values) {
       headers.putAll(name, values);
       return this;
     }
@@ -155,7 +155,7 @@ public class DefaultRequest implements Request {
      * @param value A single value for this header
      * @return This builder
      */
-    public Builder header(final String name, final String value) {
+    public Builder header(String name, String value) {
       headers.put(name, value);
       return this;
     }
@@ -166,7 +166,7 @@ public class DefaultRequest implements Request {
      * @param query The query string
      * @return This builder
      */
-    public Builder query(final String query) {
+    public Builder query(String query) {
       this.query = query;
       return this;
     }
@@ -177,7 +177,7 @@ public class DefaultRequest implements Request {
      * @param body The request body
      * @return This builder
      */
-    public Builder body(final Body body) {
+    public Builder body(Body body) {
       this.body = body;
       return this;
     }
