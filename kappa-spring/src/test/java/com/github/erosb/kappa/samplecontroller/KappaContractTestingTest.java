@@ -120,7 +120,7 @@ public class KappaContractTestingTest {
       //      );
       a.assertThat(exc.getMessage()).containsPattern("evaluated on dynamic path: .*openapi/customers-api.yaml/paths/id#/type");
 
-      a.assertThat(exc.getMessage()).contains("instance location: $request.body#/zipCode (line 5, position 14)");
+      a.assertThat(exc.getMessage()).contains("instance location: $request.body#/zipCode (line 5, position 11)");
     });
   }
 
@@ -186,8 +186,8 @@ public class KappaContractTestingTest {
     System.out.println(exc);
 
     SoftAssertions.assertSoftly(a -> {
-      a.assertThat(exc.getMessage()).contains("could not parse HTTP entity: unexpected character M");
       a.assertThat(exc.getMessage()).contains("instance location: $request.body");
+      a.assertThat(exc.getMessage()).contains("could not parse HTTP entity: unexpected character 'M'");
       a.assertThat(exc.getMessage()).containsPattern(
         "schema location: .*users-api.yaml#/paths/~1users~1me/get/responses/200/content");
     });
