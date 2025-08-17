@@ -77,7 +77,7 @@ public class KappaAutoConfigTest {
           "dynamicPath" : "#/required",
           "message" : "required properties are missing: city, zipCode, defaultShippingAddress"
         }, {
-          "dataLocation" : "$request.body#/country (line 1, position 12)",
+          "dataLocation" : "$request.body#/country (line 1, position 13)",
           "schemaLocation" : "openapi/customers-api.yaml#/components/schemas/CountryCode/maxLength",
           "dynamicPath" : "#/properties/country/$ref/maxLength",
           "message" : "actual string length 5 exceeds maxLength 2"

@@ -120,7 +120,7 @@ public class KappaContractTestingTest {
       //      );
       a.assertThat(exc.getMessage()).containsPattern("evaluated on dynamic path: .*openapi/customers-api.yaml/paths/id#/type");
 
-      a.assertThat(exc.getMessage()).contains("instance location: $request.body#/zipCode (line 5, position 11)");
+      a.assertThat(exc.getMessage()).contains("instance location: $request.body#/zipCode (line 5, position 14)");
     });
   }
 

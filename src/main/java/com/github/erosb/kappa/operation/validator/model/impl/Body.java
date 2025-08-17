@@ -11,10 +11,16 @@ import com.github.erosb.kappa.operation.validator.util.ContentType;
 import com.github.erosb.kappa.operation.validator.util.convert.ContentConverter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.net.URI;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static java.util.Objects.requireNonNull;
 
@@ -47,11 +53,11 @@ public class Body {
   @Deprecated
   public static Body from(JsonNode body) {
     requireNonNull(body, BODY_REQUIRED_ERR_MSG);
-      try {
-          return new Body(TreeUtil.json.writeValueAsString(body));
-      } catch (JsonProcessingException e) {
-          throw new RuntimeException(e);
-      }
+    try {
+      return new Body(TreeUtil.json.writeValueAsString(body));
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -77,13 +83,28 @@ public class Body {
     return new Body(body);
   }
 
+  private static String toString(InputStream is) {
+    try {
+      int bufferSize = 2048;
+      char[] buffer = new char[bufferSize];
+      StringBuilder out = new StringBuilder();
+      Reader in = new InputStreamReader(is, StandardCharsets.UTF_8);
+      for (int numRead; (numRead = in.read(buffer, 0, buffer.length)) > 0; ) {
+        out.append(buffer, 0, numRead);
+      }
+      return out.toString();
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
   public IJsonValue contentAsNode(final String rawContentType, final URI documentSource) {
     String contentType = ContentType.getTypeOnly(rawContentType);
     if (!ContentType.isJson(contentType)) {
       throw new UnsupportedOperationException("content type " + rawContentType + " is not supported");
     }
     if (bodyIs != null) {
-      return new JsonParser(bodyIs, documentSource).parse();
+      return new JsonParser(toString(bodyIs), documentSource).parse();
     } else if (bodyStr != null) {
       return new JsonParser(bodyStr, documentSource).parse();
     }
