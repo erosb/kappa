@@ -10,6 +10,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Vector;
 
 public class JakartaServletTest {
@@ -76,7 +79,7 @@ public class JakartaServletTest {
 
   @Test
   public void getTest()
-    throws IOException {
+    throws IOException, URISyntaxException {
     mockCookies(true);
     mockHeaders(true);
     servletRequest = MockHttpServletRequestBuilder.get().build();
@@ -84,7 +87,8 @@ public class JakartaServletTest {
     Request rq = JakartaServletRequest.of(servletRequest);
     checkCommons(rq, true, true);
 
-    Assert.assertEquals(servletRequest.getQueryString(), rq.getQuery());
+    Assert.assertEquals("?queryString", rq.getQuery());
+    Assert.assertEquals("{\n  \n}", rq.getBody().contentAsNode("application/json", new URI("anything")).toString());
   }
 
   @Test
@@ -92,16 +96,17 @@ public class JakartaServletTest {
     throws IOException {
     mockCookies(true);
     mockHeaders(true);
-    servletRequest = MockHttpServletRequestBuilder.post().build();
+    servletRequest = MockHttpServletRequestBuilder.post()
+      .build();
 
     Request rq = JakartaServletRequest.of(servletRequest);
     checkCommons(rq, true, true);
 
-    Assert.assertNull(rq.getQuery());
-
     Assert.assertEquals(
       JsonNodeFactory.instance.textNode("{}"),
       rq.getBody().getContentAsNode(null, null, null));
+
+    Assert.assertEquals("?queryString", rq.getQuery());
   }
 
   private void checkCommons(Request rq, boolean checkCookies, boolean checkHeaders) {

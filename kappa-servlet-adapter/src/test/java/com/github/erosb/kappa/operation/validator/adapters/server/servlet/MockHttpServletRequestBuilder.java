@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 public class MockHttpServletRequestBuilder {
 
-
   private static class MockServletInputStream
     extends ServletInputStream {
     private final InputStream sourceStream;
@@ -98,6 +97,7 @@ public class MockHttpServletRequestBuilder {
     when(req.getRequestURL()).thenReturn(new StringBuffer(URL));
     when(req.getMethod()).thenReturn(method);
     when(req.getCookies()).thenReturn(withDefaultCookies ? new Cookie[]{new Cookie("bis", "cuit")} : null);
+    when(req.getQueryString()).thenReturn("?queryString");
     if (withDefaultHeaders) {
       Vector<String> headerNames = new Vector<>();
       headerNames.add(H_NAME);
@@ -112,12 +112,12 @@ public class MockHttpServletRequestBuilder {
       when(req.getHeaders("Content-Type")).thenReturn(headerValues.elements());
     }
     MockServletInputStream msis = new MockServletInputStream(new ByteArrayInputStream("{}".getBytes()));
-      try {
-          when(req.getInputStream()).thenReturn(msis);
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
-      return req;
+    try {
+      when(req.getInputStream()).thenReturn(msis);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return req;
   }
 }
 

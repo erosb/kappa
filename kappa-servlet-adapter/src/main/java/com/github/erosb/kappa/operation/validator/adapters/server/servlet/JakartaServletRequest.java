@@ -6,14 +6,17 @@ import com.github.erosb.kappa.operation.validator.model.Request;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
 import com.github.erosb.kappa.operation.validator.model.impl.DefaultRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.nio.CharBuffer;
 import java.util.Enumeration;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class JakartaServletRequest
-  implements Request {
+public abstract class JakartaServletRequest implements Request {
   private static final String HTTP_GET = "GET";
   private static final String ERR_MSG = "A HttpServletRequest is required";
 
@@ -41,16 +44,10 @@ public abstract class JakartaServletRequest
     requireNonNull(hsr, ERR_MSG);
 
     // Method & path
-    final DefaultRequest.Builder builder = new DefaultRequest.Builder(
-      hsr.getRequestURL().toString(),
+    final DefaultRequest.Builder builder = new DefaultRequest.Builder(hsr.getRequestURL().toString(),
       Request.Method.getMethod(hsr.getMethod()));
 
-    // Query string or body
-    if (HTTP_GET.equalsIgnoreCase(hsr.getMethod())) {
-      builder.query(hsr.getQueryString());
-    } else {
-      builder.body(Body.from(body));
-    }
+    builder.query(hsr.getQueryString()).body(Body.from(body));
 
     // Cookies
     if (hsr.getCookies() != null) {
