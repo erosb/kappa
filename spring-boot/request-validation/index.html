@@ -363,6 +363,48 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#managing-undocumented-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Managing undocumented endpoints
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing undocumented endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How it works
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-configuring-swagger-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example - configuring Swagger UI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#try-it-out_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Try it out!
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -546,6 +588,48 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#managing-undocumented-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Managing undocumented endpoints
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managing undocumented endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      How it works
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-configuring-swagger-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example - configuring Swagger UI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#try-it-out_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Try it out!
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -706,6 +790,81 @@ also be validated:</p>
 <li>the <code>"name"</code> should be a string, never null, like in our request</li>
 <li>the <code>"owner.id"</code> property should be non-negative, so <code>-5</code> is invalid</li>
 <li>the <code>"birthDate"</code> also does not match the expected date format</li>
+</ul>
+<h2 id="managing-undocumented-endpoints">Managing undocumented endpoints<a class="headerlink" href="#managing-undocumented-endpoints" title="Permanent link">&para;</a></h2>
+<p>Sometimes you need to exclude certain requests from OpenAPI-based validation. This is common for:</p>
+<ul>
+<li>Non-REST endpoints (like static resources or health checks)</li>
+<li>Endpoints that don't have OpenAPI documentation yet</li>
+<li>Third-party integrations (like Swagger UI)</li>
+</ul>
+<p>You can configure these exclusions using the <code>ignoredPathPatterns</code> property in <code>KappaSpringConfiguration</code>.</p>
+<h3 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<p>When an incoming HTTP request is processed:</p>
+<ol>
+<li><strong>First</strong>, Kappa checks if the request path matches any pattern in <code>openapiDescriptions</code></li>
+<li><strong>If no match is found</strong>, Kappa checks if the path matches any pattern in <code>ignoredPathPatterns</code></li>
+<li><strong>If matched in <code>ignoredPathPatterns</code></strong>, the request bypasses validation and proceeds normally</li>
+<li><strong>If not matched anywhere</strong>, Kappa returns a validation error</li>
+</ol>
+<h3 id="example-configuring-swagger-ui">Example - configuring Swagger UI<a class="headerlink" href="#example-configuring-swagger-ui" title="Permanent link">&para;</a></h3>
+<p>Given you already have OpenAPI descriptions for all your endpoints, it is easy to make those available via
+swagger UI. We just have to make sure that the swagger UI related HTTP requests aren't rejected by Kappa due to OpenAPI the validation.</p>
+<p>Let's go through it step by step:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Add Springdoc UI dependency</label><label for="__tabbed_3_2">Configure Swagger</label><label for="__tabbed_3_3">Configure Kappa</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Maven:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>  &lt;dependency&gt;
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>      &lt;groupId&gt;org.springdoc&lt;/groupId&gt;
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>      &lt;artifactId&gt;springdoc-openapi-starter-webmvc-ui&lt;/artifactId&gt;
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>      &lt;version&gt;2.8.9&lt;/version&gt;
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>  &lt;/dependency&gt;
+</code></pre></div></p>
+<p>Gradle:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>implementation(&quot;org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9&quot;)
+</code></pre></div></p>
+</div>
+<div class="tabbed-block">
+<p><code>application.yaml</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>springdoc:
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  swagger-ui:
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    urls:
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>      - name: Pets API
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>        url: /openapi/pets-api.yaml
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="w">  </span><span class="nd">@Bean</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">KappaSpringConfiguration</span><span class="w"> </span><span class="nf">kappaConfig</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">kappaConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">KappaSpringConfiguration</span><span class="p">();</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="n">mapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="p">();</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">        </span><span class="n">mapping</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&quot;/api/**&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;/static/openapi/pets-api.yaml&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// (1)</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">        </span><span class="n">kappaConfig</span><span class="p">.</span><span class="na">setOpenapiDescriptions</span><span class="p">(</span><span class="n">mapping</span><span class="p">);</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">        </span><span class="n">kappaConfig</span><span class="p">.</span><span class="na">setIgnoredPathPatterns</span><span class="p">(</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">          </span><span class="s">&quot;/swagger-ui/**&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// (2)</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">          </span><span class="s">&quot;/v3/api-docs/**&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// (3)</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">          </span><span class="s">&quot;/openapi/**&quot;</span><span class="w"> </span><span class="c1">// (4)</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">        </span><span class="p">);</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">kappaConfig</span><span class="p">;</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<ol>
+<li>Make sure the openapi descriptions are under <code>src/main/resources/static</code> (this is required for <code>springdoc</code> to find the files)</li>
+<li>Enable requests for loading Swagger UI client</li>
+<li>Enable loading swagger UI configuration</li>
+<li>Enable loading our OpenAPI descriptions</li>
+</ol>
+</div>
+</div>
+</div>
+<h3 id="try-it-out_1">Try it out!<a class="headerlink" href="#try-it-out_1" title="Permanent link">&para;</a></h3>
+<p>The Swagger UI setup is already included in the <a href="https://github.com/erosb/kappa-examples">kappa-examples</a> repo. Let's just clone and try it locally:</p>
+<ul>
+<li><code>git clone https://github.com/erosb/kappa-examples</code></li>
+<li><code>cd kappa-examples/kappa-spring-boot-examples</code></li>
+<li><code>./gradlew bootRun</code></li>
+<li>open your browser at <code>http://localhost:8080/swagger-ui/index.html</code></li>
 </ul>
 
 
