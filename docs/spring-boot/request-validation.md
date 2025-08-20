@@ -158,16 +158,22 @@ These json schema validation errors tell us the following problems with the json
 
 ## Managing undocumented endpoints
 
-It is often useful to exclude some requests from the OpenAPI-based request validation, either because they are not REST endpoints,
-or we don't have documentation for them. This is doable with the `KappaSpringConfiguration#setignoredPathPatterns(String... pathPatterns)` configuration.
+Sometimes you need to exclude certain requests from OpenAPI-based validation. This is common for:
 
-This `ignoredPathPatterns` property works as follows:
+- Non-REST endpoints (like static resources or health checks)
+- Endpoints that don't have OpenAPI documentation yet
+- Third-party integrations (like Swagger UI)
 
- * if an incoming HTTP request doesn't match any of the path patterns (map keys)
-in the `kappaSpringConfig.openapiDescriptions` map,
- * but the request matches a pattern in `ignoredPathPatterns`,
- * then no error will be reported to
-the client, and the request will successfully complete.
+You can configure these exclusions using the `ignoredPathPatterns` property in `KappaSpringConfiguration`.
+
+### How it works
+
+When an incoming HTTP request is processed:
+
+1. **First**, Kappa checks if the request path matches any pattern in `openapiDescriptions`
+2. **If no match is found**, Kappa checks if the path matches any pattern in `ignoredPathPatterns`
+3. **If matched in `ignoredPathPatterns`**, the request bypasses validation and proceeds normally
+4. **If not matched anywhere**, Kappa returns a validation error
 
 
 ### Example - configuring Swagger UI
