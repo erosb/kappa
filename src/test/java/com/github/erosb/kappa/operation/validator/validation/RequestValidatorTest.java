@@ -66,6 +66,16 @@ public class RequestValidatorTest {
   }
 
   @Test
+  public void enumPathParam() throws Exception {
+    URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+    RequestValidator requestValidator = new RequestValidator(api);
+
+    requestValidator.validate(new DefaultRequest.Builder("https://api.com/fixed/2/enum/Option1", GET).build());
+
+  }
+
+  @Test
   public void withoutServerPathFindOperationCheck()
     throws Exception {
     URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
