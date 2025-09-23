@@ -29,14 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class KappaContractTestingTest {
 
   @Autowired
-  UsersController usersController;
-
-  @Autowired
   MockMvc mockMvc;
 
   @Test
-  public void contractFailureInRequest()
-    throws Exception {
+  public void contractFailureInRequest() {
     Throwable exc = assertThrows(AssertionError.class,
       () -> mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content("""
         {
@@ -56,8 +52,7 @@ public class KappaContractTestingTest {
   }
 
   @Test
-  public void wrongMethodFailureInRequest()
-    throws Exception {
+  public void wrongMethodFailureInRequest() {
     Throwable exc = assertThrows(AssertionError.class,
       () -> mockMvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON).content("""
         {
@@ -70,8 +65,7 @@ public class KappaContractTestingTest {
   }
 
   @Test
-  public void wrongPathFailureInRequest()
-    throws Exception {
+  public void wrongPathFailureInRequest() {
     Throwable exc = assertThrows(AssertionError.class,
       () -> mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON).content("""
         {
@@ -85,8 +79,7 @@ public class KappaContractTestingTest {
   }
 
   @Test
-  public void wrongContentTypeFailureInRequest()
-    throws Exception {
+  public void wrongContentTypeFailureInRequest()  {
     Throwable exc = assertThrows(AssertionError.class,
       () -> mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_ATOM_XML).content("""
         {
