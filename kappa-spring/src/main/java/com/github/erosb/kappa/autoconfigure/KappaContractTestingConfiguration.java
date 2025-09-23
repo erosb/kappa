@@ -1,7 +1,11 @@
 package com.github.erosb.kappa.autoconfigure;
 
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +13,9 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 
-@AutoConfiguration
-public class KappaContractTestingConfiguration implements ImportBeanDefinitionRegistrar {
+@AutoConfiguration()
+public class KappaContractTestingConfiguration
+  implements ImportBeanDefinitionRegistrar {
 
   @Autowired(required = false)
   KappaSpringConfiguration configuration;
@@ -22,9 +27,17 @@ public class KappaContractTestingConfiguration implements ImportBeanDefinitionRe
         EnableKappaContractTesting.class.getName(), false
       )
     );
+    for (String beanDefinitionName : registry.getBeanDefinitionNames()) {
+      BeanDefinition def = registry.getBeanDefinition(beanDefinitionName);
+      //      def.getBeanClassName()
+    }
+    ConstructorArgumentValues cav = new ConstructorArgumentValues();
+    MutablePropertyValues pvs = new MutablePropertyValues();
+//    pvs.
+    new RootBeanDefinition(FilterRegistrationBean.class, cav, pvs);
 
-    registry.registerBeanDefinition("", kappaContractTestingFilter());
-    System.out.println(attributes);
+    registry.registerBeanDefinition("kappaContractTestingFilter",
+      new RootBeanDefinition(FilterRegistrationBean.class, this::kappaContractTestingFilter));
   }
 
   @Bean
