@@ -88,7 +88,7 @@ public class JakartaServletTest {
     checkCommons(rq, true, true);
 
     Assert.assertEquals("?queryString", rq.getQuery());
-    Assert.assertEquals("{\n  \n}", rq.getBody().contentAsNode("application/json", new URI("anything")).toString());
+    Assert.assertEquals("{}", rq.getBody().contentAsNode("application/json", new URI("anything")).toString());
   }
 
   @Test

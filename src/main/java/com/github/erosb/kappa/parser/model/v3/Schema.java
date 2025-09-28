@@ -317,7 +317,8 @@ public class Schema
       }
 
       @Override
-      public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
+      public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema,
+                                        @NotNull CompositeSchema context) {
         return "object";
       }
 
@@ -497,7 +498,8 @@ public class Schema
   public boolean hasProperty(String name) {
     return mapHas(properties, name) || skema.accept(new SchemaVisitor<Boolean>() {
       @Override
-      public Boolean visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema) {
+      public Boolean visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema,
+                                         @NotNull CompositeSchema context) {
         return property.equals(name) ? true : null;
       }
     }) == Boolean.TRUE;
