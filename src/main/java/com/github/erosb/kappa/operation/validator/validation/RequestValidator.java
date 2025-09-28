@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.kappa.core.model.OAI;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.validation.ValidationException;
@@ -259,14 +260,14 @@ public class RequestValidator {
 
     final OperationValidator opValidator = getValidator(path, operation);
 
-    final Map<String, JsonNode> pathParameters
+    final Map<String, IJsonValue> pathParameters
       = (pathPattern != null)
       ? opValidator.validatePath(request, pathPattern, validation)
       : opValidator.validatePath(request, validation);
 
-    final Map<String, JsonNode> queryParameters = opValidator.validateQuery(request, validation);
-    final Map<String, JsonNode> headerParameters = opValidator.validateHeaders(request, validation);
-    final Map<String, JsonNode> cookieParameters = opValidator.validateCookies(request, validation);
+    final Map<String, IJsonValue> queryParameters = opValidator.validateQuery(request, validation);
+    final Map<String, IJsonValue> headerParameters = opValidator.validateHeaders(request, validation);
+    final Map<String, IJsonValue> cookieParameters = opValidator.validateCookies(request, validation);
     opValidator.validateBody(request, validation);
 
     if (!validation.isValid()) {

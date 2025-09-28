@@ -3,6 +3,7 @@ package com.github.erosb.kappa.operation.validator.util.convert.style;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.MultiStringMap;
@@ -27,17 +28,17 @@ public class FormStyleConverter {
     return INSTANCE;
   }
 
-  public JsonNode convert(OAIContext context,
-                          AbsParameter<?> param,
-                          String paramName,
-                          MultiStringMap<String> paramPairs,
-                          List<String> visitedParams) {
+  public IJsonValue convert(OAIContext context,
+                            AbsParameter<?> param,
+                            String paramName,
+                            MultiStringMap<String> paramPairs,
+                            List<String> visitedParams) {
 
     if (paramPairs == null) {
       return null;
     }
 
-    JsonNode result;
+    IJsonValue result;
     String type = param.getSchema().getSupposedType(context);
     if (OAI3SchemaKeywords.TYPE_ARRAY.equals(type)) {
       result = getArrayValues(context, param, paramPairs.get(paramName));
@@ -51,7 +52,7 @@ public class FormStyleConverter {
     return result;
   }
 
-  private JsonNode getArrayValues(OAIContext context, AbsParameter<?> param, Collection<String> paramValues) {
+  private IJsonValue getArrayValues(OAIContext context, AbsParameter<?> param, Collection<String> paramValues) {
     if (paramValues == null) {
       return null;
     }
@@ -67,7 +68,8 @@ public class FormStyleConverter {
     return TypeConverter.instance().convertArray(context, param.getSchema().getItemsSchema(), values);
   }
 
-  private JsonNode getObjectValues(OAIContext context, AbsParameter<?> param, String paramName, MultiStringMap<String> values, List<String> visitedParams) {
+  private JsonNode getObjectValues(OAIContext context, AbsParameter<?> param, String paramName, MultiStringMap<String> values,
+                                   List<String> visitedParams) {
     if (param.isExplode()) {
       return getExplodedObjectValues(context, param, values, visitedParams);
     } else {
@@ -75,7 +77,8 @@ public class FormStyleConverter {
     }
   }
 
-  private JsonNode getExplodedObjectValues(OAIContext context, AbsParameter<?> param, MultiStringMap<String> values, List<String> visitedParams) {
+  private JsonNode getExplodedObjectValues(OAIContext context, AbsParameter<?> param, MultiStringMap<String> values,
+                                           List<String> visitedParams) {
     ObjectNode result = JsonNodeFactory.instance.objectNode();
 
     for (Map.Entry<String, Schema> propEntry : param.getSchema().getProperties().entrySet()) {
@@ -97,7 +100,8 @@ public class FormStyleConverter {
     return result.isEmpty() ? null : result;
   }
 
-  private JsonNode getNotExplodedObjectValues(OAIContext context, AbsParameter<?> param, String paramName, MultiStringMap<String> values, List<String> visitedParams) {
+  private JsonNode getNotExplodedObjectValues(OAIContext context, AbsParameter<?> param, String paramName,
+                                              MultiStringMap<String> values, List<String> visitedParams) {
     Collection<String> paramValues = values.get(paramName);
     visitedParams.add(paramName);
 

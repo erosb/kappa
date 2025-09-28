@@ -3,6 +3,9 @@ package com.github.erosb.kappa.operation.validator.util.convert.style;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonArray;
+import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
@@ -14,18 +17,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 abstract class FlatStyleConverter implements StyleConverter {
-  Map<String, Object> getParameterValues(OAIContext context,
-                                         AbsParameter<?> param,
-                                         String paramName,
-                                         String rawValue,
-                                         String splitPattern) {
+  Map<String, IJsonValue> getParameterValues(OAIContext context,
+                                             AbsParameter<?> param,
+                                             String paramName,
+                                             String rawValue,
+                                             String splitPattern) {
     if (rawValue == null) {
       return null;
     }
 
-    Map<String, Object> values = new HashMap<>();
+    Map<String, IJsonValue> values = new HashMap<>();
 
     if (OAI3SchemaKeywords.TYPE_OBJECT.equals(param.getSchema().getSupposedType(context))) {
       if (param.isExplode()) {
@@ -34,33 +38,36 @@ abstract class FlatStyleConverter implements StyleConverter {
         handleNotExplodedObject(param, splitPattern, rawValue, values);
       }
     } else if (OAI3SchemaKeywords.TYPE_ARRAY.equals(param.getSchema().getSupposedType(context))) {
-      values.put(paramName, Arrays.asList(rawValue.split(splitPattern)));
+      values.put(paramName, new JsonArray(Arrays.stream(rawValue.split(splitPattern))
+        .map(JsonString::new)
+        .collect(Collectors.toList())));
     } else {
-      values.put(paramName, rawValue);
+      values.put(paramName, new JsonString(rawValue));
     }
 
     return values;
   }
 
-  private void handleExplodedObject(AbsParameter<?> param, String splitPattern, String rawValue, Map<String, Object> values) {
+  private void handleExplodedObject(AbsParameter<?> param, String splitPattern, String rawValue, Map<String, IJsonValue> values) {
     Scanner scanner = new Scanner(rawValue);
     scanner.useDelimiter(splitPattern);
     while (scanner.hasNext()) {
       String[] propEntry = scanner.next().split("=");
       if (propEntry.length == 2 && param.getSchema().hasProperty(propEntry[0])) {
-        values.put(propEntry[0], propEntry[1]);
+        values.put(propEntry[0], new JsonString(propEntry[1]));
       }
     }
     scanner.close();
   }
 
-  private void handleNotExplodedObject(AbsParameter<?> param, String splitPattern, String rawValue, Map<String, Object> values) {
+  private void handleNotExplodedObject(AbsParameter<?> param, String splitPattern, String rawValue,
+                                       Map<String, IJsonValue> values) {
     String[] splitValues = rawValue.split(splitPattern);
     if (splitValues.length % 2 == 0) {
       int i = 0;
       while (i < splitValues.length) {
         if (param.getSchema().hasProperty(splitValues[i])) {
-          values.put(splitValues[i++], splitValues[i++]);
+          values.put(splitValues[i++], new JsonString(splitValues[i++]));
         } else {
           i = i + 2;
         }

@@ -2,6 +2,7 @@ package com.github.erosb.kappa.operation.validator.util.convert.style;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 
@@ -18,9 +19,8 @@ public class SimpleStyleConverter extends FlatStyleConverter {
   }
 
   @Override
-  public JsonNode convert(OAIContext context, AbsParameter<?> param, String paramName, String rawValue) {
-    final Map<String, Object> paramValues;
-    paramValues = getParameterValues(context, param, paramName, rawValue, ",");
+  public IJsonValue convert(OAIContext context, AbsParameter<?> param, String paramName, String rawValue) {
+    final Map<String, IJsonValue> paramValues = getParameterValues(context, param, paramName, rawValue, ",");
     return convert(context, param, paramName, paramValues);
   }
 }

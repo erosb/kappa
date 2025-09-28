@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.util.convert;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.IOUtil;
@@ -16,7 +17,6 @@ import com.github.erosb.kappa.parser.model.v3.Schema;
 import com.github.erosb.kappa.operation.validator.util.convert.style.DeepObjectStyleConverter;
 import com.github.erosb.kappa.operation.validator.util.convert.style.PipeDelimitedStyleConverter;
 import com.github.erosb.kappa.operation.validator.util.convert.style.SpaceDelimitedStyleConverter;
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,22 +41,23 @@ class FormUrlConverter {
 
   private final Map<MediaType, Map<String, AbsParameter<Parameter>>> mediaTypesCache = new HashMap<>();
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final InputStream body, String encoding) throws IOException {
+  IJsonValue convert(final OAIContext context, final MediaType mediaType, final InputStream body, String encoding)
+    throws IOException {
     return convert(context, mediaType, IOUtil.toString(body, encoding), encoding);
   }
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final String body, final String encoding) {
-    Map<String, JsonNode> params = convert(context, getParameters(mediaType), body, true, encoding);
+  IJsonValue convert(final OAIContext context, final MediaType mediaType, final String body, final String encoding) {
+    Map<String, IJsonValue> params = convert(context, getParameters(mediaType), body, true, encoding);
     return TreeUtil.json.valueToTree(params);
   }
 
-  Map<String, JsonNode> convert(final OAIContext context,
-                                final Map<String, AbsParameter<Parameter>> specParameters,
-                                final String body,
-                                final boolean caseSensitive,
-                                final String encoding) {
+  Map<String, IJsonValue> convert(final OAIContext context,
+                                  final Map<String, AbsParameter<Parameter>> specParameters,
+                                  final String body,
+                                  final boolean caseSensitive,
+                                  final String encoding) {
 
-    final Map<String, JsonNode> mappedValues = new HashMap<>();
+    final Map<String, IJsonValue> mappedValues = new HashMap<>();
 
     if (body == null) {
       return mappedValues;
@@ -68,17 +69,20 @@ class FormUrlConverter {
     for (Map.Entry<String, AbsParameter<Parameter>> paramEntry : specParameters.entrySet()) {
       final String specParamName = paramEntry.getKey();
       final AbsParameter<Parameter> specParam = paramEntry.getValue();
-      final JsonNode convertedValue;
+      final IJsonValue convertedValue;
 
       if (specParam.getSchema() != null) {
         final String style = specParam.getStyle();
 
         if (SPACE_DELIMITED.equals(style)) {
-          convertedValue = SpaceDelimitedStyleConverter.instance().convert(context, specParam, specParamName, paramPairs, visitedParams);
+          convertedValue = SpaceDelimitedStyleConverter.instance().convert(context, specParam, specParamName, paramPairs,
+            visitedParams);
         } else if (PIPE_DELIMITED.equals(style)) {
-          convertedValue = PipeDelimitedStyleConverter.instance().convert(context, specParam, specParamName, paramPairs, visitedParams);
+          convertedValue = PipeDelimitedStyleConverter.instance().convert(context, specParam, specParamName, paramPairs,
+            visitedParams);
         } else if (DEEP_OBJECT.equals(style)) {
-          convertedValue = DeepObjectStyleConverter.instance().convert(context, specParam, specParamName, paramPairs, visitedParams);
+          convertedValue = DeepObjectStyleConverter.instance().convert(context, specParam, specParamName, paramPairs,
+            visitedParams);
         } else { // form is the default
           if (specParam.getExplode() == null) { // explode true is default
             specParam.setExplode(true);
@@ -86,7 +90,8 @@ class FormUrlConverter {
           convertedValue = FormStyleConverter.instance().convert(context, specParam, specParamName, paramPairs, visitedParams);
         }
       } else {
-        convertedValue = getValueFromContentType(context, specParam.getContentMediaTypes(), specParamName, paramPairs, visitedParams);
+        convertedValue = getValueFromContentType(context, specParam.getContentMediaTypes(), specParamName, paramPairs,
+          visitedParams);
       }
 
       if (convertedValue != null) {
@@ -145,11 +150,11 @@ class FormUrlConverter {
     }
   }
 
-  private JsonNode getValueFromContentType(final OAIContext context,
-                                           final Map<String, MediaType> mediaTypes,
-                                           final String paramName,
-                                           final MultiStringMap<String> paramPairs,
-                                           final List<String> visitedParams) {
+  private IJsonValue getValueFromContentType(final OAIContext context,
+                                             final Map<String, MediaType> mediaTypes,
+                                             final String paramName,
+                                             final MultiStringMap<String> paramPairs,
+                                             final List<String> visitedParams) {
 
     Collection<String> propValues = paramPairs.get(paramName);
     if (propValues == null) {

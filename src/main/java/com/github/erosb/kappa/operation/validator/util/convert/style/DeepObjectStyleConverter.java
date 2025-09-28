@@ -3,6 +3,12 @@ package com.github.erosb.kappa.operation.validator.util.convert.style;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.IJsonObject;
+import com.github.erosb.jsonsKema.IJsonString;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonObject;
+import com.github.erosb.jsonsKema.JsonString;
+import com.github.erosb.jsonsKema.JsonValue;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.MultiStringMap;
@@ -12,6 +18,7 @@ import com.github.erosb.kappa.parser.model.v3.Schema;
 import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,13 +32,13 @@ public class DeepObjectStyleConverter {
     return INSTANCE;
   }
 
-  public JsonNode convert(OAIContext context,
-                          AbsParameter<?> param,
-                          String paramName,
-                          MultiStringMap<String> paramPairs,
-                          List<String> visitedParams) {
+  public IJsonValue convert(OAIContext context,
+                            AbsParameter<?> param,
+                            String paramName,
+                            MultiStringMap<String> paramPairs,
+                            List<String> visitedParams) {
 
-    ObjectNode result = JsonNodeFactory.instance.objectNode();
+    Map<JsonString, JsonValue> result = new HashMap<>();
     Schema propSchema = param.getSchema();
     String type = propSchema.getSupposedType(context);
 
@@ -45,12 +52,12 @@ public class DeepObjectStyleConverter {
           String propName = properties.get(1);
 
           // Convert value or get string representation
-          JsonNode value = TypeConverter.instance().convertPrimitive(
+          IJsonValue value = TypeConverter.instance().convertPrimitive(
             context,
             propSchema.getProperty(propName),
             valueEntry.getValue().stream().findFirst().orElse(null));
 
-          result.set(propName, value);
+          result.put(new JsonString(propName), (JsonValue) value);
 
           visitedParams.add(propPath);
         }
@@ -60,6 +67,6 @@ public class DeepObjectStyleConverter {
       }
     }
 
-    return result;
+    return new JsonObject(result);
   }
 }

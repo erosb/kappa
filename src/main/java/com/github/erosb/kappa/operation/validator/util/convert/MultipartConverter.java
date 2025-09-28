@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.MapType;
+import com.github.erosb.jsonsKema.IJsonArray;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.IOUtil;
@@ -35,15 +38,17 @@ class MultipartConverter {
     return INSTANCE;
   }
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final String body, final String rawContentType, final String encoding) throws IOException {
+  IJsonValue convert(final OAIContext context, final MediaType mediaType, final String body, final String rawContentType,
+                     final String encoding) throws IOException {
     InputStream is = new ByteArrayInputStream(body.getBytes(encoding));
     return convert(context, mediaType, is, rawContentType, encoding);
   }
 
-  JsonNode convert(final OAIContext context, final MediaType mediaType, final InputStream body, final String rawContentType, final String encoding) throws IOException {
+  IJsonValue convert(final OAIContext context, final MediaType mediaType, final InputStream body, final String rawContentType,
+                     final String encoding) throws IOException {
     UploadContext requestContext = UPLOAD_CONTEXT_INSTANCE.create(body, rawContentType, encoding);
 
-    ObjectNode result = JsonNodeFactory.instance.objectNode();
+    IJsonValue result = JsonNodeFactory.instance.objectNode();
 
     try {
       FileItemIterator iterator = new FileUpload().getItemIterator(requestContext);
@@ -52,12 +57,12 @@ class MultipartConverter {
         String name = item.getFieldName();
 
         if (item.isFormField()) {
-          JsonNode convertedValue = mapValue(context, result, mediaType, item, name, encoding);
+          IJsonValue convertedValue = mapValue(context, result, mediaType, item, name, encoding);
           if (convertedValue != null) {
             addValue(result, name, convertedValue);
           }
         } else { // Add file name only
-          addValue(result, name, JsonNodeFactory.instance.textNode(item.getName()));
+          addValue(result, name, new JsonString(item.getName()));
         }
       }
     } catch (FileUploadException ex) {
@@ -67,7 +72,8 @@ class MultipartConverter {
     return result;
   }
 
-  private JsonNode mapValue(OAIContext context, ObjectNode result, MediaType mediaType, FileItemStream item, String name, String encoding) throws IOException {
+  private IJsonValue mapValue(OAIContext context, ObjectNode result, MediaType mediaType, FileItemStream item, String name,
+                              String encoding) throws IOException {
     Schema propSchema = mediaType.getSchema().getProperty(name);
     String itemContentType = item.getContentType();
 
@@ -76,7 +82,7 @@ class MultipartConverter {
       if (checkResult == -1) {
         // content type mismatch
         String content = IOUtil.toString(item.openStream(), encoding);
-        return JsonNodeFactory.instance.textNode(content);
+        return new JsonString(content);
       } else if (checkResult == 0) {
         // Process with the given content type
         String content = IOUtil.toString(item.openStream(), encoding);
@@ -84,7 +90,7 @@ class MultipartConverter {
           return ContentConverter.convert(context, new MediaType().setSchema(propSchema), itemContentType, null, content);
         } catch (IOException ex) {
           // content type mismatch
-          return JsonNodeFactory.instance.textNode(content);
+          return new JsonString(content);
         }
       }
     }
@@ -159,13 +165,13 @@ class MultipartConverter {
     }
   }
 
-  private void addValue(ObjectNode result, String name, JsonNode value) {
+  private void addValue(ObjectNode result, String name, IJsonValue value) {
     // Check if value is already referenced
     // If so, add new value to an array
     JsonNode previousValue = result.get(name);
     if (previousValue != null) {
-      if (previousValue instanceof ArrayNode) {
-        ((ArrayNode) previousValue).add(value);
+      if (previousValue instanceof IJsonArray) {
+        ((IJsonArray) previousValue).getElements().add(value);
       } else {
         ArrayNode values = JsonNodeFactory.instance.arrayNode();
         values.add(previousValue);

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.FormatValidationPolicy;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonParser;
+import com.github.erosb.jsonsKema.PrimitiveValidationStrategy;
 import com.github.erosb.jsonsKema.Schema;
 import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.jsonsKema.ValidationFailure;
@@ -62,13 +63,20 @@ public class SKemaBackedJsonValidator
     }
   }
 
-  public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
-    ValidationFailure failure = Validator.create(schema, new ValidatorConfig(FormatValidationPolicy.ALWAYS)).validate(jsonValue);
+  public boolean validate(IJsonValue jsonValue, ValidationData<?> validation, ValidatorConfig validatorConfig) {
+    ValidationFailure failure = Validator.create(schema, validatorConfig).validate(jsonValue);
     if (failure != null) {
       validation.add(failure);
       return false;
     }
     return true;
+  }
+
+  public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
+    return validate(jsonValue, validation, ValidatorConfig.builder()
+      .validateFormat(FormatValidationPolicy.ALWAYS)
+      .primitiveValidationStrategy(PrimitiveValidationStrategy.STRICT)
+      .build());
   }
 
   /**

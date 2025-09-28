@@ -110,15 +110,4 @@ public class Body {
     }
     throw new IllegalStateException("both bodyIs and bodyStr are null");
   }
-
-  @Deprecated
-  public JsonNode getContentAsNode(final OAIContext context,
-                                   final MediaType mediaType,
-                                   final String rawContentType) throws IOException {
-    if (bodyNode != null) {
-      return bodyNode;
-    } else {
-      return ContentConverter.convert(context, mediaType, rawContentType, bodyIs, bodyStr);
-    }
-  }
 }
