@@ -44,8 +44,8 @@ allprojects {
 }
 
 dependencies {
-  api("com.fasterxml.jackson.core:jackson-databind:2.19.2")
-  api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.2")
+  api("com.fasterxml.jackson.core:jackson-databind:2.20.0")
+  api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.0")
 
   api("com.github.erosb:json-sKema:0.26.0")
 
@@ -54,7 +54,7 @@ dependencies {
 
   compileOnly("org.json:json:20250517")
   compileOnly("commons-fileupload:commons-fileupload:1.5")
-  testImplementation("org.json:json:20240303")
+  testImplementation("org.json:json:20250517")
   testImplementation("commons-fileupload:commons-fileupload:1.5")
 }
 
