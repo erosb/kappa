@@ -84,17 +84,27 @@ public class Body {
   }
 
   private static String toString(InputStream is) {
+    Reader in = null;
     try {
       int bufferSize = 2048;
       char[] buffer = new char[bufferSize];
       StringBuilder out = new StringBuilder();
-      Reader in = new InputStreamReader(is, StandardCharsets.UTF_8);
+      in = new InputStreamReader(is, StandardCharsets.UTF_8);
       for (int numRead; (numRead = in.read(buffer, 0, buffer.length)) > 0; ) {
         out.append(buffer, 0, numRead);
       }
       return out.toString();
     } catch (IOException e) {
       throw new UncheckedIOException(e);
+    } finally {
+      try {
+        is.close();
+        if (in != null) {
+          in.close();
+        }
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
     }
   }
 

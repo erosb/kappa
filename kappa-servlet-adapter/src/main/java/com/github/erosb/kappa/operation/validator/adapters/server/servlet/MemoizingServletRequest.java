@@ -74,6 +74,7 @@ public class MemoizingServletRequest extends HttpServletRequestWrapper {
     while ((nRead = requestInputStream.read(data, 0, data.length)) != -1) {
       buffer.write(data, 0, nRead);
     }
+    requestInputStream.close();
     buffer.flush();
     this.cachedBody = buffer.toByteArray();
   }
