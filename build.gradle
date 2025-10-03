@@ -15,7 +15,7 @@ allprojects {
   apply plugin: 'jacoco'
 
   group = "com.github.erosb"
-  version = "2.0.4-RC1"
+  version = "2.0.4"
   description = "Forked version of openapi4j aiming for openapi 3.1 support"
 
   java {
@@ -47,7 +47,7 @@ dependencies {
   api("com.fasterxml.jackson.core:jackson-databind:2.20.0")
   api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.20.0")
 
-  api("com.github.erosb:json-sKema:0.26.0")
+  api("com.github.erosb:json-sKema:0.27.0")
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.skyscreamer:jsonassert:1.5.0")
