@@ -14,6 +14,7 @@ import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,13 +28,19 @@ public class PathPatternMatchingOpenApiLookup
 
   public PathPatternMatchingOpenApiLookup(KappaSpringConfiguration configuration) {
     pathPatternToApiDescr = new LinkedHashMap<>();
+    Map<String, OpenApi3> pathToParsedDescription = new HashMap<>();
     configuration.getOpenapiDescriptions().forEach((rawPathPattern, apiDescriptionPath) -> {
         try {
           if (!rawPathPattern.startsWith("/")) {
             rawPathPattern = "/" + rawPathPattern;
           }
-          pathPatternToApiDescr.put(new PathPatternParser().parse(rawPathPattern),
-            new OpenApi3Parser().parse(getClass().getResource(apiDescriptionPath), false));
+
+          OpenApi3 openApi3 = pathToParsedDescription.get(apiDescriptionPath);
+          if (openApi3 == null) {
+            openApi3 = new OpenApi3Parser().parse(getClass().getResource(apiDescriptionPath), false);
+            pathToParsedDescription.put(apiDescriptionPath, openApi3);
+          }
+          pathPatternToApiDescr.put(new PathPatternParser().parse(rawPathPattern), openApi3);
         } catch (ResolutionException | ValidationException e) {
           throw new RuntimeException(e);
         }

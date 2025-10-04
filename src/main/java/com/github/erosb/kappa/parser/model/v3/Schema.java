@@ -501,7 +501,7 @@ public class Schema
     return mapHas(properties, name) || skema.accept(new SchemaVisitor<Boolean>() {
       @Override
       public Boolean visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema,
-                                         CompositeSchema context) {
+                                         @NotNull CompositeSchema context) {
         return property.equals(name) ? true : null;
       }
     }) == Boolean.TRUE;
