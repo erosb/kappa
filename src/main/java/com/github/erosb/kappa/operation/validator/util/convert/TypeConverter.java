@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.IJsonString;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonNull;
 import com.github.erosb.jsonsKema.JsonObject;
 import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.jsonsKema.JsonValue;
@@ -16,6 +18,7 @@ import com.github.erosb.kappa.parser.model.v3.Schema;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class TypeConverter {
@@ -32,15 +35,15 @@ public final class TypeConverter {
                                   final Schema schema,
                                   final Map<String, Object> content) {
     if (schema == null || content == null) {
-      return JsonNodeFactory.instance.nullNode();
+      return new JsonNull();
     }
 
     Map<String, Schema> properties = schema.getProperties();
     if (properties == null || properties.isEmpty()) {
-      return JsonNodeFactory.instance.nullNode();
+      return new JsonNull();
     }
 
-    Map<JsonString, JsonValue> convertedContent = JsonNodeFactory.instance.objectNode();
+    Map<IJsonString, IJsonValue> convertedContent = new HashMap<>();
 
     for (Map.Entry<String, Schema> entry : properties.entrySet()) {
       String entryKey = entry.getKey();
@@ -57,10 +60,10 @@ public final class TypeConverter {
           convertedContent.put(new JsonString(entryKey), convertObject(context, flatSchema, castMap(value)));
           break;
         case OAI3SchemaKeywords.TYPE_ARRAY:
-          convertedContent.set(entryKey, convertArray(context, flatSchema.getItemsSchema(), castList(value)));
+          convertedContent.put(new JsonString(entryKey), convertArray(context, flatSchema.getItemsSchema(), castList(value)));
           break;
         default:
-          convertedContent.set(entryKey, convertPrimitive(context, flatSchema, value));
+          convertedContent.put(new JsonString(entryKey), convertPrimitive(context, flatSchema, value));
           break;
       }
     }
@@ -73,7 +76,7 @@ public final class TypeConverter {
                                  final Collection<Object> content) {
 
     if (schema == null || content == null) {
-      return JsonNodeFactory.instance.nullNode();
+      return new JsonNull();
     }
 
     ArrayNode convertedContent = JsonNodeFactory.instance.arrayNode();

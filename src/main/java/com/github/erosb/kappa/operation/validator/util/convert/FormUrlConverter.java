@@ -109,7 +109,7 @@ class FormUrlConverter {
     for (Map.Entry<String, Collection<String>> valueEntry : paramPairs.entrySet()) {
       Collection<String> values = valueEntry.getValue();
 
-      JsonNode value = TypeConverter.instance().convertPrimitive(
+      IJsonValue value = TypeConverter.instance().convertPrimitive(
         context,
         defaultSchema,
         values.iterator().next());

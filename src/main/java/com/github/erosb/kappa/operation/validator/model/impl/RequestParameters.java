@@ -1,19 +1,20 @@
 package com.github.erosb.kappa.operation.validator.model.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.IJsonValue;
 
 import java.util.Map;
 
 public class RequestParameters {
-  private final Map<String, JsonNode> pathParameters;
-  private final Map<String, JsonNode> queryParameters;
-  private final Map<String, JsonNode> headerParameters;
-  private final Map<String, JsonNode> cookieParameters;
+  private final Map<String, IJsonValue> pathParameters;
+  private final Map<String, IJsonValue> queryParameters;
+  private final Map<String, IJsonValue> headerParameters;
+  private final Map<String, IJsonValue> cookieParameters;
 
-  public RequestParameters(Map<String, JsonNode> pathParameters,
-                           Map<String, JsonNode> queryParameters,
-                           Map<String, JsonNode> headerParameters,
-                           Map<String, JsonNode> cookieParameters) {
+  public RequestParameters(Map<String, IJsonValue> pathParameters,
+                           Map<String, IJsonValue> queryParameters,
+                           Map<String, IJsonValue> headerParameters,
+                           Map<String, IJsonValue> cookieParameters) {
 
     this.pathParameters = pathParameters;
     this.queryParameters = queryParameters;
@@ -21,42 +22,50 @@ public class RequestParameters {
     this.cookieParameters = cookieParameters;
   }
 
-  public Map<String, JsonNode> getPathParameters() {
+  public Map<String, IJsonValue> getPathParameters() {
     return pathParameters;
   }
 
-  public JsonNode getPathParameter(String name) {
-    if (pathParameters == null) return null;
+  public IJsonValue getPathParameter(String name) {
+    if (pathParameters == null) {
+      return null;
+    }
 
     return pathParameters.get(name);
   }
 
-  public Map<String, JsonNode> getQueryParameters() {
+  public Map<String, IJsonValue> getQueryParameters() {
     return queryParameters;
   }
 
-  public JsonNode getQueryParameter(String name) {
-    if (queryParameters == null) return null;
+  public IJsonValue getQueryParameter(String name) {
+    if (queryParameters == null) {
+      return null;
+    }
 
     return queryParameters.get(name);
   }
 
-  public Map<String, JsonNode> getHeaderParameters() {
+  public Map<String, IJsonValue> getHeaderParameters() {
     return headerParameters;
   }
 
-  public JsonNode getHeaderParameter(String name) {
-    if (headerParameters == null) return null;
+  public IJsonValue getHeaderParameter(String name) {
+    if (headerParameters == null) {
+      return null;
+    }
 
     return headerParameters.get(name);
   }
 
-  public Map<String, JsonNode> getCookieParameters() {
+  public Map<String, IJsonValue> getCookieParameters() {
     return cookieParameters;
   }
 
-  public JsonNode getCookieParameter(String name) {
-    if (cookieParameters == null) return null;
+  public IJsonValue getCookieParameter(String name) {
+    if (cookieParameters == null) {
+      return null;
+    }
 
     return cookieParameters.get(name);
   }

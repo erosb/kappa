@@ -68,8 +68,8 @@ public class FormStyleConverter {
     return TypeConverter.instance().convertArray(context, param.getSchema().getItemsSchema(), values);
   }
 
-  private JsonNode getObjectValues(OAIContext context, AbsParameter<?> param, String paramName, MultiStringMap<String> values,
-                                   List<String> visitedParams) {
+  private IJsonValue getObjectValues(OAIContext context, AbsParameter<?> param, String paramName, MultiStringMap<String> values,
+                                     List<String> visitedParams) {
     if (param.isExplode()) {
       return getExplodedObjectValues(context, param, values, visitedParams);
     } else {
@@ -77,8 +77,8 @@ public class FormStyleConverter {
     }
   }
 
-  private JsonNode getExplodedObjectValues(OAIContext context, AbsParameter<?> param, MultiStringMap<String> values,
-                                           List<String> visitedParams) {
+  private IJsonValue getExplodedObjectValues(OAIContext context, AbsParameter<?> param, MultiStringMap<String> values,
+                                             List<String> visitedParams) {
     ObjectNode result = JsonNodeFactory.instance.objectNode();
 
     for (Map.Entry<String, Schema> propEntry : param.getSchema().getProperties().entrySet()) {
@@ -86,7 +86,7 @@ public class FormStyleConverter {
       Collection<String> paramValues = values.get(propName);
 
       if (paramValues != null) {
-        JsonNode value = TypeConverter.instance().convertPrimitive(
+        IJsonValue value = TypeConverter.instance().convertPrimitive(
           context,
           propEntry.getValue(),
           getParamValue(paramValues));
@@ -100,8 +100,8 @@ public class FormStyleConverter {
     return result.isEmpty() ? null : result;
   }
 
-  private JsonNode getNotExplodedObjectValues(OAIContext context, AbsParameter<?> param, String paramName,
-                                              MultiStringMap<String> values, List<String> visitedParams) {
+  private IJsonValue getNotExplodedObjectValues(OAIContext context, AbsParameter<?> param, String paramName,
+                                                MultiStringMap<String> values, List<String> visitedParams) {
     Collection<String> paramValues = values.get(paramName);
     visitedParams.add(paramName);
 
@@ -129,7 +129,7 @@ public class FormStyleConverter {
     return result;
   }
 
-  private JsonNode getPrimitiveValue(OAIContext context, AbsParameter<?> param, Collection<String> paramValues) {
+  private IJsonValue getPrimitiveValue(OAIContext context, AbsParameter<?> param, Collection<String> paramValues) {
     if (paramValues == null) {
       return null;
     }
