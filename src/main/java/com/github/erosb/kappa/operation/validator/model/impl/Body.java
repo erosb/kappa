@@ -11,14 +11,12 @@ import com.github.erosb.kappa.operation.validator.util.ContentType;
 import com.github.erosb.kappa.operation.validator.util.convert.ContentConverter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -27,7 +25,7 @@ import static java.util.Objects.requireNonNull;
 public class Body {
   private static final String BODY_REQUIRED_ERR_MSG = "Body content is required.";
 
-  private final JsonNode bodyNode;
+  private final IJsonValue bodyNode;
   private final String bodyStr;
   private final InputStream bodyIs;
 
@@ -119,5 +117,16 @@ public class Body {
       return new JsonParser(bodyStr, documentSource).parse();
     }
     throw new IllegalStateException("both bodyIs and bodyStr are null");
+  }
+
+  @Deprecated
+  public IJsonValue getContentAsNode(final OAIContext context,
+                                   final MediaType mediaType,
+                                   final String rawContentType) throws IOException {
+    if (bodyNode != null) {
+      return bodyNode;
+    } else {
+      return ContentConverter.convert(context, mediaType, rawContentType, bodyIs, bodyStr);
+    }
   }
 }

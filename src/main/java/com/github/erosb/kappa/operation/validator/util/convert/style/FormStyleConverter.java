@@ -118,19 +118,18 @@ public class FormStyleConverter {
       return null;
     }
 
-    ObjectNode result = JsonNodeFactory.instance.objectNode();
-
     List<String> arrayValues = StringUtil.tokenize(value, ",", false, false);
+    Map<IJsonString, IJsonValue> result = new HashMap<>(arrayValues.size() / 2 + 1);
     int idx = 0;
     while (idx < arrayValues.size()) {
       String propName = arrayValues.get(idx++);
       String propValue = arrayValues.get(idx++);
       Schema propSchema = param.getSchema().getProperty(propName);
 
-      result.set(propName, TypeConverter.instance().convertPrimitive(context, propSchema, propValue));
+      result.put(new JsonString(propName), TypeConverter.instance().convertPrimitive(context, propSchema, propValue));
     }
 
-    return result;
+    return new JsonObject(result);
   }
 
   private IJsonValue getPrimitiveValue(OAIContext context, AbsParameter<?> param, Collection<String> paramValues) {

@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.github.erosb.jsonsKema.IJsonArray;
+import com.github.erosb.jsonsKema.IJsonString;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonArray;
+import com.github.erosb.jsonsKema.JsonObject;
 import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
@@ -20,7 +23,9 @@ import org.apache.commons.fileupload.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class MultipartConverter {
@@ -48,7 +53,7 @@ class MultipartConverter {
                      final String encoding) throws IOException {
     UploadContext requestContext = UPLOAD_CONTEXT_INSTANCE.create(body, rawContentType, encoding);
 
-    IJsonValue result = JsonNodeFactory.instance.objectNode();
+    Map<IJsonString, IJsonValue> result = new HashMap<>();
 
     try {
       FileItemIterator iterator = new FileUpload().getItemIterator(requestContext);
@@ -57,7 +62,7 @@ class MultipartConverter {
         String name = item.getFieldName();
 
         if (item.isFormField()) {
-          IJsonValue convertedValue = mapValue(context, result, mediaType, item, name, encoding);
+          IJsonValue convertedValue = mapValue(context, mediaType, item, name, encoding);
           if (convertedValue != null) {
             addValue(result, name, convertedValue);
           }
@@ -69,34 +74,36 @@ class MultipartConverter {
       throw new IOException(ex);
     }
 
-    return result;
+    return new JsonObject(result);
   }
 
-  private IJsonValue mapValue(OAIContext context, ObjectNode result, MediaType mediaType, FileItemStream item, String name,
+  private IJsonValue mapValue(OAIContext context, MediaType mediaType, FileItemStream item, String name,
                               String encoding) throws IOException {
-    Schema propSchema = mediaType.getSchema().getProperty(name);
-    String itemContentType = item.getContentType();
-
-    if (itemContentType != null) {
-      final int checkResult = checkContentType(context, propSchema, mediaType.getEncoding(name), item);
-      if (checkResult == -1) {
-        // content type mismatch
-        String content = IOUtil.toString(item.openStream(), encoding);
-        return new JsonString(content);
-      } else if (checkResult == 0) {
-        // Process with the given content type
-        String content = IOUtil.toString(item.openStream(), encoding);
-        try {
-          return ContentConverter.convert(context, new MediaType().setSchema(propSchema), itemContentType, null, content);
-        } catch (IOException ex) {
-          // content type mismatch
-          return new JsonString(content);
-        }
-      }
-    }
-
-    // Process as JSON
-    return convertToJsonNode(context, result, name, propSchema, item, encoding);
+//    Schema propSchema = mediaType.getSchema().getProperty(name);
+//    String itemContentType = item.getContentType();
+    String content = IOUtil.toString(item.openStream(), encoding);
+    return new JsonString(content);
+//
+//    if (itemContentType != null) {
+//      final int checkResult = checkContentType(context, propSchema, mediaType.getEncoding(name), item);
+//      if (checkResult == -1) {
+//        // content type mismatch
+//        String content = IOUtil.toString(item.openStream(), encoding);
+//        return new JsonString(content);
+//      } else if (checkResult == 0) {
+//        // Process with the given content type
+//        String content = IOUtil.toString(item.openStream(), encoding);
+//        try {
+//          return ContentConverter.convert(context, new MediaType().setSchema(propSchema), itemContentType, null, content);
+//        } catch (IOException ex) {
+//          // content type mismatch
+//          return new JsonString(content);
+//        }
+//      }
+//    }
+//
+//    // Process as JSON
+//    return convertToJsonNode(context, result, name, propSchema, item, encoding);
   }
 
   /**
@@ -106,81 +113,82 @@ class MultipartConverter {
    * 0: if content should be processed with the given content type<br/>
    * 1: if the content should be processed as JSON.<br/>
    */
-  private int checkContentType(OAIContext context, Schema propSchema, EncodingProperty encProperty, FileItemStream item) {
-    String itemContentType = item.getContentType();
-    String specContentType = (encProperty != null && encProperty.getContentType() != null) ? encProperty.getContentType() : null;
+//  private int checkContentType(OAIContext context, Schema propSchema, EncodingProperty encProperty, FileItemStream item) {
+//    String itemContentType = item.getContentType();
+//    String specContentType = (encProperty != null && encProperty.getContentType() != null) ? encProperty.getContentType() : null;
+//
+//    // Check given content type against spec content type
+//    if (specContentType != null && !itemContentType.equals(specContentType)) {
+//      return -1;
+//    }
+//
+//    // Cheking by default value
+//    switch (propSchema.getSupposedType(context)) {
+//      case OAI3SchemaKeywords.TYPE_OBJECT:
+//        // for object - application/json
+//        return itemContentType.equals("application/json") ? 1 : 0;
+//      case OAI3SchemaKeywords.TYPE_ARRAY:
+//        // for array - defined based on the inner type
+//        return checkContentType(context, propSchema.getItemsSchema(), encProperty, item);
+//      case OAI3SchemaKeywords.TYPE_STRING:
+//        // for string with format being binary - application/octet-stream
+//        if (OAI3SchemaKeywords.FORMAT_BINARY.equals(propSchema.getFormat())) {
+//          return itemContentType.equals("application/octet-stream") ? 1 : 0;
+//        }
+//      default:
+//        // for other primitive types - text/plain
+//        return itemContentType.equals("text/plain") ? 1 : 0;
+//    }
+//  }
+//
+//  private JsonNode convertToJsonNode(final OAIContext context,
+//                                     final ObjectNode result,
+//                                     final String name,
+//                                     final Schema schema,
+//                                     final FileItemStream item,
+//                                     final String encoding) throws IOException {
+//
+//    if (schema == null) {
+//      return TypeConverter.instance().convertPrimitive(context, null, IOUtil.toString(item.openStream(), encoding));
+//    }
+//
+//    switch (schema.getSupposedType(context)) {
+//      case OAI3SchemaKeywords.TYPE_OBJECT:
+//        Map<String, Object> jsonContent = TreeUtil.json.readValue(item.openStream(), MAP_TYPE);
+//        return TypeConverter.instance().convertObject(context, schema, jsonContent);
+//      case OAI3SchemaKeywords.TYPE_ARRAY:
+//        // Special case for arrays
+//        // They can be referenced multiple times in different ways
+//        JsonNode convertedValue = convertToJsonNode(context, result, name, schema.getItemsSchema(), item, encoding);
+//        JsonNode previousValue = result.get(name);
+//        if ((previousValue instanceof ArrayNode)) {
+//          ((ArrayNode) previousValue).add(convertedValue);
+//        } else {
+//          result.set(name, JsonNodeFactory.instance.arrayNode().add(convertedValue));
+//        }
+//        return null;
+//      default:
+//        return TypeConverter.instance().convertPrimitive(context, schema, IOUtil.toString(item.openStream(), encoding));
+//    }
+//  }
 
-    // Check given content type against spec content type
-    if (specContentType != null && !itemContentType.equals(specContentType)) {
-      return -1;
-    }
-
-    // Cheking by default value
-    switch (propSchema.getSupposedType(context)) {
-      case OAI3SchemaKeywords.TYPE_OBJECT:
-        // for object - application/json
-        return itemContentType.equals("application/json") ? 1 : 0;
-      case OAI3SchemaKeywords.TYPE_ARRAY:
-        // for array - defined based on the inner type
-        return checkContentType(context, propSchema.getItemsSchema(), encProperty, item);
-      case OAI3SchemaKeywords.TYPE_STRING:
-        // for string with format being binary - application/octet-stream
-        if (OAI3SchemaKeywords.FORMAT_BINARY.equals(propSchema.getFormat())) {
-          return itemContentType.equals("application/octet-stream") ? 1 : 0;
-        }
-      default:
-        // for other primitive types - text/plain
-        return itemContentType.equals("text/plain") ? 1 : 0;
-    }
-  }
-
-  private JsonNode convertToJsonNode(final OAIContext context,
-                                     final ObjectNode result,
-                                     final String name,
-                                     final Schema schema,
-                                     final FileItemStream item,
-                                     final String encoding) throws IOException {
-
-    if (schema == null) {
-      return TypeConverter.instance().convertPrimitive(context, null, IOUtil.toString(item.openStream(), encoding));
-    }
-
-    switch (schema.getSupposedType(context)) {
-      case OAI3SchemaKeywords.TYPE_OBJECT:
-        Map<String, Object> jsonContent = TreeUtil.json.readValue(item.openStream(), MAP_TYPE);
-        return TypeConverter.instance().convertObject(context, schema, jsonContent);
-      case OAI3SchemaKeywords.TYPE_ARRAY:
-        // Special case for arrays
-        // They can be referenced multiple times in different ways
-        JsonNode convertedValue = convertToJsonNode(context, result, name, schema.getItemsSchema(), item, encoding);
-        JsonNode previousValue = result.get(name);
-        if ((previousValue instanceof ArrayNode)) {
-          ((ArrayNode) previousValue).add(convertedValue);
-        } else {
-          result.set(name, JsonNodeFactory.instance.arrayNode().add(convertedValue));
-        }
-        return null;
-      default:
-        return TypeConverter.instance().convertPrimitive(context, schema, IOUtil.toString(item.openStream(), encoding));
-    }
-  }
-
-  private void addValue(ObjectNode result, String name, IJsonValue value) {
+  private void addValue(Map<IJsonString, IJsonValue>  result, String name, IJsonValue value) {
     // Check if value is already referenced
     // If so, add new value to an array
-    JsonNode previousValue = result.get(name);
+    JsonString jsonName = new JsonString(name);
+    IJsonValue previousValue = result.get(jsonName);
     if (previousValue != null) {
       if (previousValue instanceof IJsonArray) {
         ((IJsonArray) previousValue).getElements().add(value);
       } else {
-        ArrayNode values = JsonNodeFactory.instance.arrayNode();
+        List<IJsonValue> values = new ArrayList<>();
         values.add(previousValue);
         values.add(value);
 
-        result.set(name, values);
+        result.put(jsonName, new JsonArray(values));
       }
     } else {
-      result.set(name, value);
+      result.put(jsonName, value);
     }
   }
 
