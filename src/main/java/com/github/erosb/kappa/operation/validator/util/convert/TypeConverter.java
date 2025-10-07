@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.IJsonString;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonArray;
 import com.github.erosb.jsonsKema.JsonNull;
 import com.github.erosb.jsonsKema.JsonObject;
 import com.github.erosb.jsonsKema.JsonString;
@@ -17,8 +18,10 @@ import com.github.erosb.kappa.parser.model.v3.Schema;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class TypeConverter {
@@ -79,7 +82,7 @@ public final class TypeConverter {
       return new JsonNull();
     }
 
-    ArrayNode convertedContent = JsonNodeFactory.instance.arrayNode();
+    List<IJsonValue> convertedContent = new ArrayList<>();
 
     switch (schema.getSupposedType(context)) {
       case OAI3SchemaKeywords.TYPE_OBJECT:
@@ -99,7 +102,7 @@ public final class TypeConverter {
         break;
     }
 
-    return convertedContent;
+    return new JsonArray(convertedContent);
   }
 
   public IJsonValue convertPrimitive(final OAIContext context,

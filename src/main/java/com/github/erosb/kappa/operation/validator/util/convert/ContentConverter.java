@@ -3,6 +3,8 @@ package com.github.erosb.kappa.operation.validator.util.convert;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonParser;
+import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.util.IOUtil;
 import com.github.erosb.kappa.core.util.TreeUtil;
@@ -73,11 +75,11 @@ public final class ContentConverter {
   }
 
   private static IJsonValue jsonToNode(InputStream content) throws IOException {
-    return TreeUtil.json.readTree(content);
+    return new JsonParser(content).parse();
   }
 
   private static IJsonValue jsonToNode(String content) throws IOException {
-    return TreeUtil.json.readTree(content);
+    return new JsonParser(content).parse();
   }
 
   private static IJsonValue xmlToNode(final OAIContext context, final Schema schema, InputStream content) throws IOException {
@@ -89,10 +91,10 @@ public final class ContentConverter {
   }
 
   private static IJsonValue textToNode(InputStream content) throws IOException {
-    return JsonNodeFactory.instance.textNode(IOUtil.toString(content, StandardCharsets.UTF_8.name()));
+    return new JsonString(IOUtil.toString(content, StandardCharsets.UTF_8.name()));
   }
 
   private static IJsonValue textToNode(String content) {
-    return JsonNodeFactory.instance.textNode(content);
+    return new JsonString(content);
   }
 }

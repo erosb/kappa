@@ -38,7 +38,7 @@ public class DeepObjectStyleConverter {
                             MultiStringMap<String> paramPairs,
                             List<String> visitedParams) {
 
-    Map<JsonString, JsonValue> result = new HashMap<>();
+    Map<IJsonString, IJsonValue> result = new HashMap<>();
     Schema propSchema = param.getSchema();
     String type = propSchema.getSupposedType(context);
 

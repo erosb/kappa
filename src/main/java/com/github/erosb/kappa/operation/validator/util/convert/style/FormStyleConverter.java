@@ -3,7 +3,10 @@ package com.github.erosb.kappa.operation.validator.util.convert.style;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.IJsonString;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonObject;
+import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.MultiStringMap;
@@ -14,6 +17,7 @@ import com.github.erosb.kappa.parser.model.v3.Schema;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -79,7 +83,7 @@ public class FormStyleConverter {
 
   private IJsonValue getExplodedObjectValues(OAIContext context, AbsParameter<?> param, MultiStringMap<String> values,
                                              List<String> visitedParams) {
-    ObjectNode result = JsonNodeFactory.instance.objectNode();
+    Map<IJsonString, IJsonValue> result = new HashMap<>(param.getSchema().getProperties().size());
 
     for (Map.Entry<String, Schema> propEntry : param.getSchema().getProperties().entrySet()) {
       String propName = propEntry.getKey();
@@ -91,13 +95,13 @@ public class FormStyleConverter {
           propEntry.getValue(),
           getParamValue(paramValues));
 
-        result.set(propName, value);
+        result.put(new JsonString(propName), value);
 
         visitedParams.add(propName);
       }
     }
 
-    return result.isEmpty() ? null : result;
+    return result.isEmpty() ? null : new JsonObject(result);
   }
 
   private IJsonValue getNotExplodedObjectValues(OAIContext context, AbsParameter<?> param, String paramName,
