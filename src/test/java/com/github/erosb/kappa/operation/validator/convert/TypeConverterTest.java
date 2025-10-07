@@ -1,8 +1,8 @@
 package com.github.erosb.kappa.operation.validator.convert;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-
+import com.github.erosb.jsonsKema.IJsonArray;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonNull;
 import org.junit.Test;
 import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
 import com.github.erosb.kappa.parser.model.v3.Schema;
@@ -15,32 +15,25 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TypeConverterTest {
   @Test
   public void convertObjectNullNode() {
     // no schema
-    assertEquals(
-      JsonNodeFactory.instance.nullNode(),
-      TypeConverter.instance().convertObject(null, null, new HashMap<>()));
+    assertTrue(TypeConverter.instance().convertObject(null, null, new HashMap<>()) instanceof JsonNull);
 
     Schema schema = new Schema();
     schema.setType("object");
 
     // no properties
-    assertEquals(
-      JsonNodeFactory.instance.nullNode(),
-      TypeConverter.instance().convertObject(null, schema, new HashMap<>()));
+    assertTrue(TypeConverter.instance().convertObject(null, schema, new HashMap<>()) instanceof JsonNull);
     // empty properties
     schema.setProperties(new HashMap<>());
-    assertEquals(
-      JsonNodeFactory.instance.nullNode(),
-      TypeConverter.instance().convertObject(null, schema, new HashMap<>()));
+    assertTrue(TypeConverter.instance().convertObject(null, schema, new HashMap<>()) instanceof JsonNull);
     // no content
     schema.setProperties(new HashMap<>());
-    assertEquals(
-      JsonNodeFactory.instance.nullNode(),
-      TypeConverter.instance().convertObject(null, schema, null));
+    assertTrue(TypeConverter.instance().convertObject(null, schema, null) instanceof JsonNull);
 
     // object of object
     schema
@@ -84,30 +77,25 @@ public class TypeConverterTest {
   @Test
   public void convertArrayNullNode() {
     // no schema
-    assertEquals(
-      JsonNodeFactory.instance.nullNode(),
-      TypeConverter.instance().convertArray(null, null, new ArrayList<>()));
+    assertTrue(TypeConverter.instance().convertArray(null, null, new ArrayList<>()) instanceof JsonNull);
 
     Schema schema = new Schema();
 
     // no content
-    assertEquals(
-      JsonNodeFactory.instance.nullNode(),
-      TypeConverter.instance().convertArray(null, schema, null));
+    assertTrue(TypeConverter.instance().convertArray(null, schema, null) instanceof JsonNull);
 
     // empty content
     schema.setType("integer");
-    assertEquals(
-      JsonNodeFactory.instance.arrayNode(),
-      TypeConverter.instance().convertArray(null, schema, new ArrayList<>()));
+    IJsonValue result = TypeConverter.instance().convertArray(null, schema, new ArrayList<>());
+    assertEquals(0, result.requireArray().length());
 
     // with values
     List<Object> values = new ArrayList<>();
     values.add(1);
     values.add(10);
-    JsonNode convertedNode = TypeConverter.instance().convertArray(null, schema, values);
-    assertEquals(1, convertedNode.get(0).intValue());
-    assertEquals(10, convertedNode.get(1).intValue());
+    IJsonArray convertedNode = TypeConverter.instance().convertArray(null, schema, values).requireArray();
+    assertEquals(1, convertedNode.get(0).requireInt());
+    assertEquals(10, convertedNode.get(1).requireInt());
   }
 
   @Test
@@ -119,10 +107,10 @@ public class TypeConverterTest {
     values.add(1);
     values.add(10);
 
-    JsonNode convertedNode = TypeConverter.instance().convertArray(null, schema, values);
+    IJsonArray convertedNode = TypeConverter.instance().convertArray(null, schema, values).requireArray();
 
-    assertEquals(1, convertedNode.get(0).intValue());
-    assertEquals(10, convertedNode.get(1).intValue());
+    assertEquals(1, convertedNode.get(0).requireInt());
+    assertEquals(10, convertedNode.get(1).requireInt());
   }
 
   @Test
@@ -188,26 +176,24 @@ public class TypeConverterTest {
   public void convertPrimitiveNullNode() {
     // no schema
     assertEquals(
-      JsonNodeFactory.instance.textNode("[]"),
-      TypeConverter.instance().convertPrimitive(null, null, new ArrayList<>()));
+      "[]",
+      TypeConverter.instance().convertPrimitive(null, null, new ArrayList<>()).requireString().getValue());
 
     // no schema
     assertEquals(
-      JsonNodeFactory.instance.textNode("foo"),
-      TypeConverter.instance().convertPrimitive(null, null, "foo"));
+      "foo",
+      TypeConverter.instance().convertPrimitive(null, null, "foo").requireString().getValue());
 
     Schema schema = new Schema();
 
     // no content
-    assertEquals(
-      JsonNodeFactory.instance.nullNode(),
-      TypeConverter.instance().convertPrimitive(null, schema, null));
+    assertTrue(TypeConverter.instance().convertPrimitive(null, schema, null) instanceof JsonNull);
 
     // wrong content
     schema.setType("integer");
     assertEquals(
-      JsonNodeFactory.instance.textNode("wrong"),
-      TypeConverter.instance().convertPrimitive(null, schema, "wrong"));
+      "wrong",
+      TypeConverter.instance().convertPrimitive(null, schema, "wrong").requireString().getValue());
   }
 
   @Test
@@ -217,44 +203,43 @@ public class TypeConverterTest {
     schema.setType("integer");
     // no format
     assertEquals(
-      JsonNodeFactory.instance.numberNode(BigInteger.valueOf(1)),
-      TypeConverter.instance().convertPrimitive(null, schema, 1));
+      BigInteger.valueOf(1),
+      TypeConverter.instance().convertPrimitive(null, schema, 1).requireNumber().getValue());
     schema.setFormat("int32");
     assertEquals(
-      JsonNodeFactory.instance.numberNode(Integer.valueOf(1)),
-      TypeConverter.instance().convertPrimitive(null, schema, 1));
+      1,
+      TypeConverter.instance().convertPrimitive(null, schema, 1).requireInt());
     schema.setFormat("int64");
     assertEquals(
-      JsonNodeFactory.instance.numberNode(Long.valueOf(1)),
-      TypeConverter.instance().convertPrimitive(null, schema, 1));
+      1L,
+      TypeConverter.instance().convertPrimitive(null, schema, 1).requireNumber().getValue().longValue());
 
     // DECIMAL
     // no format
     schema.setType("number");
     schema.setFormat(null);
     assertEquals(
-      JsonNodeFactory.instance.numberNode(BigDecimal.valueOf(1)),
-      TypeConverter.instance().convertPrimitive(null, schema, 1));
+      BigDecimal.valueOf(1),
+      TypeConverter.instance().convertPrimitive(null, schema, 1).requireNumber().getValue());
     schema.setFormat("float");
     assertEquals(
-      JsonNodeFactory.instance.numberNode(Float.valueOf(1)),
-      TypeConverter.instance().convertPrimitive(null, schema, 1));
+      1.0f,
+      TypeConverter.instance().convertPrimitive(null, schema, 1).requireNumber().getValue().floatValue(), 0.001f);
     schema.setFormat("double");
     assertEquals(
-      JsonNodeFactory.instance.numberNode(Double.valueOf(1)),
-      TypeConverter.instance().convertPrimitive(null, schema, 1));
+      1.0,
+      TypeConverter.instance().convertPrimitive(null, schema, 1).requireNumber().getValue().doubleValue(), 0.001);
 
     // BOOLEAN
     schema.setType("boolean");
     schema.setFormat(null);
+    assertTrue(
+      TypeConverter.instance().convertPrimitive(null, schema, "TrUe").requireBoolean().getValue());
     assertEquals(
-      JsonNodeFactory.instance.booleanNode(true),
-      TypeConverter.instance().convertPrimitive(null, schema, "TrUe"));
+      false,
+      TypeConverter.instance().convertPrimitive(null, schema, "fAlSe").requireBoolean().getValue());
     assertEquals(
-      JsonNodeFactory.instance.booleanNode(false),
-      TypeConverter.instance().convertPrimitive(null, schema, "fAlSe"));
-    assertEquals(
-      JsonNodeFactory.instance.textNode("pofkpfosdkfsd"),
-      TypeConverter.instance().convertPrimitive(null, schema, "pofkpfosdkfsd"));
+      "pofkpfosdkfsd",
+      TypeConverter.instance().convertPrimitive(null, schema, "pofkpfosdkfsd").requireString().getValue());
   }
 }

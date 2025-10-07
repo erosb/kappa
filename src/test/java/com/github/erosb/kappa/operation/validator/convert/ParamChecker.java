@@ -1,7 +1,5 @@
 package com.github.erosb.kappa.operation.validator.convert;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.erosb.jsonsKema.IJsonValue;
 
 import java.util.Map;
@@ -15,9 +13,9 @@ abstract class ParamChecker {
     assertEquals(5, nodes.get(propName).requireInt());
   }
 
-  static void checkWrongPrimitive(Map<String, JsonNode> nodes, String propName) {
+  static void checkWrongPrimitive(Map<String, IJsonValue> nodes, String propName) {
     assertEquals(1, nodes.size());
-    assertEquals(JsonNodeFactory.instance.textNode("wrong"), nodes.get(propName));
+    assertEquals("wrong", nodes.get(propName).requireString().getValue());
   }
 
   static void checkArray(Map<String, IJsonValue> nodes, String propName) {
@@ -32,8 +30,8 @@ abstract class ParamChecker {
 
   static void checkWrongArray(Map<String, IJsonValue> nodes, String propName) {
     assertEquals(1, nodes.size());
-    assertEquals(1, nodes.get(propName).l);
-    assertEquals(JsonNodeFactory.instance.arrayNode().add(JsonNodeFactory.instance.textNode("wrong")), nodes.get(propName));
+    assertEquals(1, nodes.get(propName).requireArray().length());
+    assertEquals("wrong", nodes.get(propName).requireArray().get(0).requireString().getValue());
   }
 
   static void checkObject(Map<String, IJsonValue> nodes, String propName) {
@@ -44,8 +42,8 @@ abstract class ParamChecker {
     assertTrue(nodes.get(propName).requireObject().get("boolProp").requireBoolean().getValue());
   }
 
-  static void checkWrongObject(Map<String, JsonNode> nodes, String propName) {
+  static void checkWrongObject(Map<String, IJsonValue> nodes, String propName) {
     assertEquals(1, nodes.size());
-    assertEquals(JsonNodeFactory.instance.objectNode().put("boolProp", "wrong"), nodes.get(propName));
+    assertEquals("wrong", nodes.get(propName).requireObject().get("boolProp").requireString().getValue());
   }
 }

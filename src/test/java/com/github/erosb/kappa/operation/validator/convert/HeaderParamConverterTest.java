@@ -1,8 +1,7 @@
 package com.github.erosb.kappa.operation.validator.convert;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonNull;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
 import org.junit.Test;
@@ -18,8 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class HeaderParamConverterTest {
   @Test
@@ -95,8 +94,8 @@ public class HeaderParamConverterTest {
   protected void check(String parameterName,
                        Collection<String> validValue,
                        Collection<String> invalidValue,
-                       BiConsumer<Map<String, JsonNode>, String> validChecker,
-                       BiConsumer<Map<String, JsonNode>, String> invalidChecker) throws Exception {
+                       BiConsumer<Map<String, IJsonValue>, String> validChecker,
+                       BiConsumer<Map<String, IJsonValue>, String> invalidChecker) throws Exception {
 
     OpenApi3 api = OpenApi3Util.loadApi("/operation/parameter/headerParameters.yaml");
 
@@ -113,7 +112,7 @@ public class HeaderParamConverterTest {
 
     // null value
     values.put(parameterName, null);
-    assertEquals(JsonNodeFactory.instance.nullNode(), mapToNodes(api.getContext(), parameters, values).get(parameterName));
+    assertTrue(mapToNodes(api.getContext(), parameters, values).get(parameterName) instanceof JsonNull);
 
     // unlinked param/value
     // empty map
@@ -123,7 +122,7 @@ public class HeaderParamConverterTest {
     assertNull(mapToNodes(api.getContext(), parameters, null).get(parameterName));
   }
 
-  private Map<String, JsonNode> mapToNodes(OAIContext context,
+  private Map<String, IJsonValue> mapToNodes(OAIContext context,
                                            Map<String, AbsParameter<Parameter>> parameters,
                                            Map<String, Collection<String>> values) {
     return ParameterConverter.headersToNode(context, parameters, values);

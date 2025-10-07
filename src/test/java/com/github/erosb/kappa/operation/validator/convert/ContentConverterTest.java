@@ -3,6 +3,7 @@ package com.github.erosb.kappa.operation.validator.convert;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
 import org.junit.BeforeClass;
@@ -84,7 +85,7 @@ public class ContentConverterTest {
 
   private void check(MediaType mediaType, String contentType, String input, String expected, String description) throws Exception {
     // With string
-    JsonNode actual = ContentConverter.convert(api.getContext(), mediaType, contentType, null, input);
+    IJsonValue actual = ContentConverter.convert(api.getContext(), mediaType, contentType, null, input);
     System.out.println(actual.toString());
     JSONAssert.assertEquals(
       String.format("JSON matching test failed on test '%s'", description),
