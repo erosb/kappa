@@ -6,6 +6,7 @@ import com.github.erosb.kappa.core.util.TreeUtil;
 import org.junit.Test;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 import com.github.erosb.kappa.parser.model.v3.Schema;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,8 +47,8 @@ public class BodyTest {
     Schema schema = new Schema();
     schema.setProperty("key", new Schema().setType("string"));
 
-    assertEquals(
-      values,
-      body.getContentAsNode(null, new MediaType().setSchema(schema), "application/json"));
+    JSONAssert.assertEquals(
+      values.toString(),
+      body.getContentAsNode(null, new MediaType().setSchema(schema), "application/json").toString(), false);
   }
 }

@@ -108,7 +108,9 @@ public final class TypeConverter {
   public IJsonValue convertPrimitive(final OAIContext context,
                                      final Schema schema,
                                      Object value) {
-
+    if (value == null) {
+      return new JsonNull();
+    }
     return new JsonString(value.toString());
   }
 

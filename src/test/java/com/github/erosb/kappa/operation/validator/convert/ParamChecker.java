@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 abstract class ParamChecker {
   static void checkPrimitive(Map<String, IJsonValue> nodes, String propName) {
     assertEquals(1, nodes.size());
-    assertEquals(5, nodes.get(propName).requireInt());
+    assertEquals("5", nodes.get(propName).requireString().getValue());
   }
 
   static void checkWrongPrimitive(Map<String, IJsonValue> nodes, String propName) {
@@ -23,9 +23,9 @@ abstract class ParamChecker {
     System.out.println("propName = " + propName);
     assertEquals(1, nodes.size());
     assertEquals(3, nodes.get(propName).requireArray().length());
-    assertEquals(3, nodes.get(propName).requireArray().get(0).requireInt());
-    assertEquals(4, nodes.get(propName).requireArray().get(1).requireInt());
-    assertEquals(5, nodes.get(propName).requireArray().get(2).requireInt());
+    assertEquals("3", nodes.get(propName).requireArray().get(0).requireString().getValue());
+    assertEquals("4", nodes.get(propName).requireArray().get(1).requireString().getValue());
+    assertEquals("5", nodes.get(propName).requireArray().get(2).requireString().getValue());
   }
 
   static void checkWrongArray(Map<String, IJsonValue> nodes, String propName) {
@@ -39,7 +39,7 @@ abstract class ParamChecker {
     System.out.println("propName = " + propName);
     assertEquals(1, nodes.size());
     assertEquals("admin", nodes.get(propName).requireObject().get("stringProp").requireString().getValue());
-    assertTrue(nodes.get(propName).requireObject().get("boolProp").requireBoolean().getValue());
+    assertEquals("true", nodes.get(propName).requireObject().get("boolProp").requireString().getValue());
   }
 
   static void checkWrongObject(Map<String, IJsonValue> nodes, String propName) {

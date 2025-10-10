@@ -56,7 +56,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
         validator.validate(paramValue,
           // uriFactory.pathParam(paramName),
           validation,
-          ValidatorConfig.builder().primitiveValidationStrategy(PrimitiveValidationStrategy.STRICT).build());
+          ValidatorConfig.builder().primitiveValidationStrategy(PrimitiveValidationStrategy.LENIENT).build());
       }
     }
   }
