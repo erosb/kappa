@@ -36,6 +36,8 @@ public class MatrixStyleConverter extends FlatStyleConverter {
       return null;
     }
 
+    System.out.println("paramName = " + paramName);
+    System.out.println("rawValue = " + rawValue);
     final Map<String, IJsonValue> paramValues;
     paramValues = getValues(context, param, paramName, rawValue, param.isExplode() ? ";" : ",");
 

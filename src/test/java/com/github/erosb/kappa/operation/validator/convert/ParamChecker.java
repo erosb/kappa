@@ -1,5 +1,6 @@
 package com.github.erosb.kappa.operation.validator.convert;
 
+import com.github.erosb.jsonsKema.IJsonString;
 import com.github.erosb.jsonsKema.IJsonValue;
 
 import java.util.Map;
@@ -39,7 +40,12 @@ abstract class ParamChecker {
     System.out.println("propName = " + propName);
     assertEquals(1, nodes.size());
     assertEquals("admin", nodes.get(propName).requireObject().get("stringProp").requireString().getValue());
-    assertEquals("true", nodes.get(propName).requireObject().get("boolProp").requireString().getValue());
+    IJsonValue boolProp = nodes.get(propName).requireObject().get("boolProp");
+    if (boolProp instanceof IJsonString) {
+      assertEquals("true", boolProp.requireString().getValue());
+    } else {
+      assertEquals(true, boolProp.requireBoolean().getValue());
+    }
   }
 
   static void checkWrongObject(Map<String, IJsonValue> nodes, String propName) {
