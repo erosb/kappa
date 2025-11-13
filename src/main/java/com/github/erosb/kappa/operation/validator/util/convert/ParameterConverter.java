@@ -179,6 +179,7 @@ public final class ParameterConverter {
       } else {
         Collection<String> headerValues = headers.get(paramName);
         if (headerValues != null) {
+          System.out.println("headerValues = " + headerValues);
           if (param.getSchema() != null) {
             convertedValue = SimpleStyleConverter.instance().convert(context, param, paramName, String.join(",", headerValues));
           } else {

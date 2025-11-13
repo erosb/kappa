@@ -2,7 +2,9 @@ package com.github.erosb.kappa.operation.validator.util.convert.style;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.erosb.jsonsKema.IJsonArray;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonNull;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
@@ -20,19 +22,23 @@ interface StyleConverter {
     if (paramValues == null || paramValues.isEmpty()) {
       return null;
     }
-    return paramValues.get(paramName);
-    //
-    //    String style = param.getSchema().getSupposedType(context);
-    //    Schema schema = param.getSchema();
-    //    if (OAI3SchemaKeywords.TYPE_OBJECT.equals(style)) {
-    //      return TypeConverter.instance().convertObject(context, schema, paramValues);
-    //    } else if (OAI3SchemaKeywords.TYPE_ARRAY.equals(style)) {
-    //      Object value = paramValues.get(paramName);
-    //      return (value instanceof Collection)
-    //        ? TypeConverter.instance().convertArray(context, schema.getItemsSchema(), (Collection<Object>) value)
-    //        : JsonNodeFactory.instance.nullNode();
-    //    } else {
-    //      return TypeConverter.instance().convertPrimitive(context, schema, paramValues.get(paramName));
-    //    }
+    System.out.println("paramValues = " + paramValues);
+    System.out.println("paramName = " + paramName);
+    //    return paramValues.get(paramName);
+
+    String style = param.getSchema().getSupposedType(context);
+    Schema schema = param.getSchema();
+    if (OAI3SchemaKeywords.TYPE_OBJECT.equals(style)) {
+      return TypeConverter.instance().convertObject(context, schema, paramValues);
+    } else if (OAI3SchemaKeywords.TYPE_ARRAY.equals(style)) {
+      IJsonValue value = paramValues.get(paramName);
+      System.out.println("value = " + value);
+
+      return (value instanceof IJsonArray)
+        ? value //TypeConverter.instance().convertArray(context, schema.getItemsSchema(), (Collection<Object>) value)
+        : new JsonNull();
+    } else {
+      return paramValues.get(paramName);//TypeConverter.instance().convertPrimitive(context, schema, paramValues.get(paramName));
+    }
   }
 }

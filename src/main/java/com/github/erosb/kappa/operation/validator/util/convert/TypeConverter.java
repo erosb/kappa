@@ -34,16 +34,16 @@ public final class TypeConverter {
     return INSTANCE;
   }
 
-  public IJsonValue convertObject(final OAIContext context,
-                                  final Schema schema,
-                                  final Map<String, Object> content) {
+  public <T extends JsonValue> T convertObject(final OAIContext context,
+                                               final Schema schema,
+                                               final Map<String, IJsonValue> content) {
     if (schema == null || content == null) {
-      return new JsonNull();
+      return (T) new JsonNull();
     }
 
     Map<String, Schema> properties = schema.getProperties();
     if (properties == null || properties.isEmpty()) {
-      return new JsonNull();
+      return (T) new JsonNull();
     }
 
     Map<IJsonString, IJsonValue> convertedContent = new HashMap<>();
@@ -55,7 +55,7 @@ public final class TypeConverter {
         continue;
       }
 
-      Object value = content.get(entryKey);
+      IJsonValue value = content.get(entryKey);
 
       Schema flatSchema = entry.getValue();
       switch (flatSchema.getSupposedType(context)) {
@@ -63,26 +63,28 @@ public final class TypeConverter {
           convertedContent.put(new JsonString(entryKey), convertObject(context, flatSchema, castMap(value)));
           break;
         case OAI3SchemaKeywords.TYPE_ARRAY:
-          convertedContent.put(new JsonString(entryKey), convertArray(context, flatSchema.getItemsSchema(), castList(value)));
-          break;
+          throw new UnsupportedOperationException("todo");
+          //          convertedContent.put(new JsonString(entryKey), convertArray(context, flatSchema.getItemsSchema(), castList(value)));
+          //          break;
         default:
-          convertedContent.put(new JsonString(entryKey), convertPrimitive(context, flatSchema, value));
+          convertedContent.put(new JsonString(entryKey), value /* convertPrimitive(context, flatSchema, value)*/);
           break;
       }
     }
-
-    return new JsonObject(convertedContent);
+    //    Map<JsonString, ? extends JsonValue> propz = new HashMap<>();
+    //    new JsonObject(propz);
+    return (T) new JsonObject(convertedContent);
   }
 
-  public IJsonValue convertArray(final OAIContext context,
-                                 final Schema schema,
-                                 final Collection<Object> content) {
+  public JsonValue convertArray(final OAIContext context,
+                                final Schema schema,
+                                final Collection<Object> content) {
 
     if (schema == null || content == null) {
       return new JsonNull();
     }
 
-    List<IJsonValue> convertedContent = new ArrayList<>();
+    List<JsonValue> convertedContent = new ArrayList<>();
 
     switch (schema.getSupposedType(context)) {
       case OAI3SchemaKeywords.TYPE_OBJECT:
@@ -92,7 +94,8 @@ public final class TypeConverter {
         break;
       case OAI3SchemaKeywords.TYPE_ARRAY:
         for (Object value : content) {
-          convertedContent.add(convertArray(context, schema.getItemsSchema(), castList(value)));
+          throw new UnsupportedOperationException("todo");
+          //          convertedContent.add(convertArray(context, schema.getItemsSchema(), castList(value)));
         }
         break;
       default:
@@ -105,12 +108,13 @@ public final class TypeConverter {
     return new JsonArray(convertedContent);
   }
 
-  public IJsonValue convertPrimitive(final OAIContext context,
-                                     final Schema schema,
-                                     Object value) {
+  public JsonValue convertPrimitive(final OAIContext context,
+                                    final Schema schema,
+                                    Object value) {
     if (value == null) {
       return new JsonNull();
     }
+    System.out.println("converting " + value);
     return new JsonString(value.toString());
   }
 
@@ -133,18 +137,18 @@ public final class TypeConverter {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> castMap(Object obj) {
+  private Map<String, IJsonValue> castMap(Object obj) {
     try {
-      return (Map<String, Object>) obj;
+      return (Map<String, IJsonValue>) obj;
     } catch (ClassCastException ex) {
       return null;
     }
   }
 
   @SuppressWarnings("unchecked")
-  private Collection<Object> castList(Object obj) {
+  private Collection<JsonValue> castList(Object obj) {
     try {
-      return (Collection<Object>) obj;
+      return (Collection<JsonValue>) obj;
     } catch (ClassCastException ex) {
       return null;
     }

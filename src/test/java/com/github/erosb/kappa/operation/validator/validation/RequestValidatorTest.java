@@ -223,6 +223,7 @@ public class RequestValidatorTest {
       requestValidator.validate(rq);
     } catch (ValidationException e) {
       if (shouldBeValid) {
+        e.printStackTrace();
         fail();
       }
     }

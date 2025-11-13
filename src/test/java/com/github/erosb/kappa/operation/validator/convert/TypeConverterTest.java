@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TypeConverterTest {
   @Test
@@ -46,10 +47,10 @@ public class TypeConverterTest {
     value.put("bar", 1);
     Map<String, Object> rootValue = new HashMap<>();
     rootValue.put("foo", value);
-
-    JSONAssert.assertEquals(
-      "{\"foo\":{\"bar\":\"1\"}}",
-      TypeConverter.instance().convertObject(null, schema, rootValue).toString(), false);
+    fail("TODO");
+    //    JSONAssert.assertEquals(
+    //      "{\"foo\":{\"bar\":\"1\"}}",
+    //      TypeConverter.instance().convertObject(null, schema, rootValue).toString(), false);
   }
 
   @Test
@@ -65,15 +66,16 @@ public class TypeConverterTest {
     Map<String, Object> foo = new HashMap<>();
     foo.put("foo", bar);
 
-    JSONAssert.assertEquals(
-      "{\"foo\":{\"bar\":\"1\"}}",
-      TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
-
-    // wrong value
-    foo.put("foo", "bar");
-    JSONAssert.assertEquals(
-      "{\"foo\":null}",
-      TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
+    fail("TODO");
+    //    JSONAssert.assertEquals(
+    //      "{\"foo\":{\"bar\":\"1\"}}",
+    //      TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
+    //
+    //    // wrong value
+    //    foo.put("foo", "bar");
+    //    JSONAssert.assertEquals(
+    //      "{\"foo\":null}",
+    //      TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
   }
 
   @Test
