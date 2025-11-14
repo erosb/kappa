@@ -6,6 +6,7 @@ import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonArray;
 import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.jsonsKema.JsonValue;
+import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.MultiStringMap;
@@ -19,7 +20,8 @@ import java.util.stream.Collectors;
 class DelimitedStyleConverter extends FlatStyleConverter {
   protected final String delimiter;
 
-  DelimitedStyleConverter(String delimiter) {
+  DelimitedStyleConverter(SourceLocation sourceLocation, String delimiter) {
+    super(sourceLocation);
     this.delimiter = delimiter;
   }
 

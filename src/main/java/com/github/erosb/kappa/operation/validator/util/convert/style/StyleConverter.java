@@ -14,11 +14,10 @@ import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
 import java.util.Collection;
 import java.util.Map;
 
-interface StyleConverter {
-  IJsonValue convert(OAIContext context, AbsParameter<?> param, String paramName, String rawValue);
+abstract class StyleConverter {
+  abstract IJsonValue convert(OAIContext context, AbsParameter<?> param, String paramName, String rawValue);
 
-  @SuppressWarnings("unchecked")
-  default IJsonValue convert(OAIContext context, AbsParameter<?> param, String paramName, Map<String, IJsonValue> paramValues) {
+  final IJsonValue convert(OAIContext context, AbsParameter<?> param, String paramName, Map<String, IJsonValue> paramValues) {
     if (paramValues == null || paramValues.isEmpty()) {
       return null;
     }

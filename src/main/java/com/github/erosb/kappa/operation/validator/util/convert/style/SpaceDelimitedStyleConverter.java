@@ -1,10 +1,13 @@
 package com.github.erosb.kappa.operation.validator.util.convert.style;
 
-public class SpaceDelimitedStyleConverter extends DelimitedStyleConverter {
-  private static final SpaceDelimitedStyleConverter INSTANCE = new SpaceDelimitedStyleConverter();
+import com.github.erosb.jsonsKema.SourceLocation;
+import com.github.erosb.jsonsKema.UnknownSource;
 
-  private SpaceDelimitedStyleConverter() {
-    super(" ");
+public class SpaceDelimitedStyleConverter extends DelimitedStyleConverter {
+  private static final SpaceDelimitedStyleConverter INSTANCE = new SpaceDelimitedStyleConverter(UnknownSource.INSTANCE);
+
+  private SpaceDelimitedStyleConverter(SourceLocation sourceLocation) {
+    super(sourceLocation, " ");
   }
 
   public static SpaceDelimitedStyleConverter instance() {

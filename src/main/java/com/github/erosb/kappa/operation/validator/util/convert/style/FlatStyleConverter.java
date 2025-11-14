@@ -1,25 +1,30 @@
 package com.github.erosb.kappa.operation.validator.util.convert.style;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonArray;
 import com.github.erosb.jsonsKema.JsonString;
-import com.github.erosb.jsonsKema.SchemaLoader;
+import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
-import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 
-import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-abstract class FlatStyleConverter implements StyleConverter {
+import static java.util.Objects.requireNonNull;
+
+abstract class FlatStyleConverter extends StyleConverter {
+
+  private final SourceLocation location;
+
+  FlatStyleConverter(SourceLocation location) {
+    this.location = requireNonNull(location);
+  }
+
   Map<String, IJsonValue> getParameterValues(OAIContext context,
                                              AbsParameter<?> param,
                                              String paramName,

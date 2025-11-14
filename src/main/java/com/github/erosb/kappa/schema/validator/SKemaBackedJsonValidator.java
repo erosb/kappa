@@ -73,7 +73,7 @@ public class SKemaBackedJsonValidator
       throw new RuntimeException(e);
     }
   }
-
+  
   public boolean validate(IJsonValue jsonValue, ValidationData<?> validation, ValidatorConfig validatorConfig) {
     ValidationFailure failure = Validator.create(schema, validatorConfig).validate(jsonValue);
     if (failure != null) {

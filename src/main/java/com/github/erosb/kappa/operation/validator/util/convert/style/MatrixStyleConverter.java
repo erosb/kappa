@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonArray;
 import com.github.erosb.jsonsKema.JsonString;
+import com.github.erosb.jsonsKema.SourceLocation;
+import com.github.erosb.jsonsKema.UnknownSource;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
@@ -21,9 +23,10 @@ import java.util.stream.Collectors;
 public class MatrixStyleConverter extends FlatStyleConverter {
   private static final Pattern PREFIXED_SEMICOLON_NAME_REGEX = Pattern.compile("(?:;)([^;]+)(?:=)([^;]*)");
 
-  private static final MatrixStyleConverter INSTANCE = new MatrixStyleConverter();
+  private static final MatrixStyleConverter INSTANCE = new MatrixStyleConverter(UnknownSource.INSTANCE);
 
-  private MatrixStyleConverter() {
+  private MatrixStyleConverter(SourceLocation sourceLocation) {
+    super(sourceLocation);
   }
 
   public static MatrixStyleConverter instance() {

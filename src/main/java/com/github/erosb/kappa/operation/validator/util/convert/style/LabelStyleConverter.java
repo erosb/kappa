@@ -3,15 +3,19 @@ package com.github.erosb.kappa.operation.validator.util.convert.style;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonValueKt;
+import com.github.erosb.jsonsKema.SourceLocation;
+import com.github.erosb.jsonsKema.UnknownSource;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 
 import java.util.Map;
 
 public class LabelStyleConverter extends FlatStyleConverter {
-  private static final LabelStyleConverter INSTANCE = new LabelStyleConverter();
+  private static final LabelStyleConverter INSTANCE = new LabelStyleConverter(UnknownSource.INSTANCE);
 
-  private LabelStyleConverter() {
+  private LabelStyleConverter(SourceLocation location) {
+    super(location);
   }
 
   public static LabelStyleConverter instance() {
