@@ -23,7 +23,7 @@ paths:
                 type: integer
           content:
             'application/json': { }
-  /fixed/{intPathParam}/fixed/{stringPathParam}/fixed:
+  /fixed/{intPathParam}/fixed/{stringPathParam}/fixed/:
     get:
       operationId: op2
       parameters:
