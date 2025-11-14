@@ -110,7 +110,6 @@ public final class ParameterConverter {
     if (!matcher.matches()) {
       return mappedValues;
     }
-    System.out.println("specParameters = " + specParameters);
     for (Map.Entry<String, AbsParameter<Parameter>> paramEntry : specParameters.entrySet()) {
       final String paramName = paramEntry.getKey();
       final AbsParameter<Parameter> param = paramEntry.getValue();
@@ -124,8 +123,7 @@ public final class ParameterConverter {
         } else if (MATRIX.equals(style)) {
           convertedValue = MatrixStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
         } else { // simple is the default
-          //          convertedValue = SimpleStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
-          convertedValue = new JsonParser('"' + matcher.group(paramGroupName) + '"').parse();
+          convertedValue = SimpleStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
         }
       } else {
         convertedValue = getValueFromContentType(context, param.getContentMediaTypes(), matcher.group(paramGroupName));
@@ -179,7 +177,6 @@ public final class ParameterConverter {
       } else {
         Collection<String> headerValues = headers.get(paramName);
         if (headerValues != null) {
-          System.out.println("headerValues = " + headerValues);
           if (param.getSchema() != null) {
             convertedValue = SimpleStyleConverter.instance().convert(context, param, paramName, String.join(",", headerValues));
           } else {

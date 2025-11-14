@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.FormatValidationPolicy;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.PrimitiveValidationStrategy;
 import com.github.erosb.jsonsKema.ValidatorConfig;
@@ -42,7 +43,7 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
 
   void validate(final Map<String, IJsonValue> values,
                 final ValidationData<?> validation) {
-
+    System.out.println("values = " + values);
     if (specValidators == null) {
       return;
     }
@@ -85,7 +86,11 @@ class ParameterValidator<M extends OpenApiSchema<M>> {
 
       if (paramSchema != null) {
         URI pathParamDefinitionURI = uriFactory.pathParamDefinition(paramName);
-        SKemaBackedJsonValidator v = new SKemaBackedJsonValidator(paramSchema.copy(), context, pathParamDefinitionURI);
+        SKemaBackedJsonValidator v = new SKemaBackedJsonValidator(paramSchema.copy(), context, pathParamDefinitionURI,
+          ValidatorConfig.builder()
+            .validateFormat(FormatValidationPolicy.ALWAYS)
+            .primitiveValidationStrategy(PrimitiveValidationStrategy.LENIENT)
+            .build());
         validators.put(paramName, v);
       }
     }

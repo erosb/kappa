@@ -22,9 +22,6 @@ interface StyleConverter {
     if (paramValues == null || paramValues.isEmpty()) {
       return null;
     }
-    System.out.println("paramValues = " + paramValues);
-    System.out.println("paramName = " + paramName);
-    //    return paramValues.get(paramName);
 
     String style = param.getSchema().getSupposedType(context);
     Schema schema = param.getSchema();
@@ -32,13 +29,9 @@ interface StyleConverter {
       return TypeConverter.instance().convertObject(context, schema, paramValues);
     } else if (OAI3SchemaKeywords.TYPE_ARRAY.equals(style)) {
       IJsonValue value = paramValues.get(paramName);
-      System.out.println("value = " + value);
-
-      return (value instanceof IJsonArray)
-        ? value //TypeConverter.instance().convertArray(context, schema.getItemsSchema(), (Collection<Object>) value)
-        : new JsonNull();
+      return (value instanceof IJsonArray) ? value : new JsonNull();
     } else {
-      return paramValues.get(paramName);//TypeConverter.instance().convertPrimitive(context, schema, paramValues.get(paramName));
+      return paramValues.get(paramName);
     }
   }
 }

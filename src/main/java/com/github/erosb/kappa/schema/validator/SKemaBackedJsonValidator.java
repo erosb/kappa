@@ -17,9 +17,19 @@ import com.github.erosb.kappa.core.util.TreeUtil;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 public class SKemaBackedJsonValidator
   implements JsonValidator {
+
+  public static final ValidatorConfig DEFAULT_BODY_VALIDATOR_CONFIG = ValidatorConfig.builder()
+    .validateFormat(FormatValidationPolicy.ALWAYS)
+    .primitiveValidationStrategy(PrimitiveValidationStrategy.STRICT)
+    .build();
+
+  private final ValidatorConfig validatorConfig;
 
   private static URI toURI(URL url) {
     try {
@@ -42,11 +52,12 @@ public class SKemaBackedJsonValidator
   private final Schema schema;
 
   public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context) {
-    this(schema, context, toURI(context.getContext().getBaseUrl()));
+    this(schema, context, toURI(context.getContext().getBaseUrl()), DEFAULT_BODY_VALIDATOR_CONFIG);
   }
 
   public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context,
-                                  URI baseURI) {
+                                  URI baseURI, ValidatorConfig validatorConfig) {
+    this.validatorConfig = requireNonNull(validatorConfig);
     JsonNode rawJson = TreeUtil.json.convertValue(schema, JsonNode.class);
     if (rawJson instanceof ObjectNode) {
       ObjectNode obj = (ObjectNode) rawJson;
@@ -73,10 +84,7 @@ public class SKemaBackedJsonValidator
   }
 
   public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
-    return validate(jsonValue, validation, ValidatorConfig.builder()
-      .validateFormat(FormatValidationPolicy.ALWAYS)
-      .primitiveValidationStrategy(PrimitiveValidationStrategy.STRICT)
-      .build());
+    return validate(jsonValue, validation, validatorConfig);
   }
 
   /**

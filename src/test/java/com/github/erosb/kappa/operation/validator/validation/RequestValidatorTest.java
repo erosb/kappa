@@ -57,7 +57,7 @@ public class RequestValidatorTest {
     ValidationException thrown = assertThrows(ValidationException.class, () ->
       requestValidator.validate(new DefaultRequest.Builder("https://api.com/fixed/WRONG/fixed/2/fixed/", GET).build())
     );
-
+    thrown.printStackTrace();
     OpenApiValidationFailure pathFailure = thrown.results().get(0);
     assertEquals("expected type: integer, actual: string", pathFailure.getMessage());
     assertThat(pathFailure.describeInstanceLocation(), startsWith("$request.path.intPathParam"));

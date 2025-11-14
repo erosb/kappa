@@ -21,7 +21,6 @@ public class SimpleStyleConverter extends FlatStyleConverter {
   @Override
   public IJsonValue convert(OAIContext context, AbsParameter<?> param, String paramName, String rawValue) {
     final Map<String, IJsonValue> paramValues = getParameterValues(context, param, paramName, rawValue, ",");
-    System.out.println("paramValues = " + paramValues);
     return convert(context, param, paramName, paramValues);
   }
 }

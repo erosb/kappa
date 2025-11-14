@@ -114,7 +114,6 @@ public final class TypeConverter {
     if (value == null) {
       return new JsonNull();
     }
-    System.out.println("converting " + value);
     return new JsonString(value.toString());
   }
 
