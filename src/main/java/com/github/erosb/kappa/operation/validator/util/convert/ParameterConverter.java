@@ -110,7 +110,7 @@ public final class ParameterConverter {
     if (!matcher.matches()) {
       return mappedValues;
     }
-
+    System.out.println("specParameters = " + specParameters);
     for (Map.Entry<String, AbsParameter<Parameter>> paramEntry : specParameters.entrySet()) {
       final String paramName = paramEntry.getKey();
       final AbsParameter<Parameter> param = paramEntry.getValue();

@@ -1,7 +1,11 @@
 package com.github.erosb.kappa.operation.validator.util.convert;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.IJsonString;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonObject;
+import com.github.erosb.jsonsKema.JsonString;
+import com.github.erosb.jsonsKema.JsonValue;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.IOUtil;
@@ -48,7 +52,11 @@ class FormUrlConverter {
 
   IJsonValue convert(final OAIContext context, final MediaType mediaType, final String body, final String encoding) {
     Map<String, IJsonValue> params = convert(context, getParameters(mediaType), body, true, encoding);
-    return TreeUtil.json.valueToTree(params);
+    Map<IJsonString, IJsonValue> copy = new HashMap<>();
+    params.entrySet().forEach(entry ->
+      copy.put(new JsonString(entry.getKey()), entry.getValue()));
+    JsonObject rval = new JsonObject(copy);
+    return rval;//TreeUtil.json.valueToTree(params);
   }
 
   Map<String, IJsonValue> convert(final OAIContext context,
