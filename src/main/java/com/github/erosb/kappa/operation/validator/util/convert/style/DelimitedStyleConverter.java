@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 class DelimitedStyleConverter extends FlatStyleConverter {
   protected final String delimiter;
 
-  DelimitedStyleConverter(SourceLocation sourceLocation, String delimiter) {
-    super(sourceLocation);
+  DelimitedStyleConverter(SourceLocation location, String delimiter) {
+    super(location);
     this.delimiter = delimiter;
   }
 
@@ -61,7 +61,7 @@ class DelimitedStyleConverter extends FlatStyleConverter {
 
     for (String value : values) {
       if (param.isExplode()) {
-        arrayValues.add(new JsonString(value));
+        arrayValues.add(jsonString(value));
       } else {
         arrayValues.addAll(StringUtil.tokenize(value, Pattern.quote(delimiter), false, false).stream()
           .map(JsonString::new)
@@ -72,7 +72,7 @@ class DelimitedStyleConverter extends FlatStyleConverter {
 
     Map<String, IJsonValue> paramValues = new HashMap<>();
 
-    paramValues.put(paramName, new JsonArray(arrayValues));
+    paramValues.put(paramName, jsonArrayOfValues(arrayValues));
 
     return convert(context, param, paramName, paramValues);
   }

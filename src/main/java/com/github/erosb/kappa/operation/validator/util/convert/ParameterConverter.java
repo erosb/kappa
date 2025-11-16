@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonNull;
 import com.github.erosb.jsonsKema.JsonParser;
+import com.github.erosb.jsonsKema.JsonPointer;
+import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.kappa.core.model.OAIContext;
+import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.operation.validator.util.convert.style.LabelStyleConverter;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
@@ -15,8 +18,10 @@ import com.github.erosb.kappa.operation.validator.util.PathResolver;
 import com.github.erosb.kappa.operation.validator.util.convert.style.MatrixStyleConverter;
 import com.github.erosb.kappa.operation.validator.util.convert.style.SimpleStyleConverter;
 import com.github.erosb.kappa.parser.model.OpenApiSchema;
+import com.github.erosb.kappa.schema.validator.ValidationContext;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,7 +100,7 @@ public final class ParameterConverter {
    * @param path           The rendered path from the request.
    * @return A map with parameters names associated with the value as node.
    */
-  public static Map<String, IJsonValue> pathToNode(final OAIContext context,
+  public static Map<String, IJsonValue> pathToNode(final ValidationContext<OAI3> context,
                                                    final Map<String, AbsParameter<Parameter>> specParameters,
                                                    final Pattern pattern,
                                                    final String path) {
@@ -112,6 +117,8 @@ public final class ParameterConverter {
     }
     for (Map.Entry<String, AbsParameter<Parameter>> paramEntry : specParameters.entrySet()) {
       final String paramName = paramEntry.getKey();
+      SourceLocation sourceLocation =
+        new SourceLocation(-1, -1, new JsonPointer(), context.requestScopedUriFactory().pathParam(paramName));
       final AbsParameter<Parameter> param = paramEntry.getValue();
       String paramGroupName = PathResolver.instance().getParamGroupName(paramName);
       final IJsonValue convertedValue;
@@ -119,14 +126,18 @@ public final class ParameterConverter {
       if (param.getSchema() != null) {
         final String style = param.getStyle();
         if (LABEL.equals(style)) {
-          convertedValue = LabelStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
+          convertedValue = new LabelStyleConverter(sourceLocation).convert(context.getContext(), param, paramName,
+            matcher.group(paramGroupName));
         } else if (MATRIX.equals(style)) {
-          convertedValue = MatrixStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
+          convertedValue = new MatrixStyleConverter(sourceLocation).convert(context.getContext(), param, paramName,
+            matcher.group(paramGroupName));
         } else { // simple is the default
-          convertedValue = SimpleStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
+          convertedValue = new SimpleStyleConverter(sourceLocation).convert(context.getContext(), param, paramName,
+            matcher.group(paramGroupName));
         }
       } else {
-        convertedValue = getValueFromContentType(context, param.getContentMediaTypes(), matcher.group(paramGroupName));
+        convertedValue = getValueFromContentType(context.getContext(), param.getContentMediaTypes(),
+          matcher.group(paramGroupName));
       }
 
       mappedValues.put(paramName, convertedValue);

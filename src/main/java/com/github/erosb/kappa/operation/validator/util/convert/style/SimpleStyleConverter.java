@@ -13,7 +13,7 @@ import java.util.Map;
 public class SimpleStyleConverter extends FlatStyleConverter {
   private static final SimpleStyleConverter INSTANCE = new SimpleStyleConverter(UnknownSource.INSTANCE);
 
-  private SimpleStyleConverter(SourceLocation location) {
+  public SimpleStyleConverter(SourceLocation location) {
     super(location);
   }
 

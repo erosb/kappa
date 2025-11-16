@@ -1,7 +1,5 @@
 package com.github.erosb.kappa.operation.validator.util.convert.style;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonArray;
 import com.github.erosb.jsonsKema.JsonString;
@@ -25,7 +23,7 @@ public class MatrixStyleConverter extends FlatStyleConverter {
 
   private static final MatrixStyleConverter INSTANCE = new MatrixStyleConverter(UnknownSource.INSTANCE);
 
-  private MatrixStyleConverter(SourceLocation sourceLocation) {
+  public MatrixStyleConverter(SourceLocation sourceLocation) {
     super(sourceLocation);
   }
 
@@ -56,12 +54,12 @@ public class MatrixStyleConverter extends FlatStyleConverter {
       if (OAI3SchemaKeywords.TYPE_ARRAY.equals(type)) {
         List<JsonString> arrayValues = getArrayValues(param, rawValue, splitPattern);
         if (arrayValues != null && !arrayValues.isEmpty()) {
-          values.put(paramName, new JsonArray(arrayValues));
+          values.put(paramName, jsonArray(arrayValues));
         }
       } else {
         Matcher matcher = PREFIXED_SEMICOLON_NAME_REGEX.matcher(rawValue);
         if (matcher.matches()) {
-          values.put(matcher.group(1), new JsonString(matcher.group(2)));
+          values.put(matcher.group(1), jsonString(matcher.group(2)));
         }
       }
 
@@ -80,7 +78,7 @@ public class MatrixStyleConverter extends FlatStyleConverter {
     if (param.isExplode()) {
       Map<String, IJsonValue> values = new HashMap<>();
       while (matcher.find()) {
-        values.put(matcher.group(1), new JsonString(matcher.group(2)));
+        values.put(matcher.group(1), jsonString(matcher.group(2)));
       }
       return values;
     } else {
@@ -96,12 +94,12 @@ public class MatrixStyleConverter extends FlatStyleConverter {
     if (param.isExplode()) {
       List<JsonString> arrayValues = new ArrayList<>();
       while (matcher.find()) {
-        arrayValues.add(new JsonString(matcher.group(2)));
+        arrayValues.add(jsonString(matcher.group(2)));
       }
       return arrayValues;
     } else {
       return matcher.matches()
-        ? Arrays.asList(matcher.group(2).split(splitPattern)).stream().map(JsonString::new).collect(Collectors.toList())
+        ? Arrays.asList(matcher.group(2).split(splitPattern)).stream().map(this::jsonString).collect(Collectors.toList())
         : null;
     }
   }

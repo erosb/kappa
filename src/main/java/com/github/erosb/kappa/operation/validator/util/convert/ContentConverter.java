@@ -3,6 +3,7 @@ package com.github.erosb.kappa.operation.validator.util.convert;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonParseException;
 import com.github.erosb.jsonsKema.JsonParser;
 import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.kappa.core.model.OAIContext;
@@ -32,6 +33,7 @@ public final class ContentConverter {
     String contentType = ContentType.getTypeOnly(rawContentType);
 
     if (ContentType.isJson(contentType)) {
+      System.out.println("str = " + str);
       return is != null ? jsonToNode(is) : jsonToNode(str);
     } else if (ContentType.isXml(contentType)) {
       return is != null
@@ -79,7 +81,11 @@ public final class ContentConverter {
   }
 
   private static IJsonValue jsonToNode(String content) throws IOException {
-    return new JsonParser(content).parse();
+    try {
+      return new JsonParser(content).parse();
+    } catch (JsonParseException e) {
+      return new JsonString(content);
+    }
   }
 
   private static IJsonValue xmlToNode(final OAIContext context, final Schema schema, InputStream content) throws IOException {

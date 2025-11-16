@@ -160,9 +160,8 @@ public class OperationValidator {
     if (specRequestPathValidator == null) {
       return null;
     }
-
     Map<String, IJsonValue> mappedValues = ParameterConverter.pathToNode(
-      context.getContext(),
+      context,
       specRequestPathValidator.getParameters(),
       pathPattern,
       request.getPath());

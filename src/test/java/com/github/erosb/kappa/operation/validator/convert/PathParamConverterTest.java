@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import com.github.erosb.jsonsKema.IJsonNull;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.kappa.core.model.OAIContext;
+import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
+import com.github.erosb.kappa.schema.validator.ValidationContext;
 import org.junit.Test;
 import com.github.erosb.kappa.operation.validator.OpenApi3Util;
 import com.github.erosb.kappa.operation.validator.util.PathResolver;
@@ -161,9 +164,13 @@ public class PathParamConverterTest {
     Pattern pattern = PathResolver.instance().solve("/" + parameterName + "/{" + parameterName + "}");
 
     return ParameterConverter.pathToNode(
-      api.getContext(),
+      validationContext(api.getContext()),
       parameters,
       pattern,
       "/" + parameterName + "/" + value);
+  }
+
+  private ValidationContext<OAI3> validationContext(OAIContext ctx) {
+    return new ValidationContext<>(ctx, "", "GET");
   }
 }

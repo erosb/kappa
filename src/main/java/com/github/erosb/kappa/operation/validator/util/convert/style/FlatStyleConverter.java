@@ -3,6 +3,7 @@ package com.github.erosb.kappa.operation.validator.util.convert.style;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonArray;
 import com.github.erosb.jsonsKema.JsonString;
+import com.github.erosb.jsonsKema.JsonValue;
 import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
@@ -11,6 +12,7 @@ import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -23,6 +25,18 @@ abstract class FlatStyleConverter extends StyleConverter {
 
   FlatStyleConverter(SourceLocation location) {
     this.location = requireNonNull(location);
+  }
+
+  JsonString jsonString(String value) {
+    return new JsonString(value, location);
+  }
+
+  JsonArray jsonArray(List<JsonString> elems) {
+    return new JsonArray(elems, location);
+  }
+
+  JsonArray jsonArrayOfValues(List<JsonValue> elems) {
+    return new JsonArray(elems, location);
   }
 
   Map<String, IJsonValue> getParameterValues(OAIContext context,
@@ -43,11 +57,11 @@ abstract class FlatStyleConverter extends StyleConverter {
         handleNotExplodedObject(param, splitPattern, rawValue, values);
       }
     } else if (OAI3SchemaKeywords.TYPE_ARRAY.equals(param.getSchema().getSupposedType(context))) {
-      values.put(paramName, new JsonArray(Arrays.stream(rawValue.split(splitPattern))
+      values.put(paramName, jsonArray(Arrays.stream(rawValue.split(splitPattern))
         .map(JsonString::new)
         .collect(Collectors.toList())));
     } else {
-      values.put(paramName, new JsonString(rawValue));
+      values.put(paramName, jsonString(rawValue));
     }
 
     return values;
@@ -59,7 +73,7 @@ abstract class FlatStyleConverter extends StyleConverter {
     while (scanner.hasNext()) {
       String[] propEntry = scanner.next().split("=");
       if (propEntry.length == 2 && param.getSchema().hasProperty(propEntry[0])) {
-        values.put(propEntry[0], new JsonString(propEntry[1]));
+        values.put(propEntry[0], jsonString(propEntry[1]));
       }
     }
     scanner.close();
@@ -72,7 +86,7 @@ abstract class FlatStyleConverter extends StyleConverter {
       int i = 0;
       while (i < splitValues.length) {
         if (param.getSchema().hasProperty(splitValues[i])) {
-          values.put(splitValues[i++], new JsonString(splitValues[i++]));
+          values.put(splitValues[i++], jsonString(splitValues[i++]));
         } else {
           i = i + 2;
         }

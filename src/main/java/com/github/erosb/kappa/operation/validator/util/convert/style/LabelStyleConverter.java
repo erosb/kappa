@@ -14,7 +14,7 @@ import java.util.Map;
 public class LabelStyleConverter extends FlatStyleConverter {
   private static final LabelStyleConverter INSTANCE = new LabelStyleConverter(UnknownSource.INSTANCE);
 
-  private LabelStyleConverter(SourceLocation location) {
+  public LabelStyleConverter(SourceLocation location) {
     super(location);
   }
 
