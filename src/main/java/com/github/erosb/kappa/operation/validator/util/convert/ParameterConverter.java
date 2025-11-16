@@ -118,7 +118,7 @@ public final class ParameterConverter {
     for (Map.Entry<String, AbsParameter<Parameter>> paramEntry : specParameters.entrySet()) {
       final String paramName = paramEntry.getKey();
       SourceLocation sourceLocation =
-        new SourceLocation(-1, -1, new JsonPointer(), context.requestScopedUriFactory().pathParam(paramName));
+        new SourceLocation(1, 1, new JsonPointer(), context.requestScopedUriFactory().pathParam(paramName));
       final AbsParameter<Parameter> param = paramEntry.getValue();
       String paramGroupName = PathResolver.instance().getParamGroupName(paramName);
       final IJsonValue convertedValue;

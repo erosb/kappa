@@ -33,7 +33,6 @@ public final class ContentConverter {
     String contentType = ContentType.getTypeOnly(rawContentType);
 
     if (ContentType.isJson(contentType)) {
-      System.out.println("str = " + str);
       return is != null ? jsonToNode(is) : jsonToNode(str);
     } else if (ContentType.isXml(contentType)) {
       return is != null

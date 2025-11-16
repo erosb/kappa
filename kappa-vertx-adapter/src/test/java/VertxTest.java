@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
+import com.github.erosb.jsonsKema.JsonString;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -76,7 +77,7 @@ public class VertxTest {
     assertNull(rq.getQuery());
 
     assertEquals(
-      JsonNodeFactory.instance.textNode("a body"),
+      new JsonString("a body"),
       rq.getBody().getContentAsNode(null, null, null));
   }
 

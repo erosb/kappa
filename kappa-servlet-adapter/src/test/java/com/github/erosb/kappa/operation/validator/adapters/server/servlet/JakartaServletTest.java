@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.adapters.server.servlet;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.kappa.operation.validator.model.Request;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,16 +25,6 @@ public class JakartaServletTest {
   private HttpServletRequest servletRequest;
   private Cookie cookie;
 
-  @Before
-  public void setUp()
-    throws IOException {
-    servletRequest = Mockito.mock(HttpServletRequest.class);
-    cookie = null;
-
-    Mockito.when(servletRequest.getRequestURL()).thenReturn(new StringBuffer(URL));
-    Mockito.when(servletRequest.getQueryString()).thenReturn("id=2&name=foo");
-  }
-
   private void mockCookies(boolean enable) {
     if (enable) {
       cookie = new Cookie("bis", "cuit");
@@ -42,6 +33,15 @@ public class JakartaServletTest {
     } else {
       Mockito.when(servletRequest.getCookies()).thenReturn(null);
     }
+  }
+
+  @Before
+  public void setUp() {
+    servletRequest = Mockito.mock(HttpServletRequest.class);
+    cookie = null;
+
+    Mockito.when(servletRequest.getRequestURL()).thenReturn(new StringBuffer(URL));
+    Mockito.when(servletRequest.getQueryString()).thenReturn("id=2&name=foo");
   }
 
   private void mockHeaders(boolean enable) {
@@ -103,7 +103,7 @@ public class JakartaServletTest {
     checkCommons(rq, true, true);
 
     Assert.assertEquals(
-      JsonNodeFactory.instance.textNode("{}"),
+      new JsonString("{}"),
       rq.getBody().getContentAsNode(null, null, null));
 
     Assert.assertEquals("?queryString", rq.getQuery());
