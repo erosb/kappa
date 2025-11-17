@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
 public class SKemaBackedJsonValidator
   implements JsonValidator {
 
-  public static final ValidatorConfig DEFAULT_BODY_VALIDATOR_CONFIG = ValidatorConfig.builder()
+  private static final ValidatorConfig DEFAULT_BODY_VALIDATOR_CONFIG = ValidatorConfig.builder()
     .validateFormat(FormatValidationPolicy.ALWAYS)
     .primitiveValidationStrategy(PrimitiveValidationStrategy.STRICT)
     .build();
@@ -73,7 +73,7 @@ public class SKemaBackedJsonValidator
       throw new RuntimeException(e);
     }
   }
-  
+
   public boolean validate(IJsonValue jsonValue, ValidationData<?> validation, ValidatorConfig validatorConfig) {
     ValidationFailure failure = Validator.create(schema, validatorConfig).validate(jsonValue);
     if (failure != null) {
