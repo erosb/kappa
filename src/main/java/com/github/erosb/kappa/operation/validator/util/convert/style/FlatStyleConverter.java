@@ -1,15 +1,9 @@
 package com.github.erosb.kappa.operation.validator.util.convert.style;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
-import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,13 +21,14 @@ abstract class FlatStyleConverter implements StyleConverter {
 
     Map<String, Object> values = new HashMap<>();
 
-    if (OAI3SchemaKeywords.TYPE_OBJECT.equals(param.getSchema().getSupposedType(context))) {
+    String supposedType = param.getSchema().getSupposedType(context);
+    if (OAI3SchemaKeywords.TYPE_OBJECT.equals(supposedType)) {
       if (param.isExplode()) {
         handleExplodedObject(param, splitPattern, rawValue, values);
       } else {
         handleNotExplodedObject(param, splitPattern, rawValue, values);
       }
-    } else if (OAI3SchemaKeywords.TYPE_ARRAY.equals(param.getSchema().getSupposedType(context))) {
+    } else if (OAI3SchemaKeywords.TYPE_ARRAY.equals(supposedType)) {
       values.put(paramName, Arrays.asList(rawValue.split(splitPattern)));
     } else {
       values.put(paramName, rawValue);

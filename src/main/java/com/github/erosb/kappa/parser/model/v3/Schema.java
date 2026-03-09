@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.CompositeSchema;
 import com.github.erosb.jsonsKema.FormatSchema;
@@ -18,6 +19,7 @@ import com.github.erosb.kappa.schema.validator.SKemaBackedJsonValidator;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +70,10 @@ public class Schema
   private List<Schema> oneOfSchemas;
   private Boolean readOnly;
   private Boolean writeOnly;
+  @JsonIgnore
   private String type;
+  @JsonIgnore
+  private List<String> types;
   private String title;
   private Boolean uniqueItems;
   private Xml xml;
@@ -299,6 +304,50 @@ public class Schema
 
   // Type
   public String getType() {
+    if (type != null) {
+      return type;
+    }
+    if (types != null && !types.isEmpty()) {
+      return types.get(0);
+    }
+    return null;
+  }
+
+  public List<String> getTypes() {
+    if (types != null) {
+      return types;
+    }
+    if (type != null) {
+      return List.of(type);
+    }
+    return null;
+  }
+
+  public boolean hasMultipleTypes() {
+    return types != null && types.size() > 1;
+  }
+
+  @JsonProperty(value = OAI3SchemaKeywords.TYPE, access = JsonProperty.Access.WRITE_ONLY)
+  private void setMappedType(JsonNode typeNode) {
+    if (typeNode.isTextual()) {
+      type = typeNode.textValue();
+      types = null;
+    } else if (typeNode.isArray()) {
+      types = new ArrayList<>();
+      typeNode.forEach(node -> {
+        if (node.isTextual()) {
+          types.add(node.textValue());
+        }
+      });
+      type = null;
+    }
+  }
+
+  @JsonProperty(value = OAI3SchemaKeywords.TYPE, access = JsonProperty.Access.READ_ONLY)
+  private Object getMappedType() {
+    if (types != null) {
+      return types;
+    }
     return type;
   }
 
@@ -335,6 +384,18 @@ public class Schema
     if (skema == null) {
       try {
         JsonNode rawJson = TreeUtil.json.convertValue(this, JsonNode.class);
+
+        // Transform array type to oneOf for proper validation
+        if (hasMultipleTypes() && rawJson instanceof ObjectNode) {
+          ObjectNode obj = (ObjectNode) rawJson;
+          ArrayNode oneOfArray = obj.putArray("anyOf");
+          for (String type : getTypes()) {
+            ObjectNode typeSchema = oneOfArray.addObject();
+            typeSchema.put("type", type);
+          }
+          obj.remove("type");
+        }
+
         if (context != null && rawJson instanceof ObjectNode) {
           ObjectNode obj = (ObjectNode) rawJson;
           obj.set("components", context.getBaseDocument().get("components"));
@@ -353,6 +414,14 @@ public class Schema
 
   public Schema setType(String type) {
     this.type = type;
+    this.types = null;
+    skema = null;
+    return this;
+  }
+
+  public Schema setTypes(List<String> types) {
+    this.types = types;
+    this.type = null;
     skema = null;
     return this;
   }
@@ -723,7 +792,12 @@ public class Schema
       copy.setMinProperties(getMinProperties());
       copy.setRequiredFields(copySimpleList(getRequiredFields()));
       copy.setEnums(copySimpleList(getEnums()));
-      copy.setType(getType());
+
+      if (types != null) {
+        copy.setTypes(copySimpleList(types));
+      } else if (type != null) {
+        copy.setType(type);
+      }
 
       copy.setAllOfSchemas(copyList(getAllOfSchemas()));
       copy.setOneOfSchemas(copyList(getOneOfSchemas()));

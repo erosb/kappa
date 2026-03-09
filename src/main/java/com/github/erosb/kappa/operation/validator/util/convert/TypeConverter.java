@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
-import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.Schema;
 
 import java.math.BigDecimal;
@@ -48,7 +47,11 @@ public final class TypeConverter {
       Object value = content.get(entryKey);
 
       Schema flatSchema = entry.getValue();
-      switch (flatSchema.getSupposedType(context)) {
+      String supposedType = flatSchema.getSupposedType(context);
+      if (supposedType == null) {
+        continue;
+      }
+      switch (supposedType) {
         case OAI3SchemaKeywords.TYPE_OBJECT:
           convertedContent.set(entryKey, convertObject(context, flatSchema, castMap(value)));
           break;
@@ -74,7 +77,11 @@ public final class TypeConverter {
 
     ArrayNode convertedContent = JsonNodeFactory.instance.arrayNode();
 
-    switch (schema.getSupposedType(context)) {
+    String supposedType = schema.getSupposedType(context);
+    if (supposedType == null) {
+      return convertedContent;
+    }
+    switch (supposedType) {
       case OAI3SchemaKeywords.TYPE_OBJECT:
         for (Object value : content) {
           convertedContent.add(convertObject(context, schema, castMap(value)));
@@ -108,7 +115,13 @@ public final class TypeConverter {
     }
 
     try {
-      switch (schema.getSupposedType(context)) {
+      String supposedType = schema.getSupposedType(context);
+
+      if (supposedType == null) {
+        return JsonNodeFactory.instance.textNode(value.toString());
+      }
+
+      switch (supposedType) {
         case OAI3SchemaKeywords.TYPE_BOOLEAN:
           return JsonNodeFactory.instance.booleanNode(parseBoolean(value.toString()));
         case OAI3SchemaKeywords.TYPE_INTEGER:
