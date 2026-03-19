@@ -1,8 +1,10 @@
 package com.github.erosb.kappa.operation.validator.convert;
 
 import com.github.erosb.jsonsKema.IJsonArray;
+import com.github.erosb.jsonsKema.IJsonString;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonNull;
+import com.github.erosb.jsonsKema.JsonObject;
 import org.junit.Ignore;
 import org.junit.Test;
 import com.github.erosb.kappa.operation.validator.util.convert.TypeConverter;
@@ -20,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@Ignore
+//@Ignore
 public class TypeConverterTest {
   @Test
   public void convertObjectNullNode() {
@@ -62,21 +64,21 @@ public class TypeConverterTest {
       .setProperty("foo", new Schema().setType("object")
         .setProperty("bar", new Schema().setType("integer")));
 
-    Map<String, Object> bar = new HashMap<>();
+    Map<IJsonString, IJsonValue> bar = new HashMap<>();
     bar.put("bar", 1);
-    Map<String, Object> foo = new HashMap<>();
-    foo.put("foo", bar);
+    Map<String, IJsonValue> foo = new HashMap<>();
+    foo.put("foo", new JsonObject(bar));
 
-    fail("TODO");
-    //    JSONAssert.assertEquals(
-    //      "{\"foo\":{\"bar\":\"1\"}}",
-    //      TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
-    //
-    //    // wrong value
-    //    foo.put("foo", "bar");
-    //    JSONAssert.assertEquals(
-    //      "{\"foo\":null}",
-    //      TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
+//    fail("TODO");
+        JSONAssert.assertEquals(
+          "{\"foo\":{\"bar\":\"1\"}}",
+          TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
+
+        // wrong value
+        foo.put("foo", "bar");
+        JSONAssert.assertEquals(
+          "{\"foo\":null}",
+          TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
   }
 
   @Test
