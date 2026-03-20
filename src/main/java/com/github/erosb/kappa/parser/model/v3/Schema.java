@@ -385,17 +385,6 @@ public class Schema
       try {
         JsonNode rawJson = TreeUtil.json.convertValue(this, JsonNode.class);
 
-        // Transform array type to oneOf for proper validation
-        if (hasMultipleTypes() && rawJson instanceof ObjectNode) {
-          ObjectNode obj = (ObjectNode) rawJson;
-          ArrayNode oneOfArray = obj.putArray("anyOf");
-          for (String type : getTypes()) {
-            ObjectNode typeSchema = oneOfArray.addObject();
-            typeSchema.put("type", type);
-          }
-          obj.remove("type");
-        }
-
         if (context != null && rawJson instanceof ObjectNode) {
           ObjectNode obj = (ObjectNode) rawJson;
           obj.set("components", context.getBaseDocument().get("components"));
