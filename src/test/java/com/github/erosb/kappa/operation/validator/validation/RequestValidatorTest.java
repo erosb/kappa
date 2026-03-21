@@ -3,6 +3,7 @@ package com.github.erosb.kappa.operation.validator.validation;
 import com.github.erosb.kappa.core.exception.ResolutionException;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.ValidationException;
+import com.github.erosb.kappa.operation.validator.model.impl.Body;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
 import com.github.erosb.kappa.parser.model.v3.Operation;
 import com.github.erosb.kappa.parser.model.v3.Path;
@@ -158,6 +159,50 @@ public class RequestValidatorTest {
       requestValidator,
       new DefaultRequest.Builder("https://foo.api.com/bar/fixed/", POST).header("Content-Type", "application/json").build(),
       true);
+  }
+
+  @Test
+  public void arrayTypeBodyValidation()
+    throws Exception {
+    URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+    RequestValidator requestValidator = new RequestValidator(api);
+
+    // Valid string value
+    checkRequest(
+      api,
+      "op3",
+      requestValidator,
+      new DefaultRequest.Builder("https://api.com/arrayType/", POST)
+        .header("Content-Type", "application/json")
+        .body(Body.from("{\"nullableField\": \"validString\"}"))
+        .build(),
+      true);
+
+    // Valid null value
+    checkRequest(
+      api,
+      "op3",
+      requestValidator,
+      new DefaultRequest.Builder("https://api.com/arrayType/", POST)
+        .header("Content-Type", "application/json")
+        .body(Body.from("{\"nullableField\": null}"))
+        .build(),
+      true);
+
+    // Invalid integer value (type is ["string", "null"])
+    ValidationException thrown = assertThrows(ValidationException.class, () ->
+      requestValidator.validate(
+        new DefaultRequest.Builder("https://api.com/arrayType/", POST)
+          .header("Content-Type", "application/json")
+          .body(Body.from("{\"nullableField\": 123}"))
+          .build()
+      )
+    );
+
+    OpenApiValidationFailure bodyFailure = thrown.results().get(0);
+    assertThat(bodyFailure.describeInstanceLocation(), startsWith("$request.body#/nullableField"));
+    assertEquals("expected type: one of string, null, actual: integer", bodyFailure.getMessage());
   }
 
   @Test
