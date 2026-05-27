@@ -64,21 +64,22 @@ public class TypeConverterTest {
       .setProperty("foo", new Schema().setType("object")
         .setProperty("bar", new Schema().setType("integer")));
 
-    Map<IJsonString, IJsonValue> bar = new HashMap<>();
-    bar.put("bar", 1);
-    Map<String, IJsonValue> foo = new HashMap<>();
-    foo.put("foo", new JsonObject(bar));
-
-//    fail("TODO");
-        JSONAssert.assertEquals(
-          "{\"foo\":{\"bar\":\"1\"}}",
-          TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
-
-        // wrong value
-        foo.put("foo", "bar");
-        JSONAssert.assertEquals(
-          "{\"foo\":null}",
-          TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
+    fail("TODO");
+//    Map<IJsonString, IJsonValue> bar = new HashMap<>();
+//    bar.put("bar", 1);
+//    Map<String, IJsonValue> foo = new HashMap<>();
+//    foo.put("foo", new JsonObject(bar));
+//
+////    fail("TODO");
+//        JSONAssert.assertEquals(
+//          "{\"foo\":{\"bar\":\"1\"}}",
+//          TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
+//
+//        // wrong value
+//        foo.put("foo", "bar");
+//        JSONAssert.assertEquals(
+//          "{\"foo\":null}",
+//          TypeConverter.instance().convertObject(null, schema, foo).toString(), false);
   }
 
   @Test

@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.1.0
 info:
   description: a description
   version: 1.0.0
@@ -60,3 +60,25 @@ paths:
             - Option2
     get:
       operationId: getWithEnumParam
+  /arrayType/:
+    post:
+      operationId: op3
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                nullableField:
+                  type:
+                    - string
+                    - 'null'
+              required:
+                - nullableField
+      responses:
+        '200':
+          description: a description
+          content:
+            'application/json': {}
+
