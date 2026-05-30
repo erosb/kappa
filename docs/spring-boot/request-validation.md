@@ -244,3 +244,82 @@ The Swagger UI setup is already included in the [kappa-examples](https://github.
  * `cd kappa-examples/kappa-spring-boot-examples`
  * `./gradlew bootRun`
  * open your browser at `http://localhost:8080/swagger-ui/index.html`
+
+## Fine-tuning request body validation
+
+In some cases the default configuration of request body validation may not fit your needs. Kappa lets you customize the json-sKema
+`ValidatorConfiguration` used under the hood to validate request payloads against their schemas.
+
+### Example 1: Let's be less picky about null values
+
+Optional fields of a json object may be omitted from the payload, or they can be sent with `null` values. We often don't care about it,
+since the two things are usually mean the same. Can you tell how is the meaning different of these two payloads?
+
+Sending the `birthDate` with null value:
+```json
+{
+  "name": "John Doe",
+  "birthDate": null
+}
+```
+
+And with the `birthDate` being omitted:
+```json
+{
+  "name": "John Doe"
+}
+```
+
+Most probably our backend won't care about which of the above json is received, it will just set the `birthDate` field of a java
+object to `null` while deserializing. But,
+
+!!! note "Attention"
+
+    Unfortunately, json schema itself does care about these differences: omitting a property and sending it with `null` value
+    means a difference. This is a problem to be worked around - see below.
+
+So, if we use this schema, then omitting the `birthDate` will be valid, while sending it with `null` value will be invalid:
+
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "birthDate": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [ "name" ]
+}
+```
+
+Sending `"birthDate": null` will fail to validate with an error like `"Expected type: string, actual: null"`
+
+Let's see what we can do to make Kappa less picky about such subtle differences? Let's slightly amend the Kappa configuration, and
+tell it to use a lenient validator when checking request bodies:
+
+```java
+  @Bean
+  public KappaSpringConfiguration kappaSpringConfiguration() {
+    KappaSpringConfiguration kappaConfig = new KappaSpringConfiguration();
+    var pathPatternToOpenapiDescription = new LinkedHashMap<String, String>();
+    pathPatternToOpenapiDescription.put("/**", "/openapi/users-api.yaml");
+    kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);
+
+    // here is the main point: we tell Kappa to use a lenient json schema validator
+    kappaConfig.setRequestBodyValidatorConfig(ValidatorConfig.builder()
+      .primitiveValidationStrategy(PrimitiveValidationStrategy.LENIENT)
+      .build()
+    );
+
+    return kappaConfig;
+  }
+```
+
+Configured this way, Kappa won't care if a property is omitted or sent with `null` value, as long as it is an optional property.
+
+
