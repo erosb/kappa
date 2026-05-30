@@ -22,7 +22,8 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public class SKemaBackedJsonValidator
-  implements JsonValidator {
+//  implements JsonValidator
+{
 
   private static final ValidatorConfig DEFAULT_BODY_VALIDATOR_CONFIG = ValidatorConfig.builder()
     .validateFormat(FormatValidationPolicy.ALWAYS)
@@ -81,20 +82,5 @@ public class SKemaBackedJsonValidator
       return false;
     }
     return true;
-  }
-
-  public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
-    return validate(jsonValue, validation, validatorConfig);
-  }
-
-  /**
-   * @deprecated use validate(jsonValue, validation) instead
-   */
-  @Override
-  @Deprecated
-  public boolean validate(JsonNode valueNode, URI documentSource, ValidationData<?> validation) {
-    String jsonString = valueNode.toPrettyString();
-    IJsonValue jsonValue = new JsonParser(jsonString, documentSource).parse();
-    return validate(jsonValue, validation);
   }
 }

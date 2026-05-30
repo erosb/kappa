@@ -14,7 +14,6 @@ import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
 import com.github.erosb.kappa.parser.model.v3.Schema;
-import com.github.erosb.kappa.schema.validator.JsonValidator;
 import com.github.erosb.kappa.schema.validator.SKemaBackedJsonValidator;
 import com.github.erosb.kappa.schema.validator.ValidationContext;
 import com.github.erosb.kappa.schema.validator.ValidationData;

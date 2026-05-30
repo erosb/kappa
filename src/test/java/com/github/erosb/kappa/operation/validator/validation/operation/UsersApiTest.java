@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.validation.operation;
 
 import com.github.erosb.jsonsKema.ValidationFailure;
+import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
@@ -66,7 +67,7 @@ public class UsersApiTest
       .build();
 
     ValidationException actual = assertThrows(ValidationException.class,
-      () -> new RequestValidator(api).validate(request)
+      () -> new RequestValidator(api, ValidatorConfig.builder().build()).validate(request)
     );
     OpenApiValidationFailure failure = actual.results().get(0);
     assertEquals("$request.body#/email (line 1, position 10)", failure.describeInstanceLocation());

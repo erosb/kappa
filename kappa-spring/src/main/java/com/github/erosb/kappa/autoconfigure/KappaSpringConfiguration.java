@@ -1,5 +1,6 @@
 package com.github.erosb.kappa.autoconfigure;
 
+import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.operation.validator.adapters.server.servlet.ValidationFailureSender;
 
 import java.util.LinkedHashMap;
@@ -11,6 +12,8 @@ public class KappaSpringConfiguration {
   private ValidationFailureSender validationFailureSender = ValidationFailureSender.defaultSender();
 
   private List<String> ignoredPathPatterns = List.of();
+
+  private ValidatorConfig requestBodyValidatorConfig = ValidatorConfig.builder().build();
 
   public LinkedHashMap<String, String> getOpenapiDescriptions() {
     return openapiDescriptions;
@@ -35,5 +38,13 @@ public class KappaSpringConfiguration {
 
   public List<String> getIgnoredPathPatterns() {
     return ignoredPathPatterns;
+  }
+
+  public ValidatorConfig getRequestBodyValidatorConfig() {
+    return requestBodyValidatorConfig;
+  }
+
+  public void setRequestBodyValidatorConfig(ValidatorConfig requestBodyValidatorConfig) {
+    this.requestBodyValidatorConfig = requestBodyValidatorConfig;
   }
 }
