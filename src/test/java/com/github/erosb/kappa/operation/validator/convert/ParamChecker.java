@@ -1,7 +1,7 @@
 package com.github.erosb.kappa.operation.validator.convert;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.erosb.jsonsKema.IJsonString;
+import com.github.erosb.jsonsKema.IJsonValue;
 
 import java.util.Map;
 
@@ -9,44 +9,47 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 abstract class ParamChecker {
-  static void checkPrimitive(Map<String, JsonNode> nodes, String propName) {
+  static void checkPrimitive(Map<String, IJsonValue> nodes, String propName) {
     assertEquals(1, nodes.size());
-    assertEquals(5, nodes.get(propName).intValue());
+    assertEquals("5", nodes.get(propName).requireString().getValue());
   }
 
-  static void checkWrongPrimitive(Map<String, JsonNode> nodes, String propName) {
+  static void checkWrongPrimitive(Map<String, IJsonValue> nodes, String propName) {
     assertEquals(1, nodes.size());
-    assertEquals(JsonNodeFactory.instance.textNode("wrong"), nodes.get(propName));
+    assertEquals("wrong", nodes.get(propName).requireString().getValue());
   }
 
-  static void checkArray(Map<String, JsonNode> nodes, String propName) {
+  static void checkArray(Map<String, IJsonValue> nodes, String propName) {
     System.out.println("nodes = " + nodes);
     System.out.println("propName = " + propName);
     assertEquals(1, nodes.size());
-    assertEquals(3, nodes.get(propName).size());
-    assertEquals(3, nodes.get(propName).get(0).intValue());
-    assertEquals(4, nodes.get(propName).get(1).intValue());
-    assertEquals(5, nodes.get(propName).get(2).intValue());
+    assertEquals(3, nodes.get(propName).requireArray().length());
+    assertEquals("3", nodes.get(propName).requireArray().get(0).requireString().getValue());
+    assertEquals("4", nodes.get(propName).requireArray().get(1).requireString().getValue());
+    assertEquals("5", nodes.get(propName).requireArray().get(2).requireString().getValue());
   }
 
-  static void checkWrongArray(Map<String, JsonNode> nodes, String propName) {
+  static void checkWrongArray(Map<String, IJsonValue> nodes, String propName) {
     assertEquals(1, nodes.size());
-    assertEquals(1, nodes.get(propName).size());
-    assertEquals(JsonNodeFactory.instance.arrayNode().add(JsonNodeFactory.instance.textNode("wrong")), nodes.get(propName));
+    assertEquals(1, nodes.get(propName).requireArray().length());
+    assertEquals("wrong", nodes.get(propName).requireArray().get(0).requireString().getValue());
   }
 
-  static void checkObject(Map<String, JsonNode> nodes, String propName) {
+  static void checkObject(Map<String, IJsonValue> nodes, String propName) {
     System.out.println("nodes = " + nodes);
     System.out.println("propName = " + propName);
     assertEquals(1, nodes.size());
-    assertTrue(nodes.get(propName).get("stringProp").isTextual());
-    assertEquals("admin", nodes.get(propName).get("stringProp").textValue());
-    assertTrue(nodes.get(propName).get("boolProp").isBoolean());
-    assertTrue(nodes.get(propName).get("boolProp").booleanValue());
+    assertEquals("admin", nodes.get(propName).requireObject().get("stringProp").requireString().getValue());
+    IJsonValue boolProp = nodes.get(propName).requireObject().get("boolProp");
+    if (boolProp instanceof IJsonString) {
+      assertEquals("true", boolProp.requireString().getValue());
+    } else {
+      assertEquals(true, boolProp.requireBoolean().getValue());
+    }
   }
 
-  static void checkWrongObject(Map<String, JsonNode> nodes, String propName) {
+  static void checkWrongObject(Map<String, IJsonValue> nodes, String propName) {
     assertEquals(1, nodes.size());
-    assertEquals(JsonNodeFactory.instance.objectNode().put("boolProp", "wrong"), nodes.get(propName));
+    assertEquals("wrong", nodes.get(propName).requireObject().get("boolProp").requireString().getValue());
   }
 }

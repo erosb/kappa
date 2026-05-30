@@ -17,10 +17,10 @@ public class QueryTest extends OperationValidatorTestBase {
       true);
 
     // currently we dont support nullable keyword here
-//    check(
-//      new DefaultRequest.Builder("/foo", GET).query("boolQueryParam=true&stringQueryParam").build(),
-//      val::validateQuery,
-//      true);
+    //    check(
+    //      new DefaultRequest.Builder("/foo", GET).query("boolQueryParam=true&stringQueryParam").build(),
+    //      val::validateQuery,
+    //      true);
 
     check(
       new DefaultRequest.Builder("/foo", GET).query("boolQueryParam=false&intQueryParam=12").build(),
@@ -34,7 +34,7 @@ public class QueryTest extends OperationValidatorTestBase {
       false);
 
     check(
-      new DefaultRequest.Builder("/foo", GET).query("boolQueryParam=yes").build(),
+      new DefaultRequest.Builder("/foo", GET).query("boolQueryParam=yess").build(),
       val::validateQuery,
       false);
 

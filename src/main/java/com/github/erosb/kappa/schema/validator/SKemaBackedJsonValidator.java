@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.erosb.jsonsKema.FormatValidationPolicy;
 import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonParser;
+import com.github.erosb.jsonsKema.PrimitiveValidationStrategy;
 import com.github.erosb.jsonsKema.Schema;
 import com.github.erosb.jsonsKema.SchemaLoader;
 import com.github.erosb.jsonsKema.ValidationFailure;
@@ -16,9 +17,20 @@ import com.github.erosb.kappa.core.util.TreeUtil;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 public class SKemaBackedJsonValidator
-  implements JsonValidator {
+//  implements JsonValidator
+{
+
+  private static final ValidatorConfig DEFAULT_BODY_VALIDATOR_CONFIG = ValidatorConfig.builder()
+    .validateFormat(FormatValidationPolicy.ALWAYS)
+    .primitiveValidationStrategy(PrimitiveValidationStrategy.STRICT)
+    .build();
+
+  private final ValidatorConfig validatorConfig;
 
   private static URI toURI(URL url) {
     try {
@@ -41,11 +53,12 @@ public class SKemaBackedJsonValidator
   private final Schema schema;
 
   public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context) {
-    this(schema, context, toURI(context.getContext().getBaseUrl()));
+    this(schema, context, toURI(context.getContext().getBaseUrl()), DEFAULT_BODY_VALIDATOR_CONFIG);
   }
 
   public SKemaBackedJsonValidator(com.github.erosb.kappa.parser.model.v3.Schema schema, ValidationContext<OAI3> context,
-                                  URI baseURI) {
+                                  URI baseURI, ValidatorConfig validatorConfig) {
+    this.validatorConfig = requireNonNull(validatorConfig);
     JsonNode rawJson = TreeUtil.json.convertValue(schema, JsonNode.class);
     if (rawJson instanceof ObjectNode) {
       ObjectNode obj = (ObjectNode) rawJson;
@@ -62,23 +75,12 @@ public class SKemaBackedJsonValidator
     }
   }
 
-  public boolean validate(IJsonValue jsonValue, ValidationData<?> validation) {
-    ValidationFailure failure = Validator.create(schema, new ValidatorConfig(FormatValidationPolicy.ALWAYS)).validate(jsonValue);
+  public boolean validate(IJsonValue jsonValue, ValidationData<?> validation, ValidatorConfig validatorConfig) {
+    ValidationFailure failure = Validator.create(schema, validatorConfig).validate(jsonValue);
     if (failure != null) {
       validation.add(failure);
       return false;
     }
     return true;
-  }
-
-  /**
-   * @deprecated use validate(jsonValue, validation) instead
-   */
-  @Override
-  @Deprecated
-  public boolean validate(JsonNode valueNode, URI documentSource, ValidationData<?> validation) {
-    String jsonString = valueNode.toPrettyString();
-    IJsonValue jsonValue = new JsonParser(jsonString, documentSource).parse();
-    return validate(jsonValue, validation);
   }
 }

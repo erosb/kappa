@@ -3,6 +3,7 @@ package com.github.erosb.kappa.operation.validator.adapters.server.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.operation.validator.model.Request;
@@ -27,23 +28,43 @@ public class OpenApiBasedRequestValidationFilter
     OpenApi3 api,
     ValidationFailureSender validationFailureSender
   ) {
-    return new OpenApiBasedRequestValidationFilter(path -> api, validationFailureSender);
+    return new OpenApiBasedRequestValidationFilter(path -> api, validationFailureSender, ValidatorConfig.builder().build());
+  }
+
+  public static OpenApiBasedRequestValidationFilter forApiDescription(
+    OpenApi3 api,
+    ValidationFailureSender validationFailureSender,
+    ValidatorConfig requestBodyValidatorConfig
+  ) {
+    return new OpenApiBasedRequestValidationFilter(path -> api, validationFailureSender, requestBodyValidatorConfig);
   }
 
   public static OpenApiBasedRequestValidationFilter forApiLookup(
     OpenApiLookup lookupFn,
     ValidationFailureSender validationFailureSender
   ) {
-    return new OpenApiBasedRequestValidationFilter(lookupFn, validationFailureSender);
+    return forApiLookup(lookupFn, validationFailureSender, ValidatorConfig.builder().build());
+  }
+
+
+  public static OpenApiBasedRequestValidationFilter forApiLookup(
+    OpenApiLookup lookupFn,
+    ValidationFailureSender validationFailureSender,
+    ValidatorConfig requestBodyValidatorConfig
+  ) {
+    return new OpenApiBasedRequestValidationFilter(lookupFn, validationFailureSender, requestBodyValidatorConfig);
   }
 
   private final OpenApiLookup lookupFn;
+  private final ValidatorConfig requestBodyValidatorConfig;
 
   private final ValidationFailureSender validationFailureSender;
 
-  private OpenApiBasedRequestValidationFilter(OpenApiLookup lookupFn, ValidationFailureSender validationFailureSender) {
+  private OpenApiBasedRequestValidationFilter(OpenApiLookup lookupFn, ValidationFailureSender validationFailureSender,
+                                              ValidatorConfig requestBodyValidatorConfig) {
     this.lookupFn = requireNonNull(lookupFn);
     this.validationFailureSender = requireNonNull(validationFailureSender);
+    this.requestBodyValidatorConfig = requireNonNull(requestBodyValidatorConfig);
   }
 
   @Override
@@ -80,7 +101,7 @@ public class OpenApiBasedRequestValidationFilter
 
       if (api != null) {
         // we do the validation
-        new RequestValidator(api).validate(jakartaRequest);
+        new RequestValidator(api, requestBodyValidatorConfig).validate(jakartaRequest);
 
         // if no request validation error was found, we proceed with the request execution
         chain.doFilter(memoizedReq, httpResp);

@@ -35,8 +35,7 @@ public class KappaContractTestingTest {
   MockMvc mockMvc;
 
   @Test
-  public void contractFailureInRequest()
-    throws Exception {
+  public void contractFailureInRequest() {
     Throwable exc = assertThrows(AssertionError.class,
       () -> mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content("""
         {

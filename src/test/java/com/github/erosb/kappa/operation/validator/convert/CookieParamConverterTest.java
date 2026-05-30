@@ -3,6 +3,8 @@ package com.github.erosb.kappa.operation.validator.convert;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonNull;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
 import org.junit.Test;
@@ -36,19 +38,21 @@ public class CookieParamConverterTest {
 
   @Test
   public void cookieFormNotExplodedObject() throws Exception {
-    check("formNotExplodedObject", "boolProp,true,stringProp,admin", "boolProp,wrong", ParamChecker::checkObject, ParamChecker::checkWrongObject);
+    check("formNotExplodedObject", "boolProp,true,stringProp,admin", "boolProp,wrong", ParamChecker::checkObject,
+      ParamChecker::checkWrongObject);
   }
 
   @Test
   public void cookieContentObject() throws Exception {
-    check("content", "{\"boolProp\":true,\"stringProp\":\"admin\"}", "{\"boolProp\":\"wrong\"}", ParamChecker::checkObject, ParamChecker::checkWrongObject);
+    check("content", "{\"boolProp\":true,\"stringProp\":\"admin\"}", "{\"boolProp\":\"wrong\"}", ParamChecker::checkObject,
+      ParamChecker::checkWrongObject);
   }
 
   private void check(String parameterName,
                      String validValue,
                      String invalidValue,
-                     BiConsumer<Map<String, JsonNode>, String> validChecker,
-                     BiConsumer<Map<String, JsonNode>, String> invalidChecker) throws Exception {
+                     BiConsumer<Map<String, IJsonValue>, String> validChecker,
+                     BiConsumer<Map<String, IJsonValue>, String> invalidChecker) throws Exception {
 
     OpenApi3 api = OpenApi3Util.loadApi("/operation/parameter/cookieParameters.yaml");
 
@@ -65,7 +69,7 @@ public class CookieParamConverterTest {
 
     // null value
     values.put(parameterName, null);
-    assertEquals(JsonNodeFactory.instance.nullNode(), mapToNodes(api.getContext(), parameters, values).get(parameterName));
+    assertEquals(new JsonNull(), mapToNodes(api.getContext(), parameters, values).get(parameterName));
 
     // unlinked param/value
     // empty map
@@ -75,9 +79,9 @@ public class CookieParamConverterTest {
     assertNull(mapToNodes(api.getContext(), parameters, null).get(parameterName));
   }
 
-  private Map<String, JsonNode> mapToNodes(OAIContext context,
-                                           Map<String, AbsParameter<Parameter>> parameters,
-                                           Map<String, String> values) {
+  private Map<String, IJsonValue> mapToNodes(OAIContext context,
+                                             Map<String, AbsParameter<Parameter>> parameters,
+                                             Map<String, String> values) {
 
     return ParameterConverter.cookiesToNode(context, parameters, values);
   }

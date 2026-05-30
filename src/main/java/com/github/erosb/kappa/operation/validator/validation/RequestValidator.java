@@ -1,6 +1,8 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.core.model.OAI;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.validation.ValidationException;
@@ -44,19 +46,25 @@ public class RequestValidator {
   private final OpenApi3 openApi;
   private final Map<Operation, OperationValidator> operationValidators;
   private final Map<Pattern, Path> pathPatterns;
+  private final ValidatorConfig requestBodyValidatorConfig;
+
+  public RequestValidator(OpenApi3 openApi) {
+    this(openApi, ValidatorConfig.builder().build());
+  }
 
   /**
    * Construct a new request validator with the given open API.
    *
    * @param openApi The loaded open API model
    */
-  public RequestValidator(final OpenApi3 openApi) {
+  public RequestValidator(OpenApi3 openApi, ValidatorConfig requestBodyValidatorConfig) {
     requireNonNull(openApi, OAI_REQUIRED_ERR_MSG);
     requireNonNull(openApi.getPaths(), PATHS_REQUIRED_ERR_MSG);
 
     this.openApi = openApi;
     this.operationValidators = new ConcurrentHashMap<>();
     this.pathPatterns = openApi.findPathPatterns();
+    this.requestBodyValidatorConfig = requireNonNull(requestBodyValidatorConfig);
   }
 
   /**
@@ -106,7 +114,7 @@ public class RequestValidator {
             patterns.add(patternPathEntry.getKey());
           }
         }
-        return new OperationValidator(patterns, openApi, path, op);
+        return new OperationValidator(patterns, openApi, path, op, requestBodyValidatorConfig);
       });
   }
 
@@ -259,14 +267,14 @@ public class RequestValidator {
 
     final OperationValidator opValidator = getValidator(path, operation);
 
-    final Map<String, JsonNode> pathParameters
+    final Map<String, IJsonValue> pathParameters
       = (pathPattern != null)
       ? opValidator.validatePath(request, pathPattern, validation)
       : opValidator.validatePath(request, validation);
 
-    final Map<String, JsonNode> queryParameters = opValidator.validateQuery(request, validation);
-    final Map<String, JsonNode> headerParameters = opValidator.validateHeaders(request, validation);
-    final Map<String, JsonNode> cookieParameters = opValidator.validateCookies(request, validation);
+    final Map<String, IJsonValue> queryParameters = opValidator.validateQuery(request, validation);
+    final Map<String, IJsonValue> headerParameters = opValidator.validateHeaders(request, validation);
+    final Map<String, IJsonValue> cookieParameters = opValidator.validateCookies(request, validation);
     opValidator.validateBody(request, validation);
 
     if (!validation.isValid()) {

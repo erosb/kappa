@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.adapters.server.restassured;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.kappa.operation.validator.model.Request;
 import io.restassured.authentication.NoAuthScheme;
 import io.restassured.config.RestAssuredConfig;
@@ -51,7 +52,7 @@ public class RestAssuredRequestTest {
     Assert.assertNotNull(underTest.getHeaders());
     Assert.assertTrue(underTest.getHeaders().containsKey(H_NAME));
     Assert.assertEquals(H_VALUE, underTest.getHeaders().get(H_NAME).iterator().next());
-    Assert.assertEquals(JsonNodeFactory.instance.textNode("a body"), underTest.getBody().getContentAsNode(null, null, null));
+    Assert.assertEquals(new JsonString("a body"), underTest.getBody().getContentAsNode(null, null, null));
   }
 
 }

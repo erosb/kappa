@@ -11,7 +11,7 @@ paths:
       operationId: op1
       requestBody:
         content:
-          'application/json': {}
+          'application/json': { }
       responses:
         '200':
           description: a description
@@ -22,7 +22,7 @@ paths:
                 nullable: true
                 type: integer
           content:
-            'application/json': {}
+            'application/json': { }
   /fixed/{intPathParam}/fixed/{stringPathParam}/fixed/:
     get:
       operationId: op2
@@ -48,7 +48,18 @@ paths:
                 nullable: true
                 type: integer
           content:
-            'application/json': {}
+            'application/json': { }
+  /fixed/{intPathParam}/enum/{enumParam}:
+    parameters:
+      - name: enumParam
+        in: path
+        required: true
+        schema:
+          enum:
+            - Option1
+            - Option2
+    get:
+      operationId: getWithEnumParam
   /arrayType/:
     post:
       operationId: op3

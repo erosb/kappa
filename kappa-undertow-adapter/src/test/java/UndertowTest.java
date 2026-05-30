@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
+import com.github.erosb.jsonsKema.JsonString;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +97,7 @@ public class UndertowTest {
     Assert.assertNull(rq.getQuery());
 
     Assert.assertEquals(
-      JsonNodeFactory.instance.textNode("a body"),
+      new JsonString("a body"),
       rq.getBody().getContentAsNode(null, null, null));
   }
 

@@ -20,7 +20,8 @@ public class KappaConfiguration {
     }
     OpenApiBasedRequestValidationFilter filter = OpenApiBasedRequestValidationFilter.forApiLookup(
       new PathPatternMatchingOpenApiLookup(configuration),
-      configuration.getValidationFailureSender()
+      configuration.getValidationFailureSender(),
+      configuration.getRequestBodyValidatorConfig()
     );
     FilterRegistrationBean<OpenApiBasedRequestValidationFilter> registration = new FilterRegistrationBean<>();
     registration.setFilter(filter);

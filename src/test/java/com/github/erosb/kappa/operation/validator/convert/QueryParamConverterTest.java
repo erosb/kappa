@@ -1,6 +1,6 @@
 package com.github.erosb.kappa.operation.validator.convert;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.OpenApi3;
@@ -147,8 +147,8 @@ public class QueryParamConverterTest {
   protected void check(String parameterName,
                        String validValue,
                        String invalidValue,
-                       BiConsumer<Map<String, JsonNode>, String> validChecker,
-                       BiConsumer<Map<String, JsonNode>, String> invalidChecker) throws Exception {
+                       BiConsumer<Map<String, IJsonValue>, String> validChecker,
+                       BiConsumer<Map<String, IJsonValue>, String> invalidChecker) throws Exception {
 
     OpenApi3 api = OpenApi3Util.loadApi("/operation/parameter/queryParameters.yaml");
 
@@ -164,7 +164,7 @@ public class QueryParamConverterTest {
     assertNull(mapToNodes(api.getContext(), parameters, null).get(parameterName));
   }
 
-  private Map<String, JsonNode> mapToNodes(OAIContext context,
+  private Map<String, IJsonValue> mapToNodes(OAIContext context,
                                            Map<String, AbsParameter<Parameter>> parameters,
                                            String values) {
     return ParameterConverter.queryToNode(context, parameters, values, "UTF-8");

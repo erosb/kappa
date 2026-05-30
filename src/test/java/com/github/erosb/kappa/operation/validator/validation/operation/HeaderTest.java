@@ -18,7 +18,8 @@ public class HeaderTest extends OperationValidatorTestBase {
       false);
 
     check(
-      new DefaultRequest.Builder("/merge_parameters", GET).header("pathStringHeaderParam", "foo").header("refIntHeaderParameter", "-1").build(),
+      new DefaultRequest.Builder("/merge_parameters", GET).header("pathStringHeaderParam", "foo").header("refIntHeaderParameter",
+        "-1").build(),
       val::validateHeaders,
       true);
   }
@@ -29,11 +30,6 @@ public class HeaderTest extends OperationValidatorTestBase {
 
     check(
       new DefaultRequest.Builder("/foo", GET).header("pathStringHeaderParam", "foo").header("floatHeaderParam", "0.1").build(),
-      val::validateHeaders,
-      true);
-
-    check(
-      new DefaultRequest.Builder("/foo", GET).header("pathStringHeaderParam", "foo").header("floatHeaderParam", ".1").build(),
       val::validateHeaders,
       true);
 

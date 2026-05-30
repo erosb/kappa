@@ -1,12 +1,12 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.SourceLocation;
+import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.core.exception.DecodeException;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.OperationContextUriFactory;
-import com.github.erosb.kappa.core.validation.URIFactory;
 import com.github.erosb.kappa.operation.validator.model.Request;
 import com.github.erosb.kappa.operation.validator.model.Response;
 import com.github.erosb.kappa.operation.validator.model.impl.Body;
@@ -68,6 +68,7 @@ public class OperationValidator {
   private final Operation operation;
   private final String templatePath;
   private final List<Pattern> pathPatterns;
+  private final ValidatorConfig validatorConfig;
 
   /**
    * Creates a validator for the given operation.
@@ -77,7 +78,7 @@ public class OperationValidator {
    * @param operation The Operation to validate.
    */
   public OperationValidator(final OpenApi3 openApi, final Path path, final Operation operation) {
-    this(null, openApi, path, operation);
+    this(null, openApi, path, operation, ValidatorConfig.builder().build());
   }
 
   /**
@@ -91,12 +92,14 @@ public class OperationValidator {
   OperationValidator(final List<Pattern> pathPatterns,
                      final OpenApi3 openApi,
                      final Path path,
-                     final Operation operation) {
+                     final Operation operation,
+                     ValidatorConfig validatorConfig) {
 
     this.context = new ValidationContext<>(openApi.getContext(), openApi.getPathFrom(path),
       path.findHttpMethodByOperation(operation));
     requireNonNull(operation, OPERATION_REQUIRED_ERR_MSG);
     this.templatePath = openApi.getPathFrom(requireNonNull(path, PATH_REQUIRED_ERR_MSG));
+    this.validatorConfig = validatorConfig;
 
     // Clone operation
     this.operation = buildFlatOperation(operation);
@@ -137,7 +140,7 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  public Map<String, JsonNode> validatePath(final Request request, final ValidationData<?> validation) {
+  public Map<String, IJsonValue> validatePath(final Request request, final ValidationData<?> validation) {
     // Check paths are matching before trying to map values
     Pattern pathPattern = PathResolver.instance().findPathPattern(pathPatterns, request.getPath());
     if (pathPattern == null) {
@@ -155,13 +158,12 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  Map<String, JsonNode> validatePath(final Request request, Pattern pathPattern, final ValidationData<?> validation) {
+  Map<String, IJsonValue> validatePath(final Request request, Pattern pathPattern, final ValidationData<?> validation) {
     if (specRequestPathValidator == null) {
       return null;
     }
-
-    Map<String, JsonNode> mappedValues = ParameterConverter.pathToNode(
-      context.getContext(),
+    Map<String, IJsonValue> mappedValues = ParameterConverter.pathToNode(
+      context,
       specRequestPathValidator.getParameters(),
       pathPattern,
       request.getPath());
@@ -178,12 +180,12 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  public Map<String, JsonNode> validateQuery(final Request request, final ValidationData<?> validation) {
+  public Map<String, IJsonValue> validateQuery(final Request request, final ValidationData<?> validation) {
     if (specRequestQueryValidator == null) {
       return null;
     }
 
-    Map<String, JsonNode> mappedValues = ParameterConverter.queryToNode(
+    Map<String, IJsonValue> mappedValues = ParameterConverter.queryToNode(
       context.getContext(),
       specRequestQueryValidator.getParameters(),
       request.getQuery(),
@@ -201,12 +203,12 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  public Map<String, JsonNode> validateHeaders(final Request request, final ValidationData<?> validation) {
+  public Map<String, IJsonValue> validateHeaders(final Request request, final ValidationData<?> validation) {
     if (specRequestHeaderValidator == null) {
       return null;
     }
 
-    Map<String, JsonNode> mappedValues = ParameterConverter.headersToNode(
+    Map<String, IJsonValue> mappedValues = ParameterConverter.headersToNode(
       context.getContext(),
       specRequestHeaderValidator.getParameters(),
       request.getHeaders());
@@ -223,12 +225,12 @@ public class OperationValidator {
    * @param validation The validation data delegate and results.
    * @return The mapped parameters with their values.
    */
-  public Map<String, JsonNode> validateCookies(final Request request, final ValidationData<?> validation) {
+  public Map<String, IJsonValue> validateCookies(final Request request, final ValidationData<?> validation) {
     if (specRequestCookieValidator == null) {
       return null;
     }
 
-    final Map<String, JsonNode> mappedValues = ParameterConverter.cookiesToNode(
+    final Map<String, IJsonValue> mappedValues = ParameterConverter.cookiesToNode(
       context.getContext(),
       specRequestCookieValidator.getParameters(),
       request.getCookies());
@@ -265,7 +267,8 @@ public class OperationValidator {
       request.getContentType(),
       request.getBody(),
       validation,
-      context.requestScopedUriFactory().definitionHttpEntity()
+      context.requestScopedUriFactory().definitionHttpEntity(),
+      validatorConfig
     );
   }
 
@@ -317,7 +320,8 @@ public class OperationValidator {
       response.getContentType(),
       response.getBody(),
       validation,
-      context.responseScopedUriFactory(String.valueOf(response.getStatus())).definitionHttpEntity()
+      context.responseScopedUriFactory(String.valueOf(response.getStatus())).definitionHttpEntity(),
+      ValidatorConfig.builder().build()
     );
   }
 
@@ -325,7 +329,8 @@ public class OperationValidator {
                                            final String rawContentType,
                                            final Body body,
                                            final ValidationData<?> validation,
-                                           SourceLocation bodyDefinitionLocation) {
+                                           SourceLocation bodyDefinitionLocation,
+                                           ValidatorConfig validatorConfig) {
 
     final MediaTypeContainer contentType = MediaTypeContainer.create(rawContentType);
 
@@ -343,7 +348,8 @@ public class OperationValidator {
 
     validator.validate(body,
       rawContentType,
-      validation);
+      validation,
+      validatorConfig);
   }
 
   /**
@@ -361,7 +367,7 @@ public class OperationValidator {
       return;
     }
 
-    Map<String, JsonNode> mappedValues = ParameterConverter.headersToNode(
+    Map<String, IJsonValue> mappedValues = ParameterConverter.headersToNode(
       context.getContext(),
       validator.getParameters(),
       response.getHeaders());

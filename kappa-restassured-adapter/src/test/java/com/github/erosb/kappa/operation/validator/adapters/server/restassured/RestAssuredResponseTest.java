@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.adapters.server.restassured;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.erosb.jsonsKema.JsonString;
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
 import io.restassured.response.Response;
@@ -36,7 +37,7 @@ public class RestAssuredResponseTest {
     RestAssuredResponse underTest = new RestAssuredResponse(mockResponse);
 
     Assert.assertEquals(200, underTest.getStatus());
-    Assert.assertEquals(JsonNodeFactory.instance.textNode("hello"), underTest.getBody().getContentAsNode(null, null, null));
+    Assert.assertEquals(new JsonString("hello"), underTest.getBody().getContentAsNode(null, null, null));
 
     Map<String, Collection<String>> expectedHeaders = new HashMap<>();
     expectedHeaders.put("Other-Header", Arrays.asList("value", "other value"));

@@ -17,6 +17,7 @@ import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
 import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.schema.validator.SKemaBackedJsonValidator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -365,6 +366,7 @@ public class Schema
         return "array";
       }
 
+      @Nullable
       @Override
       public String visitPropertySchema(@NotNull String property, @NotNull com.github.erosb.jsonsKema.Schema schema,
                                         @NotNull CompositeSchema context) {

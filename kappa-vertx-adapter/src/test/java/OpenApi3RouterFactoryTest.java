@@ -2,6 +2,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import com.github.erosb.jsonsKema.JsonString;
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -124,8 +125,8 @@ public class OpenApi3RouterFactoryTest
     routerFactory.addOperationHandler("regex", rc -> {
       RequestParameters rqParameters = rc.get("rqParameters");
       context.assertNotNull(rqParameters);
-      context.assertEquals(JsonNodeFactory.instance.textNode("foo"), rqParameters.getPathParameter("dataset"));
-      context.assertEquals(JsonNodeFactory.instance.textNode("bar"), rqParameters.getPathParameter("version"));
+      context.assertEquals(new JsonString("foo"), rqParameters.getPathParameter("dataset"));
+      context.assertEquals(new JsonString("bar"), rqParameters.getPathParameter("version"));
 
       rc
         .response()

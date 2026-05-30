@@ -1,5 +1,6 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
+import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.core.exception.ResolutionException;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.ValidationException;
@@ -58,12 +59,22 @@ public class RequestValidatorTest {
     ValidationException thrown = assertThrows(ValidationException.class, () ->
       requestValidator.validate(new DefaultRequest.Builder("https://api.com/fixed/WRONG/fixed/2/fixed/", GET).build())
     );
-
+    thrown.printStackTrace();
     OpenApiValidationFailure pathFailure = thrown.results().get(0);
     assertEquals("expected type: integer, actual: string", pathFailure.getMessage());
     assertThat(pathFailure.describeInstanceLocation(), startsWith("$request.path.intPathParam"));
     System.out.println(pathFailure.describeSchemaLocation());
     assertTrue(pathFailure.describeSchemaLocation().contains("/request/requestValidator.yaml/paths/intPathParam#/type"));
+  }
+
+  @Test
+  public void enumPathParam() throws Exception {
+    URL specPath = RequestValidatorTest.class.getResource("/request/requestValidator.yaml");
+    OpenApi3 api = new OpenApi3Parser().parse(specPath, false);
+    RequestValidator requestValidator = new RequestValidator(api);
+
+    requestValidator.validate(new DefaultRequest.Builder("https://api.com/fixed/2/enum/Option1", GET).build());
+
   }
 
   @Test
@@ -258,6 +269,7 @@ public class RequestValidatorTest {
       requestValidator.validate(rq);
     } catch (ValidationException e) {
       if (shouldBeValid) {
+        e.printStackTrace();
         fail();
       }
     }

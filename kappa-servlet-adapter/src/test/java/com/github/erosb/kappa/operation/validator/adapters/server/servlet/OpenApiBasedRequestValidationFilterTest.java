@@ -1,5 +1,6 @@
 package com.github.erosb.kappa.operation.validator.adapters.server.servlet;
 
+import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.core.exception.ResolutionException;
 import com.github.erosb.kappa.core.validation.ValidationException;
 import com.github.erosb.kappa.parser.OpenApi3Parser;
@@ -32,7 +33,9 @@ public class OpenApiBasedRequestValidationFilterTest {
 
   @Test
   public void bodySchemaFailure() throws Exception {
-    OpenApiBasedRequestValidationFilter filter = forApiDescription(usersApi, ValidationFailureSender.defaultSender());
+    OpenApiBasedRequestValidationFilter filter = forApiDescription(usersApi,
+      ValidationFailureSender.defaultSender()
+    );
     HttpServletResponse resp = mock(HttpServletResponse.class);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintWriter pw = new PrintWriter(out);
@@ -55,7 +58,10 @@ public class OpenApiBasedRequestValidationFilterTest {
 
   @Test
   public void multipleApiYamlLookup() throws Exception {
-    OpenApiBasedRequestValidationFilter filter = forApiLookup(path -> usersApi, ValidationFailureSender.defaultSender());
+    OpenApiBasedRequestValidationFilter filter = forApiLookup(
+      path -> usersApi,
+      ValidationFailureSender.defaultSender()
+    );
     HttpServletResponse resp = mock(HttpServletResponse.class);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintWriter pw = new PrintWriter(out);

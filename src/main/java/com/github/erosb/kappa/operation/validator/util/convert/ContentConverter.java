@@ -2,6 +2,10 @@ package com.github.erosb.kappa.operation.validator.util.convert;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonParseException;
+import com.github.erosb.jsonsKema.JsonParser;
+import com.github.erosb.jsonsKema.JsonString;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.util.IOUtil;
 import com.github.erosb.kappa.core.util.TreeUtil;
@@ -20,11 +24,11 @@ public final class ContentConverter {
   private ContentConverter() {
   }
 
-  public static JsonNode convert(final OAIContext context,
-                                 final MediaType mediaType,
-                                 final String rawContentType,
-                                 final InputStream is,
-                                 final String str) throws IOException {
+  public static IJsonValue convert(final OAIContext context,
+                                   final MediaType mediaType,
+                                   final String rawContentType,
+                                   final InputStream is,
+                                   final String str) throws IOException {
 
     String contentType = ContentType.getTypeOnly(rawContentType);
 
@@ -47,47 +51,55 @@ public final class ContentConverter {
     }
   }
 
-  private static JsonNode formUrlEncodedToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, final InputStream content) throws IOException {
+  private static IJsonValue formUrlEncodedToNode(final OAIContext context, final MediaType mediaType, final String rawContentType,
+                                                 final InputStream content) throws IOException {
     String encoding = ContentType.getCharSet(rawContentType);
     return FormUrlConverter.instance().convert(context, mediaType, content, encoding);
   }
 
-  private static JsonNode formUrlEncodedToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, final String content) {
+  private static IJsonValue formUrlEncodedToNode(final OAIContext context, final MediaType mediaType, final String rawContentType,
+                                                 final String content) {
     String encoding = ContentType.getCharSet(rawContentType);
     return FormUrlConverter.instance().convert(context, mediaType, content, encoding);
   }
 
-  private static JsonNode multipartToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, InputStream content) throws IOException {
+  private static IJsonValue multipartToNode(final OAIContext context, final MediaType mediaType, final String rawContentType,
+                                            InputStream content) throws IOException {
     String encoding = ContentType.getCharSet(rawContentType);
     return MultipartConverter.instance().convert(context, mediaType, content, rawContentType, encoding);
   }
 
-  private static JsonNode multipartToNode(final OAIContext context, final MediaType mediaType, final String rawContentType, final String content) throws IOException {
+  private static IJsonValue multipartToNode(final OAIContext context, final MediaType mediaType, final String rawContentType,
+                                            final String content) throws IOException {
     String encoding = ContentType.getCharSet(rawContentType);
     return MultipartConverter.instance().convert(context, mediaType, content, rawContentType, encoding);
   }
 
-  private static JsonNode jsonToNode(InputStream content) throws IOException {
-    return TreeUtil.json.readTree(content);
+  private static IJsonValue jsonToNode(InputStream content) throws IOException {
+    return new JsonParser(content).parse();
   }
 
-  private static JsonNode jsonToNode(String content) throws IOException {
-    return TreeUtil.json.readTree(content);
+  private static IJsonValue jsonToNode(String content) throws IOException {
+    try {
+      return new JsonParser(content).parse();
+    } catch (JsonParseException e) {
+      return new JsonString(content);
+    }
   }
 
-  private static JsonNode xmlToNode(final OAIContext context, final Schema schema, InputStream content) throws IOException {
+  private static IJsonValue xmlToNode(final OAIContext context, final Schema schema, InputStream content) throws IOException {
     return XmlConverter.instance().convert(context, schema, IOUtil.toString(content, StandardCharsets.UTF_8.name()));
   }
 
-  private static JsonNode xmlToNode(final OAIContext context, final Schema schema, String content) {
+  private static IJsonValue xmlToNode(final OAIContext context, final Schema schema, String content) {
     return XmlConverter.instance().convert(context, schema, content);
   }
 
-  private static JsonNode textToNode(InputStream content) throws IOException {
-    return JsonNodeFactory.instance.textNode(IOUtil.toString(content, StandardCharsets.UTF_8.name()));
+  private static IJsonValue textToNode(InputStream content) throws IOException {
+    return new JsonString(IOUtil.toString(content, StandardCharsets.UTF_8.name()));
   }
 
-  private static JsonNode textToNode(String content) {
-    return JsonNodeFactory.instance.textNode(content);
+  private static IJsonValue textToNode(String content) {
+    return new JsonString(content);
   }
 }

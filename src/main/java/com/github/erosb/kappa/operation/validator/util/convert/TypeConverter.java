@@ -4,13 +4,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.erosb.jsonsKema.IJsonString;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonArray;
+import com.github.erosb.jsonsKema.JsonNull;
+import com.github.erosb.jsonsKema.JsonObject;
+import com.github.erosb.jsonsKema.JsonString;
+import com.github.erosb.jsonsKema.JsonValue;
 import com.github.erosb.kappa.core.model.OAIContext;
 import com.github.erosb.kappa.core.model.v3.OAI3SchemaKeywords;
+import com.github.erosb.kappa.core.util.TreeUtil;
 import com.github.erosb.kappa.parser.model.v3.Schema;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class TypeConverter {
@@ -23,19 +34,19 @@ public final class TypeConverter {
     return INSTANCE;
   }
 
-  public JsonNode convertObject(final OAIContext context,
-                                final Schema schema,
-                                final Map<String, Object> content) {
+  public <T extends JsonValue> T convertObject(final OAIContext context,
+                                               final Schema schema,
+                                               final Map<String, IJsonValue> content) {
     if (schema == null || content == null) {
-      return JsonNodeFactory.instance.nullNode();
+      return (T) new JsonNull();
     }
 
     Map<String, Schema> properties = schema.getProperties();
     if (properties == null || properties.isEmpty()) {
-      return JsonNodeFactory.instance.nullNode();
+      return (T) new JsonNull();
     }
 
-    ObjectNode convertedContent = JsonNodeFactory.instance.objectNode();
+    Map<IJsonString, IJsonValue> convertedContent = new HashMap<>();
 
     for (Map.Entry<String, Schema> entry : properties.entrySet()) {
       String entryKey = entry.getKey();
@@ -44,44 +55,38 @@ public final class TypeConverter {
         continue;
       }
 
-      Object value = content.get(entryKey);
+      IJsonValue value = content.get(entryKey);
 
       Schema flatSchema = entry.getValue();
-      String supposedType = flatSchema.getSupposedType(context);
-      if (supposedType == null) {
-        continue;
-      }
-      switch (supposedType) {
+      switch (flatSchema.getSupposedType(context)) {
         case OAI3SchemaKeywords.TYPE_OBJECT:
-          convertedContent.set(entryKey, convertObject(context, flatSchema, castMap(value)));
+          convertedContent.put(new JsonString(entryKey), convertObject(context, flatSchema, castMap(value)));
           break;
         case OAI3SchemaKeywords.TYPE_ARRAY:
-          convertedContent.set(entryKey, convertArray(context, flatSchema.getItemsSchema(), castList(value)));
-          break;
+          throw new UnsupportedOperationException("todo");
+          //          convertedContent.put(new JsonString(entryKey), convertArray(context, flatSchema.getItemsSchema(), castList(value)));
+          //          break;
         default:
-          convertedContent.set(entryKey, convertPrimitive(context, flatSchema, value));
+          convertedContent.put(new JsonString(entryKey), value /* convertPrimitive(context, flatSchema, value)*/);
           break;
       }
     }
-
-    return convertedContent;
+    //    Map<JsonString, ? extends JsonValue> propz = new HashMap<>();
+    //    new JsonObject(propz);
+    return (T) new JsonObject(convertedContent);
   }
 
-  public JsonNode convertArray(final OAIContext context,
-                               final Schema schema,
-                               final Collection<Object> content) {
+  public JsonValue convertArray(final OAIContext context,
+                                final Schema schema,
+                                final Collection<Object> content) {
 
     if (schema == null || content == null) {
-      return JsonNodeFactory.instance.nullNode();
+      return new JsonNull();
     }
 
-    ArrayNode convertedContent = JsonNodeFactory.instance.arrayNode();
+    List<JsonValue> convertedContent = new ArrayList<>();
 
-    String supposedType = schema.getSupposedType(context);
-    if (supposedType == null) {
-      return convertedContent;
-    }
-    switch (supposedType) {
+    switch (schema.getSupposedType(context)) {
       case OAI3SchemaKeywords.TYPE_OBJECT:
         for (Object value : content) {
           convertedContent.add(convertObject(context, schema, castMap(value)));
@@ -89,7 +94,8 @@ public final class TypeConverter {
         break;
       case OAI3SchemaKeywords.TYPE_ARRAY:
         for (Object value : content) {
-          convertedContent.add(convertArray(context, schema.getItemsSchema(), castList(value)));
+          throw new UnsupportedOperationException("todo");
+          //          convertedContent.add(convertArray(context, schema.getItemsSchema(), castList(value)));
         }
         break;
       default:
@@ -99,58 +105,21 @@ public final class TypeConverter {
         break;
     }
 
-    return convertedContent;
+    return new JsonArray(convertedContent);
   }
 
-  public JsonNode convertPrimitive(final OAIContext context,
-                                   final Schema schema,
-                                   Object value) {
-
+  public JsonValue convertPrimitive(final OAIContext context,
+                                    final Schema schema,
+                                    Object value) {
     if (value == null) {
-      return JsonNodeFactory.instance.nullNode();
+      return new JsonNull();
     }
-
-    if (schema == null) {
-      return JsonNodeFactory.instance.textNode(value.toString());
-    }
-
-    try {
-      String supposedType = schema.getSupposedType(context);
-
-      if (supposedType == null) {
-        return JsonNodeFactory.instance.textNode(value.toString());
-      }
-
-      switch (supposedType) {
-        case OAI3SchemaKeywords.TYPE_BOOLEAN:
-          return JsonNodeFactory.instance.booleanNode(parseBoolean(value.toString()));
-        case OAI3SchemaKeywords.TYPE_INTEGER:
-          if (OAI3SchemaKeywords.FORMAT_INT32.equals(schema.getFormat())) {
-            return JsonNodeFactory.instance.numberNode(Integer.parseInt(value.toString()));
-          } else if (OAI3SchemaKeywords.FORMAT_INT64.equals(schema.getFormat())) {
-            return JsonNodeFactory.instance.numberNode(Long.parseLong(value.toString()));
-          } else {
-            return JsonNodeFactory.instance.numberNode(new BigInteger(value.toString()));
-          }
-        case OAI3SchemaKeywords.TYPE_NUMBER:
-          if (OAI3SchemaKeywords.FORMAT_FLOAT.equals(schema.getFormat())) {
-            return JsonNodeFactory.instance.numberNode(Float.parseFloat(value.toString()));
-          } else if (OAI3SchemaKeywords.FORMAT_DOUBLE.equals(schema.getFormat())) {
-            return JsonNodeFactory.instance.numberNode(Double.parseDouble(value.toString()));
-          } else {
-            return JsonNodeFactory.instance.numberNode(new BigDecimal(value.toString()));
-          }
-        case OAI3SchemaKeywords.TYPE_STRING:
-        default:
-          return JsonNodeFactory.instance.textNode(value.toString());
-      }
-    } catch (IllegalArgumentException ex) {
-      return JsonNodeFactory.instance.textNode(value.toString());
-    }
+    return new JsonString(value.toString());
   }
 
   /**
    * Parse boolean with exception if the value is not a boolean at all.
+   *
    * @param value The boolean value to parse.
    * @return If the value is not a boolean representation.
    */
@@ -167,18 +136,18 @@ public final class TypeConverter {
   }
 
   @SuppressWarnings("unchecked")
-  private Map<String, Object> castMap(Object obj) {
+  private Map<String, IJsonValue> castMap(Object obj) {
     try {
-      return (Map<String, Object>) obj;
+      return (Map<String, IJsonValue>) obj;
     } catch (ClassCastException ex) {
       return null;
     }
   }
 
   @SuppressWarnings("unchecked")
-  private Collection<Object> castList(Object obj) {
+  private Collection<JsonValue> castList(Object obj) {
     try {
-      return (Collection<Object>) obj;
+      return (Collection<JsonValue>) obj;
     } catch (ClassCastException ex) {
       return null;
     }

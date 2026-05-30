@@ -3,7 +3,13 @@ package com.github.erosb.kappa.operation.validator.util.convert;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonNull;
+import com.github.erosb.jsonsKema.JsonParser;
+import com.github.erosb.jsonsKema.JsonPointer;
+import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.kappa.core.model.OAIContext;
+import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.operation.validator.util.convert.style.LabelStyleConverter;
 import com.github.erosb.kappa.parser.model.v3.AbsParameter;
 import com.github.erosb.kappa.parser.model.v3.MediaType;
@@ -12,9 +18,12 @@ import com.github.erosb.kappa.operation.validator.util.PathResolver;
 import com.github.erosb.kappa.operation.validator.util.convert.style.MatrixStyleConverter;
 import com.github.erosb.kappa.operation.validator.util.convert.style.SimpleStyleConverter;
 import com.github.erosb.kappa.parser.model.OpenApiSchema;
+import com.github.erosb.kappa.schema.validator.ValidationContext;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -91,12 +100,12 @@ public final class ParameterConverter {
    * @param path           The rendered path from the request.
    * @return A map with parameters names associated with the value as node.
    */
-  public static Map<String, JsonNode> pathToNode(final OAIContext context,
-                                                 final Map<String, AbsParameter<Parameter>> specParameters,
-                                                 final Pattern pattern,
-                                                 final String path) {
+  public static Map<String, IJsonValue> pathToNode(final ValidationContext<OAI3> context,
+                                                   final Map<String, AbsParameter<Parameter>> specParameters,
+                                                   final Pattern pattern,
+                                                   final String path) {
 
-    final Map<String, JsonNode> mappedValues = new HashMap<>();
+    final Map<String, IJsonValue> mappedValues = new HashMap<>();
 
     if (pattern == null) {
       return mappedValues;
@@ -106,24 +115,29 @@ public final class ParameterConverter {
     if (!matcher.matches()) {
       return mappedValues;
     }
-
     for (Map.Entry<String, AbsParameter<Parameter>> paramEntry : specParameters.entrySet()) {
       final String paramName = paramEntry.getKey();
+      SourceLocation sourceLocation =
+        new SourceLocation(1, 1, new JsonPointer(), context.requestScopedUriFactory().pathParam(paramName));
       final AbsParameter<Parameter> param = paramEntry.getValue();
       String paramGroupName = PathResolver.instance().getParamGroupName(paramName);
-      final JsonNode convertedValue;
+      final IJsonValue convertedValue;
 
       if (param.getSchema() != null) {
         final String style = param.getStyle();
         if (LABEL.equals(style)) {
-          convertedValue = LabelStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
+          convertedValue = new LabelStyleConverter(sourceLocation).convert(context.getContext(), param, paramName,
+            matcher.group(paramGroupName));
         } else if (MATRIX.equals(style)) {
-          convertedValue = MatrixStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
+          convertedValue = new MatrixStyleConverter(sourceLocation).convert(context.getContext(), param, paramName,
+            matcher.group(paramGroupName));
         } else { // simple is the default
-          convertedValue = SimpleStyleConverter.instance().convert(context, param, paramName, matcher.group(paramGroupName));
+          convertedValue = new SimpleStyleConverter(sourceLocation).convert(context.getContext(), param, paramName,
+            matcher.group(paramGroupName));
         }
       } else {
-        convertedValue = getValueFromContentType(context, param.getContentMediaTypes(), matcher.group(paramGroupName));
+        convertedValue = getValueFromContentType(context.getContext(), param.getContentMediaTypes(),
+          matcher.group(paramGroupName));
       }
 
       mappedValues.put(paramName, convertedValue);
@@ -140,10 +154,10 @@ public final class ParameterConverter {
    * @param rawValue       The raw query string.
    * @return A map with parameters names associated with the value as node.
    */
-  public static Map<String, JsonNode> queryToNode(final OAIContext context,
-                                                  final Map<String, AbsParameter<Parameter>> specParameters,
-                                                  final String rawValue,
-                                                  final String encoding) {
+  public static Map<String, IJsonValue> queryToNode(final OAIContext context,
+                                                    final Map<String, AbsParameter<Parameter>> specParameters,
+                                                    final String rawValue,
+                                                    final String encoding) {
 
     return FormUrlConverter.instance().convert(context, specParameters, rawValue, false, encoding);
   }
@@ -155,20 +169,19 @@ public final class ParameterConverter {
    * @param specParameters The spec header parameters.
    * @return A map with parameters names associated with the value as node.
    */
-  public static <M extends OpenApiSchema<M>> Map<String, JsonNode> headersToNode(final OAIContext context,
-                                                                                 final Map<String, AbsParameter<M>> specParameters,
-                                                                                 final Map<String, Collection<String>> headers) {
-
-    final Map<String, JsonNode> mappedValues = new HashMap<>();
+  public static <M extends OpenApiSchema<M>> Map<String, IJsonValue> headersToNode(final OAIContext context,
+                                                                                   final Map<String, AbsParameter<M>> specParameters,
+                                                                                   final Map<String, Collection<String>> headers) {
 
     if (headers == null) {
-      return mappedValues;
+      return Collections.emptyMap();
     }
+    final Map<String, IJsonValue> mappedValues = new HashMap<>();
 
     for (Map.Entry<String, AbsParameter<M>> paramEntry : specParameters.entrySet()) {
       final String paramName = paramEntry.getKey();
       final AbsParameter<M> param = paramEntry.getValue();
-      final JsonNode convertedValue;
+      final IJsonValue convertedValue;
 
       if (!headers.containsKey(paramName)) {
         convertedValue = null;
@@ -184,7 +197,7 @@ public final class ParameterConverter {
               headerValues.stream().findFirst().orElse(null));
           }
         } else {
-          convertedValue = JsonNodeFactory.instance.nullNode();
+          convertedValue = new JsonNull();
         }
       }
 
@@ -203,11 +216,11 @@ public final class ParameterConverter {
    * @param specParameters The spec cookie parameters.
    * @return A map with parameters names associated with the value as node.
    */
-  public static Map<String, JsonNode> cookiesToNode(final OAIContext context,
-                                                    final Map<String, AbsParameter<Parameter>> specParameters,
-                                                    final Map<String, String> cookies) {
+  public static Map<String, IJsonValue> cookiesToNode(final OAIContext context,
+                                                      final Map<String, AbsParameter<Parameter>> specParameters,
+                                                      final Map<String, String> cookies) {
 
-    final Map<String, JsonNode> mappedValues = new HashMap<>();
+    final Map<String, IJsonValue> mappedValues = new HashMap<>();
 
     if (cookies == null) {
       return mappedValues;
@@ -216,7 +229,7 @@ public final class ParameterConverter {
     for (Map.Entry<String, AbsParameter<Parameter>> paramEntry : specParameters.entrySet()) {
       final String paramName = paramEntry.getKey();
       final AbsParameter<Parameter> param = paramEntry.getValue();
-      final JsonNode convertedValue;
+      final IJsonValue convertedValue;
 
       if (param.getExplode() == null) { // explode true is default
         param.setExplode(true);
@@ -233,7 +246,7 @@ public final class ParameterConverter {
             convertedValue = getValueFromContentType(context, param.getContentMediaTypes(), value);
           }
         } else {
-          convertedValue = JsonNodeFactory.instance.nullNode();
+          convertedValue = new JsonNull();
         }
       }
 
@@ -245,9 +258,9 @@ public final class ParameterConverter {
     return mappedValues;
   }
 
-  private static JsonNode getValueFromContentType(final OAIContext context,
-                                                  final Map<String, MediaType> mediaTypes,
-                                                  final String value) {
+  private static IJsonValue getValueFromContentType(final OAIContext context,
+                                                    final Map<String, MediaType> mediaTypes,
+                                                    final String value) {
 
     if (mediaTypes != null && value != null) {
       Optional<Map.Entry<String, MediaType>> entry = mediaTypes.entrySet().stream().findFirst();

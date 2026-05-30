@@ -2,7 +2,9 @@ package com.github.erosb.kappa.operation.validator.validation;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.JsonNull;
 import com.github.erosb.jsonsKema.JsonParseException;
+import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.core.model.v3.OAI3;
 import com.github.erosb.kappa.core.validation.OpenApiValidationFailure;
 import com.github.erosb.kappa.core.validation.OperationContextUriFactory;
@@ -29,18 +31,19 @@ class BodyValidator {
 
   void validate(final Body body,
                 final String rawContentType,
-                final ValidationData<?> validation) {
+                final ValidationData<?> validation,
+                ValidatorConfig requestBodyValidatorConfig) {
 
     if (validator == null) {
       return; // No schema specified for body
     } else if (body == null) {
-      validator.validate(JsonNodeFactory.instance.nullNode(), uriFactory.httpEntity(), validation);
+      validator.validate(new JsonNull(), validation, requestBodyValidatorConfig);
       return;
     }
 
     try {
       IJsonValue jsonBody = body.contentAsNode(rawContentType, uriFactory.httpEntity());
-      validator.validate(jsonBody, validation);
+      validator.validate(jsonBody, validation, requestBodyValidatorConfig);
     } catch (JsonParseException ex) {
       validation.add(OpenApiValidationFailure.unparseableHttpEntity(ex, uriFactory.definitionHttpEntity()));
     }
