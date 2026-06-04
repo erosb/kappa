@@ -1,6 +1,7 @@
 package com.github.erosb.kappa.operation.validator.validation;
 
 import com.github.erosb.jsonsKema.IJsonValue;
+import com.github.erosb.jsonsKema.ReadWriteContext;
 import com.github.erosb.jsonsKema.SourceLocation;
 import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.core.exception.DecodeException;
@@ -321,7 +322,7 @@ public class OperationValidator {
       response.getBody(),
       validation,
       context.responseScopedUriFactory(String.valueOf(response.getStatus())).definitionHttpEntity(),
-      ValidatorConfig.builder().build()
+      ValidatorConfig.builder().readWriteContext(ReadWriteContext.READ).build()
     );
   }
 

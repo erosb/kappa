@@ -1,0 +1,27 @@
+openapi: 3.1.0
+info:
+  version: 0.0.1
+  title: yet another users-api.yaml
+paths:
+  /users:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+components:
+  schemas:
+    User:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        password:
+          type: string
+          writeOnly: true

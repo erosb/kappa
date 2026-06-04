@@ -311,9 +311,8 @@ tell it to use a lenient validator when checking request bodies:
     kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);
 
     // here is the main point: we tell Kappa to use a lenient json schema validator
-    kappaConfig.setRequestBodyValidatorConfig(ValidatorConfig.builder()
-      .primitiveValidationStrategy(PrimitiveValidationStrategy.LENIENT)
-      .build()
+    kappaConfig.customizeRequestBodyValidator(configBuilder ->
+      configBuilder.primitiveValidationStrategy(PrimitiveValidationStrategy.LENIENT)
     );
 
     return kappaConfig;

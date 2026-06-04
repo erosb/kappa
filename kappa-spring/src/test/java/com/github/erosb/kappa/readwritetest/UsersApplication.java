@@ -1,7 +1,5 @@
-package com.github.erosb.kappa.lenienttest;
+package com.github.erosb.kappa.readwritetest;
 
-import com.github.erosb.jsonsKema.PrimitiveValidationStrategy;
-import com.github.erosb.jsonsKema.ValidatorConfig;
 import com.github.erosb.kappa.autoconfigure.EnableKappaRequestValidation;
 import com.github.erosb.kappa.autoconfigure.KappaSpringConfiguration;
 import org.springframework.boot.SpringApplication;
@@ -18,39 +16,37 @@ import java.util.LinkedHashMap;
 
 @SpringBootApplication
 @EnableKappaRequestValidation
-public class LenientApplication {
-
+public class UsersApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(LenientApplication.class);
+    SpringApplication.run(UsersApplication.class, args);
   }
+
 
   @Bean
   public KappaSpringConfiguration kappaSpringConfiguration() {
     KappaSpringConfiguration kappaConfig = new KappaSpringConfiguration();
     var pathPatternToOpenapiDescription = new LinkedHashMap<String, String>();
-    pathPatternToOpenapiDescription.put("/**", "/openapi/users-api.yaml");
+    pathPatternToOpenapiDescription.put("/users/**", "/openapi/readwrite-users-api.yaml");
     kappaConfig.setOpenapiDescriptions(pathPatternToOpenapiDescription);
-    kappaConfig.customizeRequestBodyValidator(configBuilder ->
-      configBuilder.primitiveValidationStrategy(PrimitiveValidationStrategy.LENIENT)
-    );
+    kappaConfig.setIgnoredPathPatterns("/health", "/swagger-ui**", "/upload");
     return kappaConfig;
   }
 }
 
 class CreateUserRequest {
-  private String name;
-  private String email;
-  private Integer age;
+  String name;
+  String password;
 }
+
 
 @RestController
 @RequestMapping("/users")
-class UsersController {
+class UserController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   void createUser(@RequestBody CreateUserRequest request) {
-    System.out.println("received request: " + request);
+
   }
 }
