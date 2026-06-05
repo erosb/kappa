@@ -5,6 +5,7 @@ import com.github.erosb.kappa.operation.validator.adapters.server.servlet.Valida
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class KappaSpringConfiguration {
   private LinkedHashMap<String, String> openapiDescriptions = new LinkedHashMap<>();
@@ -13,7 +14,7 @@ public class KappaSpringConfiguration {
 
   private List<String> ignoredPathPatterns = List.of();
 
-  private ValidatorConfig requestBodyValidatorConfig = ValidatorConfig.builder().build();
+  private Consumer<ValidatorConfig.Companion.ValidatorConfigBuilder> requestBodyValidatorConfigCustomizer = builder -> {};
 
   public LinkedHashMap<String, String> getOpenapiDescriptions() {
     return openapiDescriptions;
@@ -40,11 +41,11 @@ public class KappaSpringConfiguration {
     return ignoredPathPatterns;
   }
 
-  public ValidatorConfig getRequestBodyValidatorConfig() {
-    return requestBodyValidatorConfig;
+  public void customizeRequestBodyValidator(Consumer<ValidatorConfig.Companion.ValidatorConfigBuilder> customizer) {
+    this.requestBodyValidatorConfigCustomizer = customizer;
   }
 
-  public void setRequestBodyValidatorConfig(ValidatorConfig requestBodyValidatorConfig) {
-    this.requestBodyValidatorConfig = requestBodyValidatorConfig;
+  public Consumer<ValidatorConfig.Companion.ValidatorConfigBuilder> getRequestBodyValidatorConfigCustomizer() {
+    return requestBodyValidatorConfigCustomizer;
   }
 }
