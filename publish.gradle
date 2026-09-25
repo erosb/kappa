@@ -67,8 +67,8 @@ signing {
 
 jreleaser {
   signing {
-    active = 'ALWAYS'
-    armored = true
+    active = 'NEVER'
+//    armored = true
   }
   release {
     github {
