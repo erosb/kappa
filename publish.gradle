@@ -83,6 +83,7 @@ jreleaser {
       mavenCentral {
         sonatype {
           active = 'ALWAYS'
+          sign = false
           url = 'https://central.sonatype.com/api/v1/publisher'
           stagingRepository(layout.buildDirectory.dir('staging-deploy').get().toString() + '')
         }
