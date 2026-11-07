@@ -9,6 +9,7 @@
     <version>2.1.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+  <name>kappa Vert.X Adapter</name>
   <artifactId>kappa-vertx-adapter</artifactId>
   <description>Kappa adapter for working with Vert.x</description>
 

@@ -9,6 +9,7 @@
     <version>2.1.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+  <name>Kappa Spring</name>
   <artifactId>kappa-spring</artifactId>
   <description>Kappa - Spring integration</description>
 

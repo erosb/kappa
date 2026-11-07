@@ -9,6 +9,7 @@
     <version>2.1.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+  <name>Kappa RestAssured Adapter</name>
   <artifactId>kappa-restassured-adapter</artifactId>
   <description>Kappa adapter for working with RestAssured</description>
 

@@ -9,6 +9,7 @@
     <version>2.1.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+  <name>Kappa Servlet Adapter</name>
   <artifactId>kappa-servlet-adapter</artifactId>
   <description>Kappa adapter for working with the Servlet API</description>
 

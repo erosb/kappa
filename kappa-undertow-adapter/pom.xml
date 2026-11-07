@@ -9,6 +9,7 @@
     <version>2.1.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+  <name>Kappa Undertow Adapter</name>
   <artifactId>kappa-undertow-adapter</artifactId>
   <description>Kappa adapter for working with Undertow</description>
 
