@@ -38,6 +38,7 @@ nav:
       - 'Servlet API': other-frameworks/servlet-api.md
       - 'Undertow': other-frameworks/undertow.md
       - 'Vert.x': other-frameworks/vertx.md
+  - 'Read/Write context validation': 'read-write-context-validation.md'
 extra:
   kappa_version: 2.1.0
   analytics:

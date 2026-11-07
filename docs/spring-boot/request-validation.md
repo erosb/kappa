@@ -155,6 +155,8 @@ These json schema validation errors tell us the following problems with the json
  * the `"owner.id"` property should be non-negative, so `-5` is invalid
  * the `"birthDate"` also does not match the expected date format
 
+For details on how Kappa validates OpenAPI `readOnly` and `writeOnly` properties, see
+[Read/write context validation](../read-write-context-validation.md).
 
 ## Managing undocumented endpoints
 
@@ -320,5 +322,3 @@ tell it to use a lenient validator when checking request bodies:
 ```
 
 Configured this way, Kappa won't care if a property is omitted or sent with `null` value, as long as it is an optional property.
-
-
