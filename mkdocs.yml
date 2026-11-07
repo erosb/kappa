@@ -1,4 +1,5 @@
 site_name: Kappa - OpenAPI library for Java
+site_url: https://erosb.github.io/kappa/
 repo_url: https://github.com/erosb/kappa
 repo_name: Kappa
 theme:
