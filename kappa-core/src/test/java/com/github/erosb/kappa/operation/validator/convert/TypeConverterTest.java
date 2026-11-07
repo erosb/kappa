@@ -60,7 +60,7 @@ public class TypeConverterTest {
   }
 
   @Test
-  public void convertObjectOfObject() {
+  public void convertObjectOfObject() throws Exception {
     Schema schema = new Schema();
     schema
       .setType("object")
@@ -125,7 +125,7 @@ public class TypeConverterTest {
   }
 
   @Test
-  public void convertArrayObject() {
+  public void convertArrayObject() throws Exception {
     Schema schema = new Schema();
     schema
       .setType("object")
@@ -152,7 +152,7 @@ public class TypeConverterTest {
   }
 
   @Test
-  public void convertArrayArray() {
+  public void convertArrayArray() throws Exception {
     Schema schema = new Schema();
     schema
       .setType("array")

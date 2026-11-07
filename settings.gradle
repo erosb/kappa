@@ -1,7 +1,0 @@
-rootProject.name = "kappa"
-include("openapi-perf-checker")
-include("kappa-restassured-adapter")
-include("kappa-servlet-adapter")
-include("kappa-undertow-adapter")
-include("kappa-vertx-adapter")
-include("kappa-spring")

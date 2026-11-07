@@ -43,7 +43,7 @@ public class BodyTest {
     checkBody(body, TreeUtil.json.readTree(new ByteArrayInputStream(values.getBytes())));
   }
 
-  private void checkBody(Body body, JsonNode values) throws IOException {
+  private void checkBody(Body body, JsonNode values) throws Exception {
     Schema schema = new Schema();
     schema.setProperty("key", new Schema().setType("string"));
 
