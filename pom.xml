@@ -18,7 +18,6 @@
     <module>kappa-undertow-adapter</module>
     <module>kappa-vertx-adapter</module>
     <module>kappa-spring</module>
-    <module>openapi-perf-checker</module>
   </modules>
 
   <properties>
