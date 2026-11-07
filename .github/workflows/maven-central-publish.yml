@@ -1,12 +1,9 @@
 name: Publish to Maven Central
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_tag:
-        description: Existing pushed release tag to publish (for example v2.1.0)
-        required: true
-        type: string
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   publish:
@@ -16,8 +13,6 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v7
-        with:
-          ref: ${{ inputs.release_tag }}
       - name: Setup Java
         uses: actions/setup-java@v6
         with:
@@ -32,7 +27,7 @@ jobs:
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
       - name: Verify release tag
         env:
-          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_TAG: ${{ github.ref_name }}
         run: |
           if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+(\.[0-9]+)*(-[0-9A-Za-z.-]+)?$ ]]; then
             echo "Invalid release tag: $RELEASE_TAG (expected v<version>)" >&2
