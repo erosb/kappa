@@ -41,7 +41,7 @@ nav:
       - 'Vert.x': other-frameworks/vertx.md
   - 'Read/Write context validation': 'read-write-context-validation.md'
 extra:
-  kappa_version: 2.1.0
+  kappa_version: 2.1.1
   analytics:
     provider: google
     property: G-ETPR43KXJH
