@@ -14,7 +14,7 @@
 
   <properties>
     <justify.version>1.1.0</justify.version>
-    <jsontools.version>2.2.11</jsontools.version>
+    <jsontools.version>2.2.14</jsontools.version>
     <networknt.version>1.0.38</networknt.version>
   </properties>
 
