@@ -1,14 +1,23 @@
 name: Publish to Maven Central
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing pushed release tag to publish (for example v2.1.0)
+        required: true
+        type: string
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -18,6 +27,27 @@ jobs:
           server-username: CENTRAL_USERNAME
           server-password: CENTRAL_PASSWORD
           cache: maven
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+      - name: Verify release tag
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+(\.[0-9]+)*(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid release tag: $RELEASE_TAG (expected v<version>)" >&2
+            exit 1
+          fi
+          if ! git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
+            echo "Tag $RELEASE_TAG was not found in the checked-out repository." >&2
+            exit 1
+          fi
+          pom_version=$(mvn --batch-mode --no-transfer-progress -q -N help:evaluate -Dexpression=project.version -DforceStdout)
+          tag_version=${RELEASE_TAG#v}
+          if [[ "$tag_version" != "$pom_version" ]]; then
+            echo "Tag version $tag_version does not match root POM version $pom_version." >&2
+            exit 1
+          fi
       - name: Import GPG Key
         uses: crazy-max/ghaction-import-gpg@v6
         with:
@@ -26,5 +56,6 @@ jobs:
       - name: Publish packages
         run: mvn --batch-mode --no-transfer-progress -P release -pl :kappa-parent,:kappa,:kappa-restassured-adapter,:kappa-servlet-adapter,:kappa-undertow-adapter,:kappa-vertx-adapter,:kappa-spring -am deploy
         env:
-          CENTRAL_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          CENTRAL_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
