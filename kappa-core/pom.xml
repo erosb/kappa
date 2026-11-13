@@ -27,7 +27,7 @@
     <dependency>
       <groupId>com.github.erosb</groupId>
       <artifactId>json-sKema</artifactId>
-      <version>0.31.0</version>
+      <version>0.32.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
